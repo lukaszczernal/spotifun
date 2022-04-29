@@ -66,7 +66,7 @@ interface Track {
   } & ExternalURL;
 }
 
-interface Tracks {
+export interface Tracks {
   href: string;
   items: Track[];
   limit: number;

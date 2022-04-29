@@ -4,6 +4,7 @@ import { useAuth } from './services/useAuth';
 import styles from './App.module.css';
 import useUser from './services/useUser';
 import useTracks from './services/useTracks';
+import usePageCount from './services/usePageCount';
 
 const App: Component = () => {
   const { authorize, login, logout, isAuthenticated } = useAuth()!;
@@ -12,6 +13,7 @@ const App: Component = () => {
 
   const [user] = useUser();
   const [tracks] = useTracks();
+  const [pageCount] = usePageCount();
 
   return (
     <div class={styles.App}>
@@ -29,6 +31,7 @@ const App: Component = () => {
         <>
           <h4>Username: {user()?.display_name}</h4>
           <h5>Track count: {tracks()?.total}</h5>
+          <h5>Page count: {pageCount}</h5>
           <ul>
             <For each={tracks()?.items}>
               {(track, index) => (
