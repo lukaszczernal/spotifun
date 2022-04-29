@@ -1,4 +1,5 @@
-import { createResource } from 'solid-js';
+import { Accessor, createResource, createSignal, Signal } from 'solid-js';
+import { PAGE_SIZE } from './config';
 import { useAuth } from './useAuth';
 
 type ImageSize = 640 | 300 | 64;
@@ -15,7 +16,7 @@ interface ExternalURL {
   };
 }
 
-interface Track {
+export interface Track {
   added_at: string;
   track: {
     album: {
@@ -76,18 +77,32 @@ export interface Tracks {
   total: number;
 }
 
-const fetchTracks = () => {
+const getQueryParams = (pageNumber: number) =>
+  `limit=${PAGE_SIZE}&offset=${PAGE_SIZE * pageNumber}`;
+
+const fetchTracks = (pageNumbers: number[]) => {
   const { getAccessToken } = useAuth();
   const accessToken = getAccessToken();
+
   return accessToken
-    ? fetch('https://api.spotify.com/v1/me/tracks?limit=50', {
-        headers: {
-          Authorization: 'Bearer ' + accessToken,
-        },
-      }).then((res) => res.json() as Promise<Tracks>)
+    ? Promise.all(
+        pageNumbers.map((pageNumber) =>
+          fetch(
+            `https://api.spotify.com/v1/me/tracks?${getQueryParams(
+              pageNumber
+            )}`,
+            {
+              headers: {
+                Authorization: 'Bearer ' + accessToken,
+              },
+            }
+          ).then((res) => res.json() as Promise<Tracks>)
+        )
+      )
     : Promise.reject('Access Denied. Please log in.');
 };
 
-const useTracks = () => createResource<Tracks>(fetchTracks);
+const useTracks = (pageNumbers: Accessor<number[]>) =>
+  createResource<Tracks[], number[]>(pageNumbers, fetchTracks);
 
 export default useTracks;
