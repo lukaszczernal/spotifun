@@ -1,5 +1,4 @@
-import { Accessor, createMemo, Resource } from 'solid-js';
-import { PAGE_SIZE } from './config';
+import { Accessor, createMemo } from 'solid-js';
 import usePageCount from './usePageCount';
 import useTracks, { Track } from './useTracks';
 
@@ -17,20 +16,26 @@ const getRandomNumbers = (max: number, length: number = 3) => {
 
 const useRandomTracks = (): [
   Accessor<Track[] | undefined>,
-  Accessor<number[]>
+  Accessor<number[]>,
+  Accessor<string | undefined>
 ] => {
   const [pageCount] = usePageCount();
 
   const randomPageNumbers = createMemo(() => getRandomNumbers(pageCount()));
 
-  const [pages] = useTracks(randomPageNumbers);
+  const [tracks] = useTracks(randomPageNumbers);
 
   const randomTracks = createMemo(() => {
-    console.log('pages', pages());
-    return pages()?.map(page => page.items[getRandomInt(PAGE_SIZE)])
+    const pageLength = tracks()?.length;
+    return tracks()?.map((track) => track[getRandomInt(pageLength || 0)]);
   });
 
-  return [randomTracks, randomPageNumbers];
+  const preview = createMemo(() => {
+    const tracks = randomTracks();
+    return tracks?.[getRandomInt(3)]?.track.preview_url;
+  });
+
+  return [randomTracks, randomPageNumbers, preview];
 };
 
 export default useRandomTracks;

@@ -96,13 +96,16 @@ const fetchTracks = (pageNumbers: number[]) => {
                 Authorization: 'Bearer ' + accessToken,
               },
             }
-          ).then((res) => res.json() as Promise<Tracks>)
+          )
+            .then((res) => res.json() as Promise<Tracks>)
+            .then((page) => page.items)
+            .then((tracks) => tracks.filter((track) => track.track.preview_url))
         )
       )
     : Promise.reject('Access Denied. Please log in.');
 };
 
 const useTracks = (pageNumbers: Accessor<number[]>) =>
-  createResource<Tracks[], number[]>(pageNumbers, fetchTracks);
+  createResource<Track[][], number[]>(pageNumbers, fetchTracks);
 
 export default useTracks;

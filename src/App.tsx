@@ -12,8 +12,8 @@ const App: Component = () => {
   authorize();
 
   const [user] = useUser();
-  const [tracks, random] = useRandomTracks();
-  const [pageCount] = usePageCount();
+  const [randomTracks, random, previewURL] = useRandomTracks();
+  const [pageCount, total] = usePageCount();
 
   return (
     <div class={styles.App}>
@@ -30,20 +30,25 @@ const App: Component = () => {
       <Show when={isAuthenticated()}>
         <>
           <h4>Username: {user()?.display_name}</h4>
-          {/* <h5>Track count: {total}</h5> */}
+          <h5>Track count: {total}</h5>
           <h5>Page count: {pageCount}</h5>
           <h5>Random: {random().join(',')}</h5>
+          <h5>Preview URL: {previewURL()}</h5>
           <ul>
-            <For each={tracks()}>
+            <For each={randomTracks()}>
               {(track, index) => (
                 <li>
-                  {index()}{' '}
-                  <img src={track.track.album.images[2].url} />{' '}
+                  {index()} <img src={track.track.album.images[2].url} />{' '}
                   {track.track.name}
                 </li>
               )}
             </For>
           </ul>
+          <Show when={previewURL()}>
+            <audio controls>
+              <source src={previewURL()} type="audio/mpeg" />
+            </audio>
+          </Show>
         </>
       </Show>
     </div>

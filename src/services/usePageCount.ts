@@ -1,23 +1,32 @@
-import { createEffect, createSignal } from 'solid-js';
-import { Accessor, ResourceActions } from 'solid-js/types/reactive/signal';
+import { createMemo, createResource } from 'solid-js';
+import { Accessor } from 'solid-js/types/reactive/signal';
 import { PAGE_SIZE } from './config';
-import useTracks, { Tracks } from './useTracks';
+import { useAuth } from './useAuth';
+import { Tracks } from './useTracks';
+
+const fetchTrack = () => {
+  const { getAccessToken } = useAuth();
+  const accessToken = getAccessToken();
+
+  return accessToken
+    ? fetch('https://api.spotify.com/v1/me/tracks', {
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+        },
+      }).then((res) => res.json() as Promise<Tracks>)
+    : Promise.reject('Access Denied. Please log in.');
+};
 
 const countPages = (total?: number) =>
   total ? Math.ceil(total / PAGE_SIZE) : 0;
 
-const usePageCount = (): [
-  Accessor<number>,
-  ResourceActions<Tracks[] | undefined>
-] => {
-  const [pageCount, setPageCount] = createSignal(0);
-  const [firstPage, rest] = useTracks(() => [0]);
+const usePageCount = (): [Accessor<number>, Accessor<number | undefined>] => {
+  const [firstPage] = createResource(fetchTrack);
 
-  createEffect(() => {
-    setPageCount(countPages(firstPage()?.[0].total));
-  });
+  const total = createMemo(() => firstPage()?.total);
+  const pageCount = createMemo(() => countPages(total()));
 
-  return [pageCount, rest];
+  return [pageCount, total];
 };
 
 export default usePageCount;
