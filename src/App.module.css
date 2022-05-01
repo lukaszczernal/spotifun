@@ -1,3 +1,10 @@
 .App {
   text-align: left;
 }
+
+.coverList {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  padding: 0;
+}

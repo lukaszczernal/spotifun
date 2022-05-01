@@ -34,12 +34,11 @@ const App: Component = () => {
           <h5>Page count: {pageCount}</h5>
           <h5>Random: {random().join(',')}</h5>
           <h5>Preview URL: {previewURL()}</h5>
-          <ul>
+          <ul className={styles.coverList}>
             <For each={randomTracks()}>
-              {(track, index) => (
+              {(track) => (
                 <li>
-                  {index()} <img src={track.track.album.images[2].url} />{' '}
-                  {track.track.name}
+                  <img src={track.track.album.images[2].url} />
                 </li>
               )}
             </For>
