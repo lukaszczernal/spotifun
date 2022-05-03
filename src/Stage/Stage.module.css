@@ -1,0 +1,14 @@
+.stage__covers {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  padding: 0;
+}
+
+.stage__cover {
+  border: 2px solid white;
+}
+
+.stage__cover_selected {
+  border: 2px solid green;
+}

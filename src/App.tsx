@@ -1,10 +1,10 @@
-import { Component, For, Show } from 'solid-js';
+import { Component, Match, Show, Switch, useContext } from 'solid-js';
 import { useAuth } from './services/useAuth';
 
 import styles from './App.module.css';
 import useUser from './services/useUser';
-import usePageCount from './services/usePageCount';
-import useRandomTracks from './services/useRandomTracks';
+import { GameContext } from './services/useGame';
+import { Stage } from './Stage';
 
 const App: Component = () => {
   const { authorize, login, logout, isAuthenticated } = useAuth()!;
@@ -12,42 +12,23 @@ const App: Component = () => {
   authorize();
 
   const [user] = useUser();
-  const [randomTracks, random, previewURL] = useRandomTracks();
-  const [pageCount, total] = usePageCount();
+  const [gameStore] = useContext(GameContext)!;
 
   return (
     <div class={styles.App}>
       <h2>Music cover guesser</h2>
 
-      <Show when={!isAuthenticated()}>
-        <button onClick={login}>Login to Spotify</button>
-      </Show>
-
-      <Show when={isAuthenticated()}>
-        <button onClick={logout}>Logout</button>
-      </Show>
+      <Switch fallback={<button onClick={login}>Login to Spotify</button>}>
+        <Match when={isAuthenticated()}>
+          <button onClick={logout}>Logout</button>
+        </Match>
+      </Switch>
 
       <Show when={isAuthenticated()}>
         <>
           <h4>Username: {user()?.display_name}</h4>
-          <h5>Track count: {total}</h5>
-          <h5>Page count: {pageCount}</h5>
-          <h5>Random: {random().join(',')}</h5>
-          <h5>Preview URL: {previewURL()}</h5>
-          <ul className={styles.coverList}>
-            <For each={randomTracks()}>
-              {(track) => (
-                <li>
-                  <img src={track.track.album.images[2].url} />
-                </li>
-              )}
-            </For>
-          </ul>
-          <Show when={previewURL()}>
-            <audio controls>
-              <source src={previewURL()} type="audio/mpeg" />
-            </audio>
-          </Show>
+          <h5>Current stage: {gameStore.currentStage()}</h5>
+          <Stage />
         </>
       </Show>
     </div>

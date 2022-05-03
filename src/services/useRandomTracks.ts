@@ -1,4 +1,4 @@
-import { Accessor, createMemo } from 'solid-js';
+import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
 import usePageCount from './usePageCount';
 import useTracks, { Track } from './useTracks';
 
@@ -14,28 +14,33 @@ const getRandomNumbers = (max: number, length: number = 3) => {
   return result;
 };
 
-const useRandomTracks = (): [
-  Accessor<Track[] | undefined>,
-  Accessor<number[]>,
-  Accessor<string | undefined>
-] => {
+const useRandomTracks = (
+  stage: Accessor<number>
+): {
+  randomTracks: Accessor<Track[] | undefined>;
+  mysteryTrack: Accessor<Track | undefined>;
+} => {
   const [pageCount] = usePageCount();
+  const [randomNumbers, setRandomNumbers] = createSignal<number[]>([]);
 
-  const randomPageNumbers = createMemo(() => getRandomNumbers(pageCount()));
+  createEffect(() => {
+    stage(); // Added only to trigger effect
+    setRandomNumbers(getRandomNumbers(pageCount()));
+  });
 
-  const [tracks] = useTracks(randomPageNumbers);
+  const [tracks] = useTracks(randomNumbers);
 
   const randomTracks = createMemo(() => {
     const pageLength = tracks()?.length;
     return tracks()?.map((track) => track[getRandomInt(pageLength || 0)]);
   });
 
-  const preview = createMemo(() => {
+  const mysteryTrack = createMemo(() => {
     const tracks = randomTracks();
-    return tracks?.[getRandomInt(3)]?.track.preview_url;
+    return tracks?.[getRandomInt(3)];
   });
 
-  return [randomTracks, randomPageNumbers, preview];
+  return { randomTracks, mysteryTrack };
 };
 
 export default useRandomTracks;

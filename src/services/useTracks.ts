@@ -105,7 +105,7 @@ const fetchTracks = (pageNumbers: number[]) => {
     : Promise.reject('Access Denied. Please log in.');
 };
 
-const useTracks = (pageNumbers: Accessor<number[]>) =>
+const useTracks = (pageNumbers: Accessor<number[]> = () => []) =>
   createResource<Track[][], number[]>(pageNumbers, fetchTracks);
 
 export default useTracks;
