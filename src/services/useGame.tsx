@@ -9,7 +9,6 @@ interface Score {
 
 type GameContext = ReturnType<typeof getStore>;
 
-const FINAL_STAGE = 3;
 export const GameContext = createContext<GameContext>();
 export const GameProvider: Component = (props) => (
   <GameContext.Provider value={getStore()} children={props.children} />
@@ -17,15 +16,14 @@ export const GameProvider: Component = (props) => (
 
 const getStore = () => {
   const [gameScore, setGameScore] = createStore<Score[]>([]);
-
-  const currentStage = () => gameScore.length + 1;
+  const [stage, setStage] = createSignal(0);
 
   const nextStage = (score: Score) => {
-    if (currentStage() >= FINAL_STAGE) {
-      return;
-    }
     setGameScore((state) => [...state, score]);
+    setStage(prev => prev + 1);
   };
 
-  return [{ currentStage }, { nextStage }] as const;
+  const startGame = () => setStage(1);
+
+  return [{ stage }, { nextStage, startGame }] as const;
 };

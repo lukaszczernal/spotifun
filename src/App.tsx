@@ -5,6 +5,7 @@ import styles from './App.module.css';
 import useUser from './services/useUser';
 import { GameContext } from './services/useGame';
 import { Stage } from './Stage';
+import { Splash } from './Splash';
 
 const App: Component = () => {
   const { authorize, login, logout, isAuthenticated } = useAuth()!;
@@ -25,11 +26,21 @@ const App: Component = () => {
       </Switch>
 
       <Show when={isAuthenticated()}>
-        <>
-          <h4>Username: {user()?.display_name}</h4>
-          <h5>Current stage: {gameStore.currentStage()}</h5>
-          <Stage />
-        </>
+        <h4>Username: {user()?.display_name}</h4>
+        <Switch>
+          <Match when={gameStore.stage() === 0}>
+            <Splash />
+          </Match>
+
+          <Match when={gameStore.stage() > 3}>
+            <h1>you won</h1>
+          </Match>
+
+          <Match when={gameStore.stage() > 0}>
+            <Stage />
+          </Match>
+        </Switch>
+    
       </Show>
     </div>
   );

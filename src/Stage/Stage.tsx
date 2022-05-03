@@ -1,4 +1,5 @@
 import { createSignal, For, Show, useContext } from 'solid-js';
+import { Player } from '../components/Player';
 import { GameContext } from '../services/useGame';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
@@ -6,12 +7,11 @@ import styles from './Stage.module.css';
 
 const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
-  const [{currentStage}, gameAction] = useContext(GameContext)!;
-  const { randomTracks, mysteryTrack } = useRandomTracks(currentStage)!;
+  const [{stage}, gameAction] = useContext(GameContext)!;
+  const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
   return (
     <>
-    {currentStage()}
       <ul className={styles.stage__covers}>
         <For each={randomTracks()}>
           {(track) => (
@@ -29,13 +29,12 @@ const Stage = () => {
           )}
         </For>
       </ul>
-      <Show when={mysteryTrack()?.track.preview_url}>
-        <audio controls>
-          <source src={mysteryTrack()?.track.preview_url} type="audio/mpeg" />
-        </audio>
+      <Show when={mysteryTrack()}>
+        <Player track={mysteryTrack} />
       </Show>
 
       <button
+        disabled={!selectedTrack()}
         onClick={() => {
           gameAction.nextStage({
             correctTrack: mysteryTrack(),
