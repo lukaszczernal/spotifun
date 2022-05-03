@@ -1,4 +1,9 @@
-import { Accessor, Component, createEffect, createSignal, ResourceFetcher } from 'solid-js';
+import {
+  Accessor,
+  Component,
+  createEffect,
+  createSignal,
+} from 'solid-js';
 import { Track } from '../../services/useTracks';
 
 interface Props {
@@ -15,12 +20,9 @@ const Player: Component<Props> = ({ track }) => {
   });
 
   return (
-    <>
-      <p>Now playing: {playbackURL()}</p>
-      <audio ref={playerRef} controls>
-        <source src={playbackURL()} type="audio/mpeg" />
-      </audio>
-    </>
+    <audio ref={playerRef} controls>
+      <source src={playbackURL()} type="audio/mpeg" />
+    </audio>
   );
 };
 

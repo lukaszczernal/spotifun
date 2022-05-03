@@ -6,6 +6,7 @@ import useUser from './services/useUser';
 import { GameContext } from './services/useGame';
 import { Stage } from './Stage';
 import { Splash } from './Splash';
+import { Board } from './Board';
 
 const App: Component = () => {
   const { authorize, login, logout, isAuthenticated } = useAuth()!;
@@ -33,7 +34,7 @@ const App: Component = () => {
           </Match>
 
           <Match when={gameStore.stage() > 3}>
-            <h1>you won</h1>
+            <Board />
           </Match>
 
           <Match when={gameStore.stage() > 0}>

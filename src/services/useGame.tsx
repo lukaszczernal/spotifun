@@ -2,7 +2,7 @@ import { Component, createContext, createSignal } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Track } from './useTracks';
 
-interface Score {
+export interface Score {
   correctTrack?: Track;
   selectedTrack?: Track;
 }
@@ -15,15 +15,23 @@ export const GameProvider: Component = (props) => (
 );
 
 const getStore = () => {
-  const [gameScore, setGameScore] = createStore<Score[]>([]);
+  const [gameScore, setGameScore] = createStore<{ answers: Score[] }>({
+    answers: [],
+  });
   const [stage, setStage] = createSignal(0);
 
   const nextStage = (score: Score) => {
-    setGameScore((state) => [...state, score]);
-    setStage(prev => prev + 1);
+    setGameScore('answers', (state) => [...state, score]);
+    setStage((prev) => prev + 1);
   };
 
-  const startGame = () => setStage(1);
+  const startGame = () => {
+    setGameScore('answers', []);
+    setStage(1);
+  };
 
-  return [{ stage }, { nextStage, startGame }] as const;
+  return [
+    { stage, gameScore },
+    { nextStage, startGame },
+  ] as const;
 };
