@@ -1,6 +1,13 @@
 import { CLIENT_ID, REDIRECT_URI, SCOPE, STATE_KEY } from '../config';
 import { generateRandomString, getHashParams } from './utils';
 
+interface ErrorResponse {
+  error: {
+    status: number;
+    message: string;
+  };
+}
+
 export const login = () => {
   var state = generateRandomString(16);
 
@@ -21,7 +28,7 @@ export const logout = () => {
   sessionStorage.removeItem(STATE_KEY);
   // @ts-ignore
   window.location = REDIRECT_URI;
-} 
+};
 
 export const authorize = () => {
   const params = getHashParams();
@@ -40,5 +47,20 @@ export const authorize = () => {
       // @ts-ignore
       window.location = REDIRECT_URI;
     }
+  }
+};
+
+const errorCodeEffect: { [key in number]: () => any } = {
+  401: logout,
+};
+
+export const responseHandler = <T>(res: Response) => {
+  if (res.ok) {
+    return res.json() as Promise<T>;
+  } else {
+    return res.json().then(({ error }: ErrorResponse) => {
+      errorCodeEffect[error.status];
+      throw error;
+    });
   }
 };

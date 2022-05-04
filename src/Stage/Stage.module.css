@@ -1,7 +1,11 @@
+.stage__scroll {
+  display: block;
+  overflow: scroll;
+}
+
 .stage__covers {
   list-style: none;
   display: flex;
-  justify-content: space-around;
   padding: 0;
 }
 

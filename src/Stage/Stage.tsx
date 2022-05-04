@@ -7,28 +7,34 @@ import styles from './Stage.module.css';
 
 const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
-  const [{stage}, gameAction] = useContext(GameContext)!;
+  const [{ stage }, gameAction] = useContext(GameContext)!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
   return (
     <>
-      <ul className={styles.stage__covers}>
-        <For each={randomTracks()}>
-          {(track) => (
-            <li
-              className={
-                selectedTrack()?.track.id === track.track.id
-                  ? styles.stage__cover_selected
-                  : styles.stage__cover
-              }
-            >
-              <a onClick={() => setSelectedTrack(track)}>
-                <img src={track.track.album.images[2].url} />
-              </a>
-            </li>
-          )}
-        </For>
-      </ul>
+      <div className={styles.stage__scroll}>
+        <ul className={styles.stage__covers}>
+          <For each={randomTracks()}>
+            {(track) => (
+              <li
+                className={
+                  selectedTrack()?.track.id === track.track.id
+                    ? styles.stage__cover_selected
+                    : styles.stage__cover
+                }
+              >
+                <a onClick={() => setSelectedTrack(track)}>
+                  <img
+                    className={styles.stage__coverImage}
+                    src={track.track.album.images[1].url}
+                  />
+                </a>
+              </li>
+            )}
+          </For>
+        </ul>
+      </div>
+
       <Show when={mysteryTrack()}>
         <Player track={mysteryTrack} />
       </Show>

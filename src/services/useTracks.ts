@@ -1,4 +1,5 @@
-import { Accessor, createResource, createSignal, Signal } from 'solid-js';
+import { Accessor, createResource } from 'solid-js';
+import { responseHandler } from './authorize';
 import { PAGE_SIZE } from './config';
 import { useAuth } from './useAuth';
 
@@ -97,7 +98,7 @@ const fetchTracks = (pageNumbers: number[]) => {
               },
             }
           )
-            .then((res) => res.json() as Promise<Tracks>)
+            .then(res => responseHandler<Tracks>(res))
             .then((page) => page.items)
             .then((tracks) => tracks.filter((track) => track.track.preview_url))
         )
@@ -109,3 +110,4 @@ const useTracks = (pageNumbers: Accessor<number[]> = () => []) =>
   createResource<Track[][], number[]>(pageNumbers, fetchTracks);
 
 export default useTracks;
+
