@@ -1,8 +1,9 @@
+import { Link } from 'solid-app-router';
 import { For, Show, useContext } from 'solid-js';
 import { GameContext, Score } from '../services/useGame';
 
-const Board = () => {
-  const [{ gameScore }, { startGame }] = useContext(GameContext)!;
+const ScoreBoard = () => {
+  const [{ gameScore }] = useContext(GameContext)!;
 
   const isCorrect = (score: Score) => {
     const { correctTrack, selectedTrack } = score;
@@ -34,9 +35,11 @@ const Board = () => {
           )}
         </For>
       </ul>
-      <button onClick={startGame}>One more round</button>
+      <Link class="nav" href="/game">
+        One more round
+      </Link>
     </>
   );
 };
 
-export default Board;
+export default ScoreBoard;

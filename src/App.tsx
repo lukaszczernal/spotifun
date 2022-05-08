@@ -1,48 +1,37 @@
-import { Component, Match, Show, Switch, useContext } from 'solid-js';
+import { Component } from 'solid-js';
 import { useAuth } from './services/useAuth';
 
 import styles from './App.module.css';
-import useUser from './services/useUser';
-import { GameContext } from './services/useGame';
 import { Stage } from './Stage';
 import { Splash } from './Splash';
-import { Board } from './Board';
+import { ScoreBoard } from './ScoreBoard';
+import { Route, Routes } from 'solid-app-router';
+import { AuthGuard } from './components/AuthGuard';
 
 const App: Component = () => {
-  const { authorize, login, logout, isAuthenticated } = useAuth()!;
+  const { authorize, login } = useAuth()!;
 
   authorize();
 
-  const [user] = useUser();
-  const [gameStore] = useContext(GameContext)!;
-
   return (
-    <div class={styles.App}>
-      <h2>Music cover guesser</h2>
+    <div class={styles.app}>
+      <Routes>
+        <Route path="/game" element={<AuthGuard />}>
+          <Route path="/score" element={<ScoreBoard />} />
+          <Route path="/*" element={<Stage />} />
+        </Route>
 
-      <Switch fallback={<button onClick={login}>Login to Spotify</button>}>
-        <Match when={isAuthenticated()}>
-          <button onClick={logout}>Logout</button>
-        </Match>
-      </Switch>
-
-      <Show when={isAuthenticated()}>
-        <h4>Username: {user()?.display_name}</h4>
-        <Switch>
-          <Match when={gameStore.stage() === 0}>
-            <Splash />
-          </Match>
-
-          <Match when={gameStore.stage() > 3}>
-            <Board />
-          </Match>
-
-          <Match when={gameStore.stage() > 0}>
-            <Stage />
-          </Match>
-        </Switch>
-    
-      </Show>
+        <Route
+          path="/login"
+          element={
+            <p>
+              You need to login.{' '}
+              <button onClick={login}>Login to Spotify</button>
+            </p>
+          }
+        />
+        <Route path="/*" element={<Splash />} />
+      </Routes>
     </div>
   );
 };

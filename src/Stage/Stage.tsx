@@ -1,4 +1,12 @@
-import { createSignal, For, Show, useContext } from 'solid-js';
+import { useNavigate } from 'solid-app-router';
+import {
+  createEffect,
+  createSignal,
+  For,
+  onMount,
+  Show,
+  useContext,
+} from 'solid-js';
 import { Player } from '../components/Player';
 import { GameContext } from '../services/useGame';
 import useRandomTracks from '../services/useRandomTracks';
@@ -9,9 +17,21 @@ const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
   const [{ stage }, gameAction] = useContext(GameContext)!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
+  const navigate = useNavigate();
+
+  createEffect(() => {
+    if (stage() > 3) {
+      navigate('/game/score');
+    }
+  });
+
+  onMount(() => {
+    gameAction.startGame();
+  });
 
   return (
     <>
+      <h1>Guess cover by sample</h1>
       <div className={styles.stage__scroll}>
         <ul className={styles.stage__covers}>
           <For each={randomTracks()}>

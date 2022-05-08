@@ -59,7 +59,7 @@ export const responseHandler = <T>(res: Response) => {
     return res.json() as Promise<T>;
   } else {
     return res.json().then(({ error }: ErrorResponse) => {
-      errorCodeEffect[error.status];
+      errorCodeEffect[error.status]?.();
       throw error;
     });
   }

@@ -1,13 +1,13 @@
-import { useContext } from 'solid-js';
-import { GameContext } from '../services/useGame';
+import { Link } from 'solid-app-router';
 
 const Splash = () => {
-  const [_, gameAction] = useContext(GameContext)!;
-
   return (
     <>
-      <h1>Guess cover by sample</h1>
-      <button onClick={() => gameAction.startGame()}>Start</button>
+      <h2>Spotifun</h2>
+
+      <Link class="nav" href="/game">
+        Start
+      </Link>
     </>
   );
 };
