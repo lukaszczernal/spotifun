@@ -3,7 +3,7 @@ import { For, Show, useContext } from 'solid-js';
 import { GameContext, Score } from '../services/useGame';
 
 const ScoreBoard = () => {
-  const [{ gameScore }] = useContext(GameContext)!;
+  const [{ gameScore }, { startGame }] = useContext(GameContext)!;
 
   const isCorrect = (score: Score) => {
     const { correctTrack, selectedTrack } = score;
@@ -35,9 +35,9 @@ const ScoreBoard = () => {
           )}
         </For>
       </ul>
-      <Link class="nav" href="/game">
+      <button onClick={startGame}>
         One more round
-      </Link>
+      </button>
     </>
   );
 };

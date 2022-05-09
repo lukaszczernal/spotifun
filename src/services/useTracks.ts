@@ -81,33 +81,36 @@ export interface Tracks {
 const getQueryParams = (pageNumber: number) =>
   `limit=${PAGE_SIZE}&offset=${PAGE_SIZE * pageNumber}`;
 
-const fetchTracks = (pageNumbers: number[]) => {
+const fetchTracks = (pageNumbers: number[] = []) => {
   const { getAccessToken } = useAuth();
   const accessToken = getAccessToken();
 
-  return accessToken
-    ? Promise.all(
-        pageNumbers.map((pageNumber) =>
-          fetch(
-            `https://api.spotify.com/v1/me/tracks?${getQueryParams(
-              pageNumber
-            )}`,
-            {
-              headers: {
-                Authorization: 'Bearer ' + accessToken,
-              },
-            }
-          )
-            .then(res => responseHandler<Tracks>(res))
-            .then((page) => page.items)
-            .then((tracks) => tracks.filter((track) => track.track.preview_url))
+  if (accessToken && pageNumbers.length) {
+    return Promise.all(
+      pageNumbers.map((pageNumber) =>
+        fetch(
+          `https://api.spotify.com/v1/me/tracks?${getQueryParams(pageNumber)}`,
+          {
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+            },
+          }
         )
+          .then((res) => responseHandler<Tracks>(res))
+          .then((page) => page.items)
+          .then((tracks) => tracks.filter((track) => track.track.preview_url))
       )
-    : Promise.reject('Access Denied. Please log in.');
+    );
+  }
+
+  if (pageNumbers.length === 0) {
+    return Promise.resolve(undefined);
+  }
+
+  return Promise.reject('Access Denied. Please log in.');
 };
 
-const useTracks = (pageNumbers: Accessor<number[]> = () => []) =>
-  createResource<Track[][], number[]>(pageNumbers, fetchTracks);
+const useTracks = (pageNumbers: Accessor<number[]>) =>
+  createResource<Track[][] | undefined, number[]>(pageNumbers, fetchTracks);
 
 export default useTracks;
-

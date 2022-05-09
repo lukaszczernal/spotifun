@@ -1,5 +1,6 @@
 import { createMemo, createResource } from 'solid-js';
 import { Accessor } from 'solid-js/types/reactive/signal';
+import { responseHandler } from './authorize';
 import { PAGE_SIZE } from './config';
 import { useAuth } from './useAuth';
 import { Tracks } from './useTracks';
@@ -13,7 +14,7 @@ const fetchTrack = () => {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
-      }).then((res) => res.json() as Promise<Tracks>)
+      }).then((res) => responseHandler<Tracks>(res))
     : Promise.reject('Access Denied. Please log in.');
 };
 

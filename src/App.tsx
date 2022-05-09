@@ -4,7 +4,6 @@ import { useAuth } from './services/useAuth';
 import styles from './App.module.css';
 import { Stage } from './Stage';
 import { Splash } from './Splash';
-import { ScoreBoard } from './ScoreBoard';
 import { Route, Routes } from 'solid-app-router';
 import { AuthGuard } from './components/AuthGuard';
 
@@ -17,7 +16,6 @@ const App: Component = () => {
     <div class={styles.app}>
       <Routes>
         <Route path="/game" element={<AuthGuard />}>
-          <Route path="/score" element={<ScoreBoard />} />
           <Route path="/*" element={<Stage />} />
         </Route>
 
