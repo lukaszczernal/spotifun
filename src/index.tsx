@@ -2,13 +2,13 @@
 import { render } from 'solid-js/web';
 import App from './App';
 import { GameProvider } from './services/useGame';
-import { Router } from 'solid-app-router';
+import { hashIntegration, Router } from 'solid-app-router';
 
 import './index.css';
 
 render(
   () => (
-    <Router base="spotifun">
+    <Router source={hashIntegration()}>
       <GameProvider>
         <App />
       </GameProvider>
