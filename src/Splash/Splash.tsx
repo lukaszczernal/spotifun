@@ -1,13 +1,11 @@
-import { Link } from 'solid-app-router';
+import { Button } from '../components/Button';
+import { SplashText } from '../components/SplashText';
 
 const Splash = () => {
   return (
     <>
-      <h2>Spotifun</h2>
-
-      <Link class="nav" href="/game">
-        Start
-      </Link>
+      <SplashText>Quiz app powered by Spotify</SplashText>
+      <Button href="/game">Start</Button>
     </>
   );
 };

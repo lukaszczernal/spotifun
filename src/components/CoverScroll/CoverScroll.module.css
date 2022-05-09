@@ -1,18 +1,18 @@
-.stage__scroll {
+.coverScroll {
   display: block;
   overflow: scroll;
 }
 
-.stage__covers {
+.coverScroll__covers {
   list-style: none;
   display: flex;
   padding: 0;
 }
 
-.stage__cover {
+.coverScroll__cover {
   border: 2px solid white;
 }
 
-.stage__cover_selected {
+.coverScroll__cover_selected {
   border: 2px solid green;
 }

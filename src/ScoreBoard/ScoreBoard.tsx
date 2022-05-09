@@ -1,4 +1,3 @@
-import { Link } from 'solid-app-router';
 import { For, Show, useContext } from 'solid-js';
 import { GameContext, Score } from '../services/useGame';
 

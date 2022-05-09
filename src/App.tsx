@@ -1,4 +1,4 @@
-import { Component } from 'solid-js';
+import { Component, useContext } from 'solid-js';
 import { useAuth } from './services/useAuth';
 
 import styles from './App.module.css';
@@ -6,28 +6,24 @@ import { Stage } from './Stage';
 import { Splash } from './Splash';
 import { Route, Routes } from 'solid-app-router';
 import { AuthGuard } from './components/AuthGuard';
+import { Logo } from './components/Logo';
+import { Login } from './Login';
+import { GameContext } from './services/useGame';
 
 const App: Component = () => {
-  const { authorize, login } = useAuth()!;
+  const { authorize } = useAuth()!;
+  const [{ stage }] = useContext(GameContext)!;
 
   authorize();
 
   return (
     <div class={styles.app}>
+      <Logo compact={stage() > 0} />
       <Routes>
         <Route path="/game" element={<AuthGuard />}>
           <Route path="/*" element={<Stage />} />
         </Route>
-
-        <Route
-          path="/login"
-          element={
-            <p>
-              You need to login.{' '}
-              <button onClick={login}>Login to Spotify</button>
-            </p>
-          }
-        />
+        <Route path="/login" element={<Login />} />
         <Route path="/*" element={<Splash />} />
       </Routes>
     </div>

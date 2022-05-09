@@ -1,21 +1,25 @@
+import { useNavigate } from 'solid-app-router';
 import {
   createEffect,
   createSignal,
-  For,
   Match,
+  onCleanup,
   onMount,
   Show,
   Switch,
   useContext,
 } from 'solid-js';
+import { Button } from '../components/Button';
+import { CoverScroll } from '../components/CoverScroll';
 import { Player } from '../components/Player';
+import { SplashText } from '../components/SplashText';
 import { ScoreBoard } from '../ScoreBoard';
 import { GameContext, Score } from '../services/useGame';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
-import styles from './Stage.module.css';
 
 const Stage = () => {
+  const navigate = useNavigate();
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
   const [stageScore, setStageScore] = createSignal<Score | null>(null);
   const [{ stage }, gameAction] = useContext(GameContext)!;
@@ -46,58 +50,47 @@ const Stage = () => {
     gameAction.startGame();
   });
 
+  onCleanup(() => {
+    gameAction.exitGame();
+  });
+
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= 3}>
-        <h1>Guess cover by sample</h1>
+        <SplashText>Guess cover by sample</SplashText>
 
         <Show when={stageScore()}>
           {isCorrect() ? 'You are right!' : 'Sorry, wrong cover'}
         </Show>
 
-        <div className={styles.stage__scroll}>
-          <ul className={styles.stage__covers}>
-            <For each={randomTracks()}>
-              {(track) => (
-                <li
-                  className={
-                    selectedTrack()?.track.id === track.track.id
-                      ? styles.stage__cover_selected
-                      : styles.stage__cover
-                  }
-                >
-                  <a onClick={() => setSelectedTrack(track)}>
-                    <img
-                      className={styles.stage__coverImage}
-                      src={track.track.album.images[1].url}
-                    />
-                  </a>
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
+        <CoverScroll
+          tracks={randomTracks()}
+          selectedTrack={selectedTrack()}
+          onTrackSelect={setSelectedTrack}
+        />
 
         <Show when={mysteryTrack()}>
           <Player track={mysteryTrack} />
         </Show>
 
         <Show when={stageScore() === null}>
-          <button onClick={checkStage}>Check</button>
+          <Button href="" onClick={checkStage}>
+            Check
+          </Button>
         </Show>
 
         <Show when={stageScore()}>
-          <button
-            disabled={!selectedTrack()}
-            onClick={() => {
+          <Button
+            href=""
+            onClick={() =>
               gameAction.nextStage({
                 correctTrack: mysteryTrack(),
                 selectedTrack: selectedTrack(),
-              });
-            }}
+              })
+            }
           >
             Next stage
-          </button>
+          </Button>
         </Show>
       </Match>
     </Switch>

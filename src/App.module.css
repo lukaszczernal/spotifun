@@ -1,3 +1,21 @@
 .app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   background-color: var(--dark-background);
+  align-items: center;
+  height: 100vh;
+  padding: 4rem 0;
+  box-sizing: border-box;
+}
+
+.app::before {
+  content: '';
+  background: linear-gradient(0deg, var(--accent-light) 0%, #052414 100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 340px;
+  z-index: -1;
 }

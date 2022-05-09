@@ -1,0 +1,8 @@
+.splashText {
+  font-size: 1.4rem;
+  padding: 2rem 3rem;
+  flex: 1;
+  align-items: center;
+  display: flex;
+  text-align: center;
+}

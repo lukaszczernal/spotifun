@@ -1,0 +1,9 @@
+.logo {
+  margin: 5rem 0;
+  transition: transform 500ms ease-in-out, margin 500ms ease-in-out;
+}
+
+.logo--compact {
+  transform: scale(0.5);
+  margin-top: 1rem;
+}

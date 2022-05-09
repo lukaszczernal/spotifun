@@ -30,8 +30,13 @@ const getStore = () => {
     setStage(1);
   };
 
+  const exitGame = () => {
+    setGameScore('answers', []);
+    setStage(0);
+  };
+
   return [
     { stage, gameScore },
-    { nextStage, startGame },
+    { nextStage, startGame, exitGame },
   ] as const;
 };
