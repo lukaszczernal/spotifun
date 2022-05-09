@@ -8,7 +8,7 @@ import './index.css';
 
 render(
   () => (
-    <Router>
+    <Router base="spotifun">
       <GameProvider>
         <App />
       </GameProvider>
