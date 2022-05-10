@@ -6,7 +6,7 @@ import { login } from '../services/authorize';
 const Login = () => {
   return (
     <>
-      <SplashText>Full version available after log in</SplashText>
+      <SplashText subtitle="after log in">Full version available</SplashText>
       <Footer>
         <Button href="" onClick={login}>
           Login to Spotify
