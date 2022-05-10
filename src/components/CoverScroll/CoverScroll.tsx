@@ -10,6 +10,7 @@ import './CoverScroll.css';
 interface Props {
   tracks?: Track[];
   onTrackSelect: (track: Track) => any;
+  onClick: () => any;
 }
 
 const CoverScroll: Component<Props> = (props) => {
@@ -35,6 +36,8 @@ const CoverScroll: Component<Props> = (props) => {
     swiperRef.on('realIndexChange', function () {
       selectTrackByIndex(swiperRef.realIndex);
     });
+
+    swiperRef.on('click', props.onClick);
   });
 
   /**

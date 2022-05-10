@@ -1,8 +1,13 @@
 .splashText {
-  font-size: 1.4rem;
-  padding: 2rem 3rem;
+  padding: 2rem 3rem 1rem 3rem;
   flex: 1;
   align-items: center;
   display: flex;
   text-align: center;
+  flex-direction: column;
+}
+
+.splashText__main {
+  font-size: 1.6rem;
+  padding-bottom: 0.6rem;
 }

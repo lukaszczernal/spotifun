@@ -10,7 +10,7 @@ export default defineConfig({
       manifest: {
         theme_color: '#061b0e',
         background_color: '#061b0e',
-        display: 'fullscreen',
+        display: 'standalone',
         scope: '/',
         start_url: 'https://lukaszczernal.github.io/spotifun/',
         name: 'Spotifun.live',

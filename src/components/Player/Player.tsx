@@ -67,7 +67,7 @@ const Player: Component<Props> = ({ track }) => {
       <a className={styles.player__button} onClick={togglePlay}>
         {playing() ? PAUSE_ICON : PLAY_ICON}
       </a>
-      <audio ref={playerRef} controls>
+      <audio ref={playerRef} loop>
         <source src={playbackURL()} type="audio/mpeg" />
       </audio>
     </div>

@@ -1,8 +1,19 @@
-import { Component } from 'solid-js';
+import { Component, Show } from 'solid-js';
 import styles from './SplashText.module.css';
 
-const SplashText: Component = ({ children }) => {
-  return <span className={styles.splashText}>{children}</span>;
+interface Props {
+  subtitle?: string;
+}
+
+const SplashText: Component<Props> = (props) => {
+  return (
+    <section className={styles.splashText}>
+      <span className={styles.splashText__main}>{props.children}</span>
+      <Show when={props.subtitle}>
+        <span>{props.subtitle}</span>
+      </Show>
+    </section>
+  );
 };
 
 export default SplashText;

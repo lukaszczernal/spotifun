@@ -24,12 +24,11 @@ const Stage = () => {
   const [{ stage }, gameAction] = useContext(GameContext)!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
-  const checkStage = () => {
-    setStageScore({
-      selectedTrack: selectedTrack(),
+  const goToNextStage = () =>
+    gameAction.nextStage({
       correctTrack: mysteryTrack(),
+      selectedTrack: selectedTrack(),
     });
-  };
 
   const isCorrect = () => {
     const { correctTrack, selectedTrack } = stageScore() || {};
@@ -53,42 +52,24 @@ const Stage = () => {
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= 3}>
-        <Show when={stageScore() === null}>
-          <SplashText>Guess cover by sample</SplashText>
-        </Show>
+        <SplashText subtitle={`Stage ${stage()}/3`}>
+          Guess cover by sample
+        </SplashText>
 
-        <Show when={stageScore()}>
-          <SplashText>
-            {isCorrect() ? 'You are right!' : 'Sorry, wrong cover'}
-          </SplashText>
-        </Show>
-
-        <CoverScroll tracks={randomTracks()} onTrackSelect={setSelectedTrack} />
+        <CoverScroll
+          tracks={randomTracks()}
+          onTrackSelect={setSelectedTrack}
+          onClick={goToNextStage}
+        />
 
         <Show when={mysteryTrack()}>
           <Player track={mysteryTrack} />
         </Show>
 
         <Footer>
-          <Show when={stageScore() === null}>
-            <Button href="" onClick={checkStage}>
-              Check
-            </Button>
-          </Show>
-
-          <Show when={stageScore()}>
-            <Button
-              href=""
-              onClick={() =>
-                gameAction.nextStage({
-                  correctTrack: mysteryTrack(),
-                  selectedTrack: selectedTrack(),
-                })
-              }
-            >
-              Next stage
-            </Button>
-          </Show>
+          <Button href="" onClick={goToNextStage}>
+            I choose this cover
+          </Button>
         </Footer>
       </Match>
     </Switch>
