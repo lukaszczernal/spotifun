@@ -1,0 +1,18 @@
+.player {
+  padding-bottom: 2rem;
+}
+
+.player audio {
+  display: none;
+}
+
+.player__button {
+  color: var(--background-dark);
+  display: flex;
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--font-light);
+  border-radius: 2rem;
+  justify-content: center;
+  align-items: center;
+}

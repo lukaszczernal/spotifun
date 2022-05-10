@@ -32,7 +32,9 @@ const useRandomTracks = (
 
   const randomTracks = createMemo(() => {
     const pageLength = tracks()?.length;
-    return tracks()?.map((track) => track[getRandomInt(pageLength || 0)]);
+    return tracks()
+      ?.map((track) => track[getRandomInt(pageLength || 0)])
+      .filter(Boolean); // TODO check why we get undefineds sometimes - improve randomizer logic
   });
 
   const mysteryTrack = createMemo(() => {

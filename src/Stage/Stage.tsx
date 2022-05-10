@@ -52,10 +52,14 @@ const Stage = () => {
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= 3}>
-        <SplashText>Guess cover by sample</SplashText>
+        <Show when={stageScore() === null}>
+          <SplashText>Guess cover by sample</SplashText>
+        </Show>
 
         <Show when={stageScore()}>
-          {isCorrect() ? 'You are right!' : 'Sorry, wrong cover'}
+          <SplashText>
+            {isCorrect() ? 'You are right!' : 'Sorry, wrong cover'}
+          </SplashText>
         </Show>
 
         <CoverScroll tracks={randomTracks()} onTrackSelect={setSelectedTrack} />
