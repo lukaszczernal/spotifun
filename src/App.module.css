@@ -5,7 +5,7 @@
   background-color: var(--dark-background);
   align-items: center;
   height: 100vh;
-  padding: 4rem 0;
+  padding: 1rem 0 3rem 0;
   box-sizing: border-box;
 }
 

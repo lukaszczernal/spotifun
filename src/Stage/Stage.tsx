@@ -10,6 +10,7 @@ import {
 } from 'solid-js';
 import { Button } from '../components/Button';
 import { CoverScroll } from '../components/CoverScroll';
+import { Footer } from '../components/Footer';
 import { Player } from '../components/Player';
 import { SplashText } from '../components/SplashText';
 import { ScoreBoard } from '../ScoreBoard';
@@ -68,25 +69,27 @@ const Stage = () => {
           <Player track={mysteryTrack} />
         </Show>
 
-        <Show when={stageScore() === null}>
-          <Button href="" onClick={checkStage}>
-            Check
-          </Button>
-        </Show>
+        <Footer>
+          <Show when={stageScore() === null}>
+            <Button href="" onClick={checkStage}>
+              Check
+            </Button>
+          </Show>
 
-        <Show when={stageScore()}>
-          <Button
-            href=""
-            onClick={() =>
-              gameAction.nextStage({
-                correctTrack: mysteryTrack(),
-                selectedTrack: selectedTrack(),
-              })
-            }
-          >
-            Next stage
-          </Button>
-        </Show>
+          <Show when={stageScore()}>
+            <Button
+              href=""
+              onClick={() =>
+                gameAction.nextStage({
+                  correctTrack: mysteryTrack(),
+                  selectedTrack: selectedTrack(),
+                })
+              }
+            >
+              Next stage
+            </Button>
+          </Show>
+        </Footer>
       </Match>
     </Switch>
   );

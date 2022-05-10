@@ -1,5 +1,9 @@
 .player {
-  padding-bottom: 2rem;
+  padding: 1rem;
+  min-height: 6rem;
+  align-items: center;
+  display: flex;
+  flex: 2;
 }
 
 .player audio {

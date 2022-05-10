@@ -1,6 +1,10 @@
 import { For, Show, useContext } from 'solid-js';
 import { Button } from '../components/Button';
+import { Footer } from '../components/Footer';
+import { SplashText } from '../components/SplashText';
 import { GameContext, Score } from '../services/useGame';
+
+import styles from './ScoreBoard.module.css';
 
 const ScoreBoard = () => {
   const [{ gameScore }, { startGame }] = useContext(GameContext)!;
@@ -14,8 +18,8 @@ const ScoreBoard = () => {
 
   return (
     <>
-      <h1>Your score: {correctCount()}/3</h1>
-      <ul>
+      <SplashText>Your score: {correctCount()}/3</SplashText>
+      <ul className={styles.scoreBoard}>
         <For each={gameScore.answers}>
           {(score) => (
             <li>
@@ -36,9 +40,11 @@ const ScoreBoard = () => {
         </For>
       </ul>
 
-      <Button href="" onClick={startGame}>
-        One more round
-      </Button>
+      <Footer>
+        <Button href="" onClick={startGame}>
+          One more round
+        </Button>
+      </Footer>
     </>
   );
 };
