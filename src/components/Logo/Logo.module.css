@@ -5,5 +5,5 @@
 
 .logo--compact {
   transform: scale(0.5);
-  margin-top: 1rem;
+  margin: 0;
 }

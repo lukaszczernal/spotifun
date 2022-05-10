@@ -1,4 +1,4 @@
-import { CLIENT_ID, REDIRECT_URI, SCOPE, STATE_KEY } from '../config';
+import { CLIENT_ID, REDIRECT_URI, SCOPE, STATE_KEY, HOST } from '../config';
 import { generateRandomString, getHashParams } from './utils';
 
 interface ErrorResponse {
@@ -27,7 +27,7 @@ export const login = () => {
 export const logout = () => {
   sessionStorage.removeItem(STATE_KEY);
   // @ts-ignore
-  window.location = REDIRECT_URI;
+  window.location = HOST;
 };
 
 export const authorize = () => {

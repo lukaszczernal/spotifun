@@ -1,4 +1,5 @@
 import { For, Show, useContext } from 'solid-js';
+import { Button } from '../components/Button';
 import { GameContext, Score } from '../services/useGame';
 
 const ScoreBoard = () => {
@@ -34,9 +35,10 @@ const ScoreBoard = () => {
           )}
         </For>
       </ul>
-      <button onClick={startGame}>
+
+      <Button href="" onClick={startGame}>
         One more round
-      </button>
+      </Button>
     </>
   );
 };

@@ -1,4 +1,3 @@
-import { useNavigate } from 'solid-app-router';
 import {
   createEffect,
   createSignal,
@@ -19,7 +18,6 @@ import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
 
 const Stage = () => {
-  const navigate = useNavigate();
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
   const [stageScore, setStageScore] = createSignal<Score | null>(null);
   const [{ stage }, gameAction] = useContext(GameContext)!;
@@ -40,10 +38,7 @@ const Stage = () => {
   createEffect(() => {
     stage(); // Only to trigger update
     setStageScore(null);
-  });
-
-  createEffect(() => {
-    setSelectedTrack(randomTracks()?.[0]);
+    setSelectedTrack();
   });
 
   onMount(() => {
@@ -63,11 +58,7 @@ const Stage = () => {
           {isCorrect() ? 'You are right!' : 'Sorry, wrong cover'}
         </Show>
 
-        <CoverScroll
-          tracks={randomTracks()}
-          selectedTrack={selectedTrack()}
-          onTrackSelect={setSelectedTrack}
-        />
+        <CoverScroll tracks={randomTracks()} onTrackSelect={setSelectedTrack} />
 
         <Show when={mysteryTrack()}>
           <Player track={mysteryTrack} />
