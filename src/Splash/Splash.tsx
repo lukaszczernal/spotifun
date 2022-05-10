@@ -5,7 +5,7 @@ import { SplashText } from '../components/SplashText';
 const Splash = () => {
   return (
     <>
-      <SplashText>Guess cover albums of your favorite songs</SplashText>
+      <SplashText subtitle="of your favourite songs">Guess cover albums</SplashText>
       <Footer>
         <Button href="/game">Start</Button>
       </Footer>
