@@ -59,6 +59,7 @@ const Player: Component<Props> = ({ track }) => {
   createEffect(() => {
     setPlaybackURL(track()?.track.preview_url);
     playerRef?.load();
+    setPlaying(false);
   });
 
   return (

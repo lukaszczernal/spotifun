@@ -4,7 +4,7 @@ import { SplashText } from '../components/SplashText';
 const Splash = () => {
   return (
     <>
-      <SplashText>Quiz app powered by Spotify</SplashText>
+      <SplashText>Guess cover albums of your favorite songs</SplashText>
       <Button href="/game">Start</Button>
     </>
   );
