@@ -1,3 +1,28 @@
 .scoreBoard {
   flex: 4;
+  list-style: none;
+  padding: 0;
+  width: 70%;
+  min-width: 10rem;
+}
+
+.scoreBoard__response {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.scoreBoard__responseTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scoreBoard__card {
+  display: flex;
+  align-items: center;
+  justify-items: start;
+}
+
+.scoreBoard__songInfo {
+  padding: 0.4rem 1rem;
 }
