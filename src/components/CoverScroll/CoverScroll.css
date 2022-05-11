@@ -2,6 +2,7 @@
   display: block;
   flex: 3;
   width: 100%;
+  max-width: 400px;
 }
 
 .swiper-slide {
@@ -22,6 +23,7 @@
   height: 100%;
   max-width: 300px;
   max-height: 300px;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, .2);
 }
 
 .swiper-slide img {
