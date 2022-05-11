@@ -17,9 +17,11 @@
   -ms-flex-align: center;
   -webkit-align-items: center;
   align-items: center;
+  padding: 0 10px;
   width: 76%;
   height: 100%;
-  padding: 0 10px;
+  max-width: 300px;
+  max-height: 300px;
 }
 
 .swiper-slide img {

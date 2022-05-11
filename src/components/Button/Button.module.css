@@ -7,3 +7,9 @@
   text-decoration: none;
   border-radius: 50px;
 }
+
+.button__dark {
+  padding: 0.5rem 1.4rem;
+  background-color: var(--background-dark);
+  font-size: 1.2rem;
+}

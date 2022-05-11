@@ -29,7 +29,7 @@ const useRandomTracks = (stage: Accessor<number>) => {
   const randomTracks = createMemo(
     () =>
       tracks()?.map((track) => track[getRandomInt(track.length || 0)]) ||
-      Array(3) // To render placeholder on a scroller
+      Array(STAGE_SIZE) // To render placeholder on a scroller
   );
 
   const mysteryTrack = createMemo(() => {

@@ -11,7 +11,6 @@
   user-zoom: none;
   width: 100%;
   overflow: hidden;
-  overflow-y: scroll;
 }
 
 
@@ -19,12 +18,30 @@
   content: '';
   background: linear-gradient(0deg, var(--accent-light) 0%, #052414 100%);
   position: absolute;
-  top: -27vh;
-  left: -100%;
+  top: -24vh;
+  left: -30%;
   right: 0;
   height: 60vh;
   z-index: -1;
   border-radius: 50%;
-  width: 300%;
+  width: 160%;
 }
 
+.app::after {
+  content: '';
+  background: linear-gradient(0deg, var(--accent-light) 0%, #052414 70%, #061B0E 100%);
+  position: absolute;
+  left: -50%;
+  right: 0;
+  height: 100vh;
+  z-index: -1;
+  border-radius: 50%;
+  width: 200%;
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.app__stage::after {
+  opacity: 1;
+  bottom: -14vh;
+}

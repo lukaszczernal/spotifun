@@ -7,7 +7,6 @@
 }
 
 .scoreBoard__response {
-  margin-bottom: 2rem;
   width: 100%;
 }
 
@@ -15,14 +14,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  line-height: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.scoreBoard__tag {
+  color: var(--accent-light);
+  transform: translate(16px, 48px);
 }
 
 .scoreBoard__card {
   display: flex;
   align-items: center;
   justify-items: start;
+  margin-bottom: 1.6rem;
 }
 
 .scoreBoard__songInfo {
   padding: 0.4rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.scoreBoard__songTitle {
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.scoreBoard__songArtists {
+  font-size: 0.8rem;
+  opacity: 0.6;
 }

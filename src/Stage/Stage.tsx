@@ -69,7 +69,7 @@ const Stage = () => {
         </Show>
 
         <Footer>
-          <Button href="" onClick={goToNextStage}>
+          <Button href="" onClick={goToNextStage} dark>
             I choose this cover
           </Button>
         </Footer>

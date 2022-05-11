@@ -25,8 +25,8 @@ const ScoreBoard = () => {
           {(score, index) => (
             <li className={styles.scoreBoard__response}>
               <div className={styles.scoreBoard__responseTitle}>
-                <h3>Stage {index() + 1}</h3>
-                <small>{isCorrect(score) ? 'Correct' : ''}</small>
+                <span>Stage {index() + 1}</span>
+                <span className={styles.scoreBoard__tag}>{isCorrect(score) ? 'Correct' : ''}</span>
               </div>
               <section className={styles.scoreBoard__card}>
                 <img
@@ -35,12 +35,12 @@ const ScoreBoard = () => {
                   src={score.correctTrack?.track.album.images[2].url}
                 />
                 <div className={styles.scoreBoard__songInfo}>
-                  <p>{score.correctTrack?.track.name}</p>
-                  <p>
+                  <span className={styles.scoreBoard__songTitle}>{score.correctTrack?.track.name}</span>
+                  <span className={styles.scoreBoard__songArtists}>
                     {score.correctTrack?.track.artists
                       .map((artist) => artist.name)
                       .join(',')}
-                  </p>
+                  </span>
                 </div>
               </section>
             </li>
@@ -49,7 +49,7 @@ const ScoreBoard = () => {
       </ul>
 
       <Footer>
-        <Button href="" onClick={startGame}>
+        <Button href="" onClick={startGame} dark>
           One more round
         </Button>
       </Footer>

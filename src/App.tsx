@@ -17,7 +17,7 @@ const App: Component = () => {
   authorize();
 
   return (
-    <div class={styles.app}>
+    <div class={`${styles.app} ${stage() > 0 ? styles.app__stage : ''}`}>
       <Logo compact={stage() > 0} />
       <Routes>
         <Route path="/game" element={<AuthGuard />}>

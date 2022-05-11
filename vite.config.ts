@@ -8,8 +8,8 @@ export default defineConfig({
     solidPlugin(),
     VitePWA({
       manifest: {
-        theme_color: '#061b0e',
-        background_color: '#061b0e',
+        theme_color: '#0E502F',
+        background_color: '#061B0E',
         display: 'standalone',
         scope: '/',
         start_url: 'https://lukaszczernal.github.io/spotifun/',
