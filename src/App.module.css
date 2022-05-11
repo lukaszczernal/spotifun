@@ -19,7 +19,7 @@
   content: '';
   background: linear-gradient(0deg, var(--accent-light) 0%, #052414 100%);
   position: absolute;
-  top: -20vh;
+  top: -27vh;
   left: -100%;
   right: 0;
   height: 60vh;

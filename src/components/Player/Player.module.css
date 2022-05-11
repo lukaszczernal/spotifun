@@ -13,8 +13,8 @@
 .player__button {
   color: var(--background-dark);
   display: flex;
-  width: 4rem;
-  height: 4rem;
+  width: 58px;
+  height: 58px;
   background-color: var(--font-light);
   border-radius: 2rem;
   justify-content: center;
