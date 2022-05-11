@@ -10,7 +10,7 @@
   user-select: none;
   user-zoom: none;
   width: 100%;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 
