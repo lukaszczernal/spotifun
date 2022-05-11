@@ -13,14 +13,15 @@ import { CoverScroll } from '../components/CoverScroll';
 import { Footer } from '../components/Footer';
 import { Player } from '../components/Player';
 import { SplashText } from '../components/SplashText';
+import { STAGE_SIZE } from '../config';
 import { ScoreBoard } from '../ScoreBoard';
-import { GameContext, Score } from '../services/useGame';
+import { GameContext } from '../services/useGame';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
 
 const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
-  const [stageScore, setStageScore] = createSignal<Score | null>(null);
+  // const [setStageScore] = createSignal<Score | null>(null);
   const [{ stage }, gameAction] = useContext(GameContext)!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
@@ -30,14 +31,15 @@ const Stage = () => {
       selectedTrack: selectedTrack(),
     });
 
-  const isCorrect = () => {
-    const { correctTrack, selectedTrack } = stageScore() || {};
-    return correctTrack?.track.id === selectedTrack?.track.id;
-  };
+  // TODO check if we should come back to stage result concept
+  // const isCorrect = () => {
+  //   const { correctTrack, selectedTrack } = stageScore() || {};
+  //   return correctTrack?.track.id === selectedTrack?.track.id;
+  // };
 
   createEffect(() => {
     stage(); // Only to trigger update
-    setStageScore(null);
+    // setStageScore(null);
     setSelectedTrack();
   });
 
@@ -52,7 +54,7 @@ const Stage = () => {
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= 3}>
-        <SplashText subtitle={`Stage ${stage()}/3`}>
+        <SplashText subtitle={`Stage ${stage()}/${STAGE_SIZE}`}>
           Guess cover by sample
         </SplashText>
 

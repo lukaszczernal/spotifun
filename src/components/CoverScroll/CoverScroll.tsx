@@ -1,4 +1,4 @@
-import { Component, createEffect, For, onMount } from 'solid-js';
+import { Component, createEffect, For, onMount, Show } from 'solid-js';
 import { Track } from '../../services/useTracks';
 import { Swiper } from 'swiper';
 
@@ -26,7 +26,7 @@ const CoverScroll: Component<Props> = (props) => {
   onMount(() => {
     swiperRef = new Swiper('.mySwiper', {
       slidesPerView: 'auto',
-      spaceBetween: 20,
+      spaceBetween: 0,
       centeredSlides: true,
       pagination: {
         el: '.swiper-pagination',
@@ -59,7 +59,9 @@ const CoverScroll: Component<Props> = (props) => {
           <For each={props.tracks}>
             {(track) => (
               <div class="swiper-slide">
-                <img src={track.track.album.images[1].url} />
+                <Show when={track}>
+                  <img src={track.track.album.images[1].url} />
+                </Show>
               </div>
             )}
           </For>

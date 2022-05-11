@@ -2,6 +2,7 @@ import { For, useContext } from 'solid-js';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
+import { STAGE_SIZE } from '../config';
 import { GameContext, Score } from '../services/useGame';
 
 import styles from './ScoreBoard.module.css';
@@ -18,7 +19,7 @@ const ScoreBoard = () => {
 
   return (
     <>
-      <SplashText>Your score: {correctCount()}/3</SplashText>
+      <SplashText>Your score: {correctCount()}/{STAGE_SIZE}</SplashText>
       <ul className={styles.scoreBoard}>
         <For each={gameScore.answers}>
           {(score, index) => (

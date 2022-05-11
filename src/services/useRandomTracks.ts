@@ -1,10 +1,11 @@
 import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
+import { STAGE_SIZE } from '../config';
 import usePageCount from './usePageCount';
-import useTracks, { Track } from './useTracks';
+import useTracks from './useTracks';
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
-const getRandomNumbers = (max: number, length: number = 3) => {
+const getRandomNumbers = (max: number, length: number = STAGE_SIZE) => {
   const result: number[] = [];
   if (max > 0) {
     while (length--) {
@@ -14,12 +15,7 @@ const getRandomNumbers = (max: number, length: number = 3) => {
   return result;
 };
 
-const useRandomTracks = (
-  stage: Accessor<number>
-): {
-  randomTracks: Accessor<Track[] | undefined>;
-  mysteryTrack: Accessor<Track | undefined>;
-} => {
+const useRandomTracks = (stage: Accessor<number>) => {
   const [pageCount] = usePageCount();
   const [randomNumbers, setRandomNumbers] = createSignal<number[]>([]);
 
@@ -30,16 +26,15 @@ const useRandomTracks = (
 
   const [tracks] = useTracks(randomNumbers);
 
-  const randomTracks = createMemo(() => {
-    const pageLength = tracks()?.length;
-    return tracks()
-      ?.map((track) => track[getRandomInt(pageLength || 0)])
-      .filter(Boolean); // TODO check why we get undefineds sometimes - improve randomizer logic
-  });
+  const randomTracks = createMemo(
+    () =>
+      tracks()?.map((track) => track[getRandomInt(track.length || 0)]) ||
+      Array(3) // To render placeholder on a scroller
+  );
 
   const mysteryTrack = createMemo(() => {
     const tracks = randomTracks();
-    return tracks?.[getRandomInt(3)];
+    return tracks?.[getRandomInt(STAGE_SIZE)];
   });
 
   return { randomTracks, mysteryTrack };
