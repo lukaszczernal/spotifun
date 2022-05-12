@@ -1,34 +1,31 @@
-## Usage
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+![Spotifun logo](lukaszczernal.github.com/spotify/Logo.png)
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+# Spotifun
 
-```bash
-$ npm install # or pnpm install or yarn install
-```
+A quiz app that let you match an album cover with a song sample. 
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+Each quiz game is dividied into 3 rounds. In each, you will listen to a song sample and guess which album cover it belongs to.
 
-## Available Scripts
+## Spotify
 
-In the project directory, you can run:
+In order to play that game you need a Spotify accound. Also its required that you have bunch of songs in you favourite playlist. This will be the source data for the quiz. 
 
-### `npm dev` or `npm start`
+## Development status
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The game is in "alpha" stage. Error handling and UX improvements are next.
 
-The page will reload if you make edits.<br>
+The Spotify API is currently in development mode. It means that if you want to play the game you need to ask me to add your Spotify's username to the whitelist.
 
-### `npm run build`
+### Todos
+- [] Add error handling
+- [] Add stage result - user should see the result of each stage imediatelly
+- [] Add count down before the sample start playing
+- [] Add confetti animation at the end 
 
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+## How to play the game
 
-## Deployment
+The game is deployed on github pages at this moment. But not all of you can play yet (check Development status paragraph).
 
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+Link to the game https://lukaszczernal.github.io/spotifun
