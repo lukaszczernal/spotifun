@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Player: Component<Props> = ({ track }) => {
-  const [playing, setPlaying] = createSignal<boolean>(true);
+  const [playing, setPlaying] = createSignal<boolean>(false);
   let playerRef: any; // TODO typings
   const [playbackURL, setPlaybackURL] = createSignal<string>();
 
@@ -29,6 +29,7 @@ const Player: Component<Props> = ({ track }) => {
     setPlaybackURL(track()?.track.preview_url);
     playerRef?.load();
     playerRef?.play();
+    setPlaying(true);
   });
 
   return (
