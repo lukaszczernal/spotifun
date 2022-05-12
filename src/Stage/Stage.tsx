@@ -21,7 +21,6 @@ import { Track } from '../services/useTracks';
 
 const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
-  // const [setStageScore] = createSignal<Score | null>(null);
   const [{ stage }, gameAction] = useContext(GameContext)!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
@@ -39,7 +38,6 @@ const Stage = () => {
 
   createEffect(() => {
     stage(); // Only to trigger update
-    // setStageScore(null);
     setSelectedTrack();
   });
 
