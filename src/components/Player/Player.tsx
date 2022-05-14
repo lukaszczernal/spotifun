@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Player: Component<Props> = ({ track }) => {
-  const [playing, setPlaying] = createSignal<boolean>(false);
+  const [playing, setPlaying] = createSignal<boolean>(true);
   let playerRef: any; // TODO typings
   const [playbackURL, setPlaybackURL] = createSignal<string>();
 
@@ -37,7 +37,7 @@ const Player: Component<Props> = ({ track }) => {
       <a className={styles.player__button} onClick={togglePlay}>
         {playing() ? PAUSE_ICON : PLAY_ICON}
       </a>
-      <audio ref={playerRef} loop>
+      <audio ref={playerRef} loop autoplay>
         <source src={playbackURL()} type="audio/mpeg" />
       </audio>
     </div>
