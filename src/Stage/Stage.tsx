@@ -11,17 +11,19 @@ import {
 import { Button } from '../components/Button';
 import { CoverScroll } from '../components/CoverScroll';
 import { Footer } from '../components/Footer';
-import { Player } from '../components/Player';
+import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
 import { STAGE_SIZE } from '../config';
 import { ScoreBoard } from '../ScoreBoard';
 import { GameContext } from '../services/useGame';
+import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
 
 const Stage = () => {
   const [selectedTrack, setSelectedTrack] = createSignal<Track>();
   const [{ stage }, gameAction] = useContext(GameContext)!;
+  const { pause } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
   const goToNextStage = () =>
@@ -47,6 +49,7 @@ const Stage = () => {
 
   onCleanup(() => {
     gameAction.exitGame();
+    pause();
   });
 
   return (
@@ -63,7 +66,7 @@ const Stage = () => {
         />
 
         <Show when={mysteryTrack()}>
-          <Player track={mysteryTrack} />
+          <PlayerControls track={mysteryTrack} />
         </Show>
 
         <Footer>

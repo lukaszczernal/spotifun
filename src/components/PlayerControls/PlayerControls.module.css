@@ -1,4 +1,4 @@
-.player {
+.playerControls {
   padding: 0rem 1rem 0.4rem 1rem;
   min-height: 6rem;
   align-items: center;
@@ -6,11 +6,7 @@
   flex: 2;
 }
 
-.player audio {
-  display: none;
-}
-
-.player__button {
+.playerControls__button {
   color: var(--background-dark);
   display: flex;
   width: 58px;
