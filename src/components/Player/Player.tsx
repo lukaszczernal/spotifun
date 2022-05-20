@@ -3,13 +3,14 @@ import { usePlayer } from '../../services/usePlayer';
 
 const Player: Component = () => {
   let playerRef: any; // TODO typings
-  const { state, source } = usePlayer()!;
+  const { state, play, source } = usePlayer()!;
 
   createEffect(() => {
     source();
     if (source()) {
       playerRef.load();
       playerRef.play();
+      play();
     }
   });
 

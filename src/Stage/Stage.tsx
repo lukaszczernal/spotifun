@@ -41,6 +41,9 @@ const Stage = () => {
   createEffect(() => {
     stage(); // Only to trigger update
     setSelectedTrack();
+    if (stage() > 3) {
+      pause();
+    }
   });
 
   onMount(() => {

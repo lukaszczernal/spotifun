@@ -4,8 +4,8 @@
 }
 
 .logo--compact {
-  transform: scale(0.45);
+  transform: scale(0.7);
   margin: 0;
-  margin-bottom: -1rem;
-  margin-top: -3vh;
+  margin-bottom: 1vh;
+  height: 11vh;
 }
