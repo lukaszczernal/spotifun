@@ -23,7 +23,15 @@ const getStore = () => {
     sourceUrl && setSource(sourceUrl);
   };
 
-  return { state, source, play, pause, load } as const;
+  /**
+   * Prevents from running songs from previous games at start up
+   */
+  const clear = () => {
+    pause();
+    load();
+  };
+
+  return { state, source, play, pause, load, clear } as const;
 };
 
 export const usePlayer = () => useContext(PlayerContext);

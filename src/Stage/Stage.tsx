@@ -18,19 +18,20 @@ import { ScoreBoard } from '../ScoreBoard';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
-import { Track } from '../services/useTracks';
 
 const Stage = () => {
-  const [selectedTrack, setSelectedTrack] = createSignal<Track>();
+  const [selectedIndex, setSelectedIndex] = createSignal<number>();
   const [{ stage }, gameAction] = useContext(GameContext)!;
-  const { pause } = usePlayer()!;
+  const { clear, pause } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
-  const goToNextStage = () =>
+  const goToNextStage = (selectedIndex: number = 0) => {
+    const selectedTrack = randomTracks()[selectedIndex];
     gameAction.nextStage({
       correctTrack: mysteryTrack(),
-      selectedTrack: selectedTrack(),
+      selectedTrack,
     });
+  };
 
   // TODO check if we should come back to stage result concept
   // const isCorrect = () => {
@@ -40,7 +41,7 @@ const Stage = () => {
 
   createEffect(() => {
     stage(); // Only to trigger update
-    setSelectedTrack();
+    setSelectedIndex();
     if (stage() > 3) {
       pause();
     }
@@ -52,7 +53,7 @@ const Stage = () => {
 
   onCleanup(() => {
     gameAction.exitGame();
-    pause();
+    clear();
   });
 
   return (
@@ -64,7 +65,7 @@ const Stage = () => {
 
         <CoverScroll
           tracks={randomTracks()}
-          onTrackSelect={setSelectedTrack}
+          onSelectIndex={setSelectedIndex}
           onClick={goToNextStage}
         />
 
@@ -73,7 +74,7 @@ const Stage = () => {
         </Show>
 
         <Footer>
-          <Button href="" onClick={goToNextStage} dark>
+          <Button href="" onClick={() => goToNextStage(selectedIndex())} dark>
             I choose this cover
           </Button>
         </Footer>

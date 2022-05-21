@@ -7,22 +7,24 @@ import 'swiper/css/bundle';
 import 'swiper/css';
 import './CoverScroll.css';
 
+type SwiperModel = any; // TODO typings
+
 interface Props {
   tracks?: Track[];
-  onTrackSelect: (track: Track) => any;
-  onClick: () => any;
+  onSelectIndex: (index: number) => any;
+  onClick: (index: number) => any;
 }
 
 const CoverScroll: Component<Props> = (props) => {
-  let swiperRef: any;
+  let swiperRef: SwiperModel;
 
-  const selectTrackByIndex = (index: number) => {
-    const selectedTrack = props?.tracks?.[index];
-    if (selectedTrack) {
-      props?.onTrackSelect(selectedTrack);
-    }
+  const onTrackClick = (swiper: SwiperModel) => {
+    props.onClick(swiper.clickedIndex);
   };
 
+  /**
+   * Initialize swiper and add even listeners
+   */
   onMount(() => {
     swiperRef = new Swiper('.mySwiper', {
       slidesPerView: 'auto',
@@ -34,18 +36,19 @@ const CoverScroll: Component<Props> = (props) => {
       },
     });
     swiperRef.on('realIndexChange', function () {
-      selectTrackByIndex(swiperRef.realIndex);
+      props.onSelectIndex(swiperRef.realIndex);
     });
 
-    swiperRef.on('click', props.onClick);
+    swiperRef.on('click', onTrackClick);
   });
 
   /**
    * Resets scroll if new tracks arrive
    */
   createEffect(() => {
+    props.tracks; // just to detect changes
     if (swiperRef.realIndex === 0) {
-      selectTrackByIndex(swiperRef.realIndex);
+      props.onSelectIndex(swiperRef.realIndex as number);
     }
     if (swiperRef.realIndex > 0) {
       swiperRef.slideTo(0);
