@@ -19,15 +19,11 @@ const ScoreBoard = () => {
 
   return (
     <>
-      <SplashText>Your score: {correctCount()}/{STAGE_SIZE}</SplashText>
+      <SplashText multiline={['Your score', `${correctCount()}/${STAGE_SIZE}`]} />
       <ul className={styles.scoreBoard}>
         <For each={gameScore.answers}>
           {(score, index) => (
             <li className={styles.scoreBoard__response}>
-              <div className={styles.scoreBoard__responseTitle}>
-                <span>Stage {index() + 1}</span>
-                <span className={styles.scoreBoard__tag}>{isCorrect(score) ? 'Correct' : ''}</span>
-              </div>
               <section className={styles.scoreBoard__card}>
                 <img
                   width={64}
@@ -35,13 +31,18 @@ const ScoreBoard = () => {
                   src={score.correctTrack?.track.album.images[2].url}
                 />
                 <div className={styles.scoreBoard__songInfo}>
-                  <span className={styles.scoreBoard__songTitle}>{score.correctTrack?.track.name}</span>
+                  <span className={styles.scoreBoard__songTitle}>
+                    {score.correctTrack?.track.name}
+                  </span>
                   <span className={styles.scoreBoard__songArtists}>
                     {score.correctTrack?.track.artists
                       .map((artist) => artist.name)
                       .join(',')}
                   </span>
                 </div>
+                <span className={styles.scoreBoard__tag}>
+                  {isCorrect(score) ? 'Correct' : ''}
+                </span>
               </section>
             </li>
           )}

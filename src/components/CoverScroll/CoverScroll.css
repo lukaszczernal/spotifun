@@ -7,26 +7,19 @@
 
 .swiper {
   overflow: inherit;
+  height: 100%;
 }
 
 .swiper-slide {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
-  padding: 0 10px;
+  margin: 0 10px;
   width: 76%;
   height: 100%;
   max-width: 300px;
   max-height: 300px;
+  background-color: var(--background-dark);
 }
 
 .swiper-slide img {
@@ -39,6 +32,6 @@
   box-sizing: border-box;
 }
 
-.swiper-slide img:hover {
+.swiper-slide img:active {
   border-color: var(--accent-light);
 }

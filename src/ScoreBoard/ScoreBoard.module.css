@@ -2,8 +2,9 @@
   flex: 4;
   list-style: none;
   padding: 0;
-  width: 70%;
+  width: 86%;
   min-width: 10rem;
+  max-width: 40rem;
 }
 
 .scoreBoard__response {
@@ -20,7 +21,7 @@
 
 .scoreBoard__tag {
   color: var(--accent-light);
-  transform: translate(16px, 48px);
+  width: 4rem;
 }
 
 .scoreBoard__card {
@@ -34,6 +35,7 @@
   padding: 0.4rem 1rem;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .scoreBoard__songTitle {
