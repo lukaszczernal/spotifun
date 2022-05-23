@@ -53,6 +53,7 @@ const CoverScroll: Component<Props> = (props) => {
     if (swiperRef.realIndex > 0) {
       swiperRef.slideTo(0);
     }
+    swiperRef.update();
   });
 
   return (

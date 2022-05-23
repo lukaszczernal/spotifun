@@ -21,11 +21,9 @@ const Player: Component<Props> = ({ track }) => {
   });
 
   return (
-    <div className={styles.playerControls}>
-      <a className={styles.playerControls__button} onClick={togglePlay}>
-        {state() === 'play' ? PAUSE_ICON : PLAY_ICON}
-      </a>
-    </div>
+    <a className={styles.playerControls__button} onClick={togglePlay}>
+      {state() === 'play' ? PAUSE_ICON : PLAY_ICON}
+    </a>
   );
 };
 

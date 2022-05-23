@@ -1,0 +1,5 @@
+.stage__playerControls {
+  align-items: center;
+  display: flex;
+  flex: 2;
+}

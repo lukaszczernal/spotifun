@@ -19,6 +19,8 @@ import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
 
+import styles from './Stage.module.css';
+
 const Stage = () => {
   const [selectedIndex, setSelectedIndex] = createSignal<number>();
   const [{ stage }, gameAction] = useContext(GameContext)!;
@@ -69,9 +71,11 @@ const Stage = () => {
           onClick={goToNextStage}
         />
 
+      <div className={styles.stage__playerControls}>
         <Show when={mysteryTrack()}>
           <PlayerControls track={mysteryTrack} />
         </Show>
+      </div>
 
         <Footer>
           <Button href="" onClick={() => goToNextStage(selectedIndex())} dark>

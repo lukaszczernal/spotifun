@@ -1,9 +1,3 @@
-.playerControls {
-  align-items: center;
-  display: flex;
-  flex: 2;
-}
-
 .playerControls__button {
   color: var(--background-dark);
   display: flex;
