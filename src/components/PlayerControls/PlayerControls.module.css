@@ -1,10 +1,36 @@
-.playerControls__button {
-  color: var(--background-dark);
-  display: flex;
-  width: 58px;
-  height: 58px;
-  background-color: var(--font-light);
-  border-radius: 2rem;
-  justify-content: center;
-  align-items: center;
+@keyframes rotating {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.playerControls__recordWrapper {
+  position: relative;
+  height: 260px;
+  width: 260px;
+  bottom: -100px;
+}
+
+.playerControls__recordWrapper__stop .playerControls__recordLabel {
+  animation-play-state: paused;
+}
+
+.playerControls__recordWrapper__start .playerControls__recordLabel {
+  animation-play-state: running;
+}
+
+.playerControls__recordLabelWrapper {
+  top: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
+  left: 50%;
+  width: 45%;
+  height: 45%;
+}
+
+.playerControls__recordLabel {
+  animation: rotating 6s linear infinite;
 }

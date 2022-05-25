@@ -2,4 +2,6 @@
   align-items: center;
   display: flex;
   flex: 2;
+  justify-content: center;
+  max-height: 180px;
 }

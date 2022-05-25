@@ -11,7 +11,6 @@ type SwiperModel = any; // TODO typings
 
 interface Props {
   tracks?: Track[];
-  onSelectIndex: (index: number) => any;
   onClick: (index: number) => any;
 }
 
@@ -35,9 +34,6 @@ const CoverScroll: Component<Props> = (props) => {
         clickable: true,
       },
     });
-    swiperRef.on('realIndexChange', function () {
-      props.onSelectIndex(swiperRef.realIndex);
-    });
 
     swiperRef.on('click', onTrackClick);
   });
@@ -47,9 +43,6 @@ const CoverScroll: Component<Props> = (props) => {
    */
   createEffect(() => {
     props.tracks; // just to detect changes
-    if (swiperRef.realIndex === 0) {
-      props.onSelectIndex(swiperRef.realIndex as number);
-    }
     if (swiperRef.realIndex > 0) {
       swiperRef.slideTo(0);
     }
