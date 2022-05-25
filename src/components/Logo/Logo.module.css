@@ -5,5 +5,5 @@
 }
 
 .logo--compact {
-  transform: scale(.6) translate3d(0,-17vh,0);
+  transform: scale(0.6) translate3d(0, -20vh, 0);
 }

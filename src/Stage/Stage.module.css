@@ -1,3 +1,7 @@
+.stage__scroller {
+  flex: 2;
+}
+
 .stage__playerControls {
   align-items: center;
   display: flex;

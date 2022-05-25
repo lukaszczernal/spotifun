@@ -56,10 +56,10 @@ const Stage = () => {
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= 3}>
-        <SplashText subtitle={`Stage ${stage()}/${STAGE_SIZE}`} />
-
-        <CoverScroll tracks={randomTracks()} onClick={goToNextStage} />
-
+        <section className={styles.stage__scroller}>
+          <SplashText subtitle={`Stage ${stage()}/${STAGE_SIZE}`} />
+          <CoverScroll tracks={randomTracks()} onClick={goToNextStage} />
+        </section>
         <div className={styles.stage__playerControls}>
           <Show when={mysteryTrack()}>
             <PlayerControls track={mysteryTrack} />

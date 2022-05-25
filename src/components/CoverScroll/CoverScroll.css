@@ -1,6 +1,5 @@
 .coverScroll {
   display: block;
-  flex: 3;
   width: 100%;
   max-width: 400px;
 }

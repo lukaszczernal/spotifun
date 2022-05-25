@@ -5,15 +5,19 @@ import { SplashText } from '../components/SplashText';
 import { useAuth } from '../services/useAuth';
 import { usePlayer } from '../services/usePlayer';
 
+import styles from './Splash.module.css';
+
 const Splash = () => {
   const { isAuthenticated, login } = useAuth()!;
   const { play } = usePlayer()!;
 
   return (
     <>
-      <SplashText subtitle="of your favourite songs">
-        Guess cover albums
-      </SplashText>
+      <section className={styles.splash__title}>
+        <SplashText subtitle="of your favourite songs">
+          Guess cover albums
+        </SplashText>
+      </section>
       <Footer>
         <Show
           when={isAuthenticated()}

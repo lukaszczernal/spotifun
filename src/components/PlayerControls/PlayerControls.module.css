@@ -9,8 +9,7 @@
 
 .playerControls__recordWrapper {
   position: relative;
-  height: 260px;
-  width: 260px;
+  width: 40vh;
   bottom: -100px;
 }
 
