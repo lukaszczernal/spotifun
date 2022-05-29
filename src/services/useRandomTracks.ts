@@ -1,7 +1,7 @@
 import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
 import { STAGE_SIZE } from '../config';
 import usePageCount from './usePageCount';
-import useTracks from './useTracks';
+import useTracks, { Track } from './useTracks';
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
@@ -29,7 +29,7 @@ const useRandomTracks = (stage: Accessor<number>) => {
 
   const [tracks] = useTracks(randomNumbers);
 
-  const randomTracks = createMemo(
+  const randomTracks = createMemo<Array<Track | undefined>>(
     () =>
       tracks()?.map((track) => track[getRandomInt(track.length || 0)]) ||
       Array(STAGE_SIZE) // To render placeholder on a scroller

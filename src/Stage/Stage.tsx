@@ -1,5 +1,6 @@
 import {
   createEffect,
+  For,
   Match,
   onCleanup,
   onMount,
@@ -7,10 +8,9 @@ import {
   Switch,
   useContext,
 } from 'solid-js';
-import { CoverScroll } from '../components/CoverScroll';
 import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
-import { STAGE_SIZE } from '../config';
+import { STAGE_COUNT } from '../config';
 import { ScoreBoard } from '../ScoreBoard';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
@@ -39,7 +39,7 @@ const Stage = () => {
 
   createEffect(() => {
     stage(); // Only to trigger update
-    if (stage() > 3) {
+    if (stage() > STAGE_COUNT) {
       pause();
     }
   });
@@ -55,10 +55,23 @@ const Stage = () => {
 
   return (
     <Switch fallback={<ScoreBoard />}>
-      <Match when={stage() <= 3}>
+      <Match when={stage() <= STAGE_COUNT}>
         <section className={styles.stage__scroller}>
-          <SplashText subtitle={`Stage ${stage()}/${STAGE_SIZE}`} />
-          <CoverScroll tracks={randomTracks()} onClick={goToNextStage} />
+          <SplashText subtitle="Choose correct cover" />
+          <section className={styles.stage__coverList}>
+            <For each={randomTracks()}>
+              {(track, index) => {
+                return (
+                  <a
+                    className={styles.stage__cover}
+                    onClick={() => goToNextStage(index())}
+                  >
+                    <img src={track?.track.album.images[1].url} />
+                  </a>
+                );
+              }}
+            </For>
+          </section>
         </section>
         <div className={styles.stage__playerControls}>
           <Show when={mysteryTrack()}>
