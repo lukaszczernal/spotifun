@@ -66,6 +66,10 @@ const Stage = () => {
     clear();
   });
 
+  const isSelected = (track?: Track) => track === selected();
+
+  const transformMap = ['25%, 25%', '-25%, 25%', '25%, -25%', '-25%, -25%'];
+
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= STAGE_COUNT}>
@@ -73,10 +77,20 @@ const Stage = () => {
           <SplashText subtitle="Choose correct cover" />
           <section className={styles.stage__coverList}>
             <For each={randomTracks()}>
-              {(track) => {
+              {(track, index) => {
                 return (
                   <div className={styles.stage__coverPlaceholder}>
                     <a
+                      style={
+                        isSelected(track)
+                          ? {
+                              'z-index': 3,
+                              transform: `scale(2.14) translate(${
+                                transformMap[index()]
+                              })`,
+                            }
+                          : {}
+                      }
                       className={styles.stage__cover}
                       onClick={() => selectCover(track)}
                     >
