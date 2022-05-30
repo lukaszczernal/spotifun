@@ -1,4 +1,5 @@
 .footer {
   display: flex;
   padding-bottom: 5vh;
+  z-index: 1;
 }

@@ -1,6 +1,7 @@
 .stage__scroller {
   flex: 2;
   max-width: 32rem;
+  width: 100%;
 }
 
 .stage__playerControls {
@@ -9,6 +10,9 @@
   flex: 2;
   justify-content: center;
   max-height: 180px;
+  position: absolute;
+  bottom: 0;
+  z-index: 0;
 }
 
 .stage__coverList {
@@ -19,10 +23,19 @@
   padding: 0 1.4rem;
 }
 
+.stage__coverPlaceholder {
+  display: inherit;
+  background-color: var(--background-dark);
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Maintain aspect ration */
+}
+
 .stage__cover {
   transition: transform 200ms ease-out;
   display: inherit;
   cursor: pointer;
+  position: absolute;
 }
 
 .stage__cover:hover {
