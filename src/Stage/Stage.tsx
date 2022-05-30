@@ -39,10 +39,8 @@ const Stage = () => {
     });
   };
 
-  // TODO check if we should come back to stage result concept
   // const isCorrect = () => {
-  //   const { correctTrack, selectedTrack } = stageScore() || {};
-  //   return correctTrack?.track.id === selectedTrack?.track.id;
+  //   return mysteryTrack()?.track.id === selected()?.track.id;
   // };
 
   const selectCover = (track?: Track) => {
@@ -70,27 +68,23 @@ const Stage = () => {
 
   const transformMap = ['25%, 25%', '-25%, 25%', '25%, -25%', '-25%, -25%'];
 
+  const getSelectedStyle = (index: number) => ({
+    'z-index': 3,
+    transform: `scale(2.14) translate(${transformMap[index]})`,
+  });
+
   return (
     <Switch fallback={<ScoreBoard />}>
       <Match when={stage() <= STAGE_COUNT}>
         <section className={styles.stage__scroller}>
-          <SplashText subtitle="Choose correct cover" />
+          <SplashText subtitle="Choose correct album" />
           <section className={styles.stage__coverList}>
             <For each={randomTracks()}>
               {(track, index) => {
                 return (
                   <div className={styles.stage__coverPlaceholder}>
                     <a
-                      style={
-                        isSelected(track)
-                          ? {
-                              'z-index': 3,
-                              transform: `scale(2.14) translate(${
-                                transformMap[index()]
-                              })`,
-                            }
-                          : {}
-                      }
+                      style={isSelected(track) ? getSelectedStyle(index()) : {}}
                       className={styles.stage__cover}
                       onClick={() => selectCover(track)}
                     >

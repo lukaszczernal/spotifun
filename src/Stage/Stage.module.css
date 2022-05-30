@@ -36,6 +36,7 @@
   display: inherit;
   cursor: pointer;
   position: absolute;
+  box-shadow: 5px 5px 20px rgb(0 0 0 / 40%);
 }
 
 .stage__cover:hover {
