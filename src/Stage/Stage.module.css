@@ -32,10 +32,16 @@
 }
 
 .stage__cover {
-  transition: transform 200ms ease-out;
+  transition-property: top, left, right, bottom, transform;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
   display: inherit;
   cursor: pointer;
   position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   box-shadow: 5px 5px 20px rgb(0 0 0 / 40%);
 }
 

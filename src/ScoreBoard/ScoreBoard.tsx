@@ -3,6 +3,7 @@ import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
 import { STAGE_COUNT } from '../config';
+import { countCorrect, isCorrect } from '../services/gameUtils';
 import { GameContext, Score } from '../services/useGame';
 
 import styles from './ScoreBoard.module.css';
@@ -10,16 +11,11 @@ import styles from './ScoreBoard.module.css';
 const ScoreBoard = () => {
   const [{ gameScore }, { startGame }] = useContext(GameContext)!;
 
-  const isCorrect = (score: Score) => {
-    const { correctTrack, selectedTrack } = score;
-    return correctTrack?.track.id === selectedTrack?.track.id;
-  };
-
-  const correctCount = () => gameScore.answers.filter(isCorrect).length;
+  const score = () => countCorrect(gameScore.answers);
 
   return (
     <>
-      <SplashText multiline={['Your score', `${correctCount()}/${STAGE_COUNT}`]} />
+      <SplashText multiline={['Your score', `${score()}/${STAGE_COUNT}`]} />
       <ul className={styles.scoreBoard}>
         <For each={gameScore.answers}>
           {(score, index) => (
