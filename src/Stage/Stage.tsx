@@ -88,7 +88,7 @@ const Stage = () => {
                       className={styles.stage__cover}
                       onClick={() => selectCover(track)}
                     >
-                      <img src={track?.track.album.images[1].url} />
+                      <img src={track?.track.album.images[0].url} />
                     </a>
                   </div>
                 );
