@@ -16,7 +16,6 @@ import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
 import { STAGE_COUNT } from '../config';
 import { ScoreBoard } from '../ScoreBoard';
-import { countCorrect } from '../services/gameUtils';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
@@ -52,28 +51,22 @@ const Stage = () => {
   };
 
   const slideRecordInside = (complete: () => any) => {
-    anime
+    return anime
       .timeline({
         targets: recordRef,
-        translateY: -500,
-        duration: 1200,
+        duration: 3501,
         complete,
       })
       .add({
         targets: recordRef,
-        translateY: -500,
+        translateY: -350,
+        delay: 500,
         duration: 1000,
       })
       .add({
         targets: recordRef,
-        opacity: 0,
-        duration: 200,
-      })
-      .add({
-        targets: recordRef,
-        opacity: 1,
-        translateY: 0,
-        duration: 0,
+        translateY: 300,
+        duration: 1,
       });
   };
 
@@ -89,11 +82,20 @@ const Stage = () => {
   const checkRecord = (track?: Track) => {
     anime({
       targets: recordRef,
-      translateY: -350,
+      translateY: -280,
       duration: 2400,
       complete: () => {
         if (isCorrect(track)) {
-          slideRecordInside(goToNextStage);
+          slideRecordInside(() => {
+            goToNextStage();
+            anime({
+              targets: recordRef,
+              translateY: 0,
+              delay: 1000,
+              duration: 2000,
+            });
+          });
+
           return;
         }
 
@@ -123,10 +125,10 @@ const Stage = () => {
 
   // const transformMap = ['25%, 25%', '-25%, 25%', '25%, -25%', '-25%, -25%']; // TODO testing image scaling
   const transformMap = [
-    { right: '-107%' },
-    { left: '-107%' },
-    { top: '-107%', right: '-107%' },
-    { top: '-107%', left: '-107%' },
+    { right: '-109%' },
+    { left: '-109%' },
+    { top: '-109%', right: '-109%' },
+    { top: '-109%', left: '-109%' },
   ];
 
   const getSelectedStyle = (index: number) => ({
