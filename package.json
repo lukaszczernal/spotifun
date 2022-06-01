@@ -14,6 +14,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/animejs": "^3.1.4",
+    "@types/hammerjs": "^2.0.41",
     "deepclone-js": "gist:0bce1161cfd2aa91ae7cad9abb42c342",
     "gh-pages": "^3.2.3",
     "push-dir": "^0.4.1",
@@ -24,8 +25,8 @@
   },
   "dependencies": {
     "animejs": "^3.2.1",
+    "hammerjs": "^2.0.8",
     "solid-app-router": "^0.3.2",
-    "solid-js": "^1.3.7",
-    "swiper": "^8.1.4"
+    "solid-js": "^1.3.7"
   }
 }

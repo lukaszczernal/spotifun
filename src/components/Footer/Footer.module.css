@@ -1,6 +1,6 @@
 .footer {
   display: flex;
-  padding-bottom: 5vh;
+  padding-bottom: 10vh;
   z-index: 1;
   position: absolute;
   bottom: 0;

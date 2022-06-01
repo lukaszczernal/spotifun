@@ -9,6 +9,7 @@ import {
   Switch,
   useContext,
 } from 'solid-js';
+import Hammer from 'hammerjs';
 import anime from 'animejs';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
@@ -25,11 +26,23 @@ import styles from './Stage.module.css';
 
 const Stage = () => {
   const [selected, setSelected] = createSignal<Track>();
-  const [{ stage, gameScore }, gameAction] = useContext(GameContext)!;
+  const [{ stage }, gameAction] = useContext(GameContext)!;
   const { clear, pause } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
 
   let recordRef: HTMLDivElement;
+
+  onMount(() => {
+    const hammerRecord = new Hammer(recordRef, {
+      recognizers: [[Hammer.Swipe, { direction: Hammer.DIRECTION_UP }]],
+    });
+    hammerRecord.on('swipe', () => {
+      if (selected()) {
+        checkRecord(selected())
+        console.log('touched')
+      }
+    });
+  });
 
   const goToNextStage = () => {
     if (!selected()) {
@@ -54,6 +67,7 @@ const Stage = () => {
     return anime
       .timeline({
         targets: recordRef,
+        complete,
       })
       .add({
         translateY: '-100%',
@@ -61,7 +75,11 @@ const Stage = () => {
       })
       .add({
         targets: recordRef,
-        translateY: 300,
+        translateY: '-130%',
+        duration: 1000,
+      })
+      .add({
+        translateY: '100%',
         duration: 1,
       });
   };
@@ -73,12 +91,12 @@ const Stage = () => {
         complete,
       })
       .add({
-        translateY: -100,
+        translateY: '-40%',
         duration: 1000,
       })
       .add({
-        translateY: 300,
-        duration: 1500,
+        translateY: '100%',
+        duration: 1900,
       });
   };
 
@@ -99,7 +117,6 @@ const Stage = () => {
 
     slideRecordOutside(() => {
       goToNextStage();
-      setSelected();
       anime({
         targets: recordRef,
         translateY: 0,
@@ -166,7 +183,7 @@ const Stage = () => {
 
         <Show when={selected()}>
           <Footer>
-            <Button onClick={() => checkRecord(selected())} href="">
+            <Button dark onClick={() => checkRecord(selected())} href="">
               Check
             </Button>
           </Footer>
