@@ -54,14 +54,10 @@ const Stage = () => {
     return anime
       .timeline({
         targets: recordRef,
-        duration: 3501,
-        complete,
       })
       .add({
-        targets: recordRef,
-        translateY: -350,
-        delay: 500,
-        duration: 1000,
+        translateY: '-100%',
+        duration: 2400,
       })
       .add({
         targets: recordRef,
@@ -71,36 +67,45 @@ const Stage = () => {
   };
 
   const slideRecordOutside = (complete: () => any) => {
-    anime({
-      targets: recordRef,
-      translateY: 0,
-      duration: 1000,
-      complete,
-    });
+    anime
+      .timeline({
+        targets: recordRef,
+        complete,
+      })
+      .add({
+        translateY: -100,
+        duration: 1000,
+      })
+      .add({
+        translateY: 300,
+        duration: 1500,
+      });
   };
 
   const checkRecord = (track?: Track) => {
-    anime({
-      targets: recordRef,
-      translateY: -280,
-      duration: 2400,
-      complete: () => {
-        if (isCorrect(track)) {
-          slideRecordInside(() => {
-            goToNextStage();
-            anime({
-              targets: recordRef,
-              translateY: 0,
-              delay: 1000,
-              duration: 2000,
-            });
-          });
+    if (isCorrect(track)) {
+      slideRecordInside(() => {
+        goToNextStage();
+        anime({
+          targets: recordRef,
+          translateY: 0,
+          delay: 1000,
+          duration: 2000,
+        });
+      });
 
-          return;
-        }
+      return;
+    }
 
-        slideRecordOutside(setSelected);
-      },
+    slideRecordOutside(() => {
+      goToNextStage();
+      setSelected();
+      anime({
+        targets: recordRef,
+        translateY: 0,
+        delay: 1000,
+        duration: 2000,
+      });
     });
   };
 
@@ -123,18 +128,16 @@ const Stage = () => {
 
   const isSelected = (track?: Track) => track === selected();
 
-  // const transformMap = ['25%, 25%', '-25%, 25%', '25%, -25%', '-25%, -25%']; // TODO testing image scaling
   const transformMap = [
-    { right: '-109%' },
-    { left: '-109%' },
-    { top: '-109%', right: '-109%' },
-    { top: '-109%', left: '-109%' },
+    { bottom: '-105%', right: '-105%' },
+    { bottom: '-105%', left: '-105%' },
+    { top: '-105%', right: '-105%' },
+    { top: '-105%', left: '-105%' },
   ];
 
   const getSelectedStyle = (index: number) => ({
     'z-index': 3,
     ...transformMap[index],
-    // transform: `scale(2.14) translate(${transformMap[index]})`, // TODO testing image scaling
   });
 
   return (

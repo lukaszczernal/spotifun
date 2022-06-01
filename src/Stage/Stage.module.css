@@ -1,6 +1,6 @@
 .stage__scroller {
   flex: 2;
-  max-width: 32rem;
+  max-width: 50vh;
   width: 100%;
 }
 
@@ -9,8 +9,6 @@
   display: flex;
   flex: 2;
   justify-content: center;
-  max-height: 180px;
-  position: absolute;
   bottom: 0;
   z-index: 0;
 }
@@ -19,8 +17,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
-  grid-gap: 0.8rem;
-  padding: 0 1.4rem;
+  grid-gap: 1vh;
+  padding: 0 1.4vh;
 }
 
 .stage__coverPlaceholder {
@@ -45,8 +43,10 @@
   box-shadow: 5px 5px 20px rgb(0 0 0 / 40%);
 }
 
-.stage__cover:hover {
-  transform: scale(1.05);
+@media(hover: hover) and (pointer: fine) {
+  .stage__cover:hover {
+    transform: scale(1.05);
+  }
 }
 
 .stage__cover img {

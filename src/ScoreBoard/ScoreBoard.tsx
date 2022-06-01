@@ -4,7 +4,7 @@ import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
 import { STAGE_COUNT } from '../config';
 import { countCorrect, isCorrect } from '../services/gameUtils';
-import { GameContext, Score } from '../services/useGame';
+import { GameContext } from '../services/useGame';
 
 import styles from './ScoreBoard.module.css';
 
