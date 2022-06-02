@@ -20,18 +20,18 @@ const getStore = () => {
   };
 
   const load = (sourceUrl?: string) => {
-    sourceUrl && setSource(sourceUrl);
+    setSource(sourceUrl);
   };
 
   /**
    * Prevents from running songs from previous games at start up
    */
-  const clear = () => {
+  const reset = () => {
     pause();
     load();
   };
 
-  return { state, source, play, pause, load, clear } as const;
+  return { state, source, play, pause, load, reset } as const;
 };
 
 export const usePlayer = () => useContext(PlayerContext);

@@ -1,3 +1,4 @@
+import { useNavigate } from 'solid-app-router';
 import { For, useContext } from 'solid-js';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
@@ -9,8 +10,8 @@ import { GameContext } from '../services/useGame';
 import styles from './ScoreBoard.module.css';
 
 const ScoreBoard = () => {
-  const [{ gameScore }, { startGame }] = useContext(GameContext)!;
-
+  const navigate = useNavigate();
+  const [{ gameScore }, { resetGame }] = useContext(GameContext)!;
   const score = () => countCorrect(gameScore.answers);
 
   return (
@@ -46,7 +47,7 @@ const ScoreBoard = () => {
       </ul>
 
       <Footer>
-        <Button href="" onClick={startGame} dark>
+        <Button href="/game" dark>
           One more round
         </Button>
       </Footer>

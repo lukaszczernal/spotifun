@@ -1,4 +1,4 @@
-import { Component, createContext, createSignal } from 'solid-js';
+import { Component, createContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Track } from './useTracks';
 
@@ -18,25 +18,14 @@ const getStore = () => {
   const [gameScore, setGameScore] = createStore<{ answers: Score[] }>({
     answers: [],
   });
-  const [stage, setStage] = createSignal(0);
 
-  const nextStage = (score: Score) => {
+  const addScore = (score: Score) => {
     setGameScore('answers', (state) => [...state, score]);
-    setStage((prev) => prev + 1);
   };
 
-  const startGame = () => {
+  const resetGame = () => {
     setGameScore('answers', []);
-    setStage(1);
   };
 
-  const exitGame = () => {
-    setGameScore('answers', []);
-    setStage(0);
-  };
-
-  return [
-    { stage, gameScore },
-    { nextStage, startGame, exitGame },
-  ] as const;
+  return [{ gameScore }, { addScore, resetGame }] as const;
 };

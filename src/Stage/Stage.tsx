@@ -2,64 +2,78 @@ import {
   createEffect,
   createSignal,
   For,
-  Match,
   onCleanup,
   onMount,
   Show,
-  Switch,
   useContext,
 } from 'solid-js';
 import Hammer from 'hammerjs';
 import anime from 'animejs';
-import { Button } from '../components/Button';
-import { Footer } from '../components/Footer';
 import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
 import { STAGE_COUNT } from '../config';
-import { ScoreBoard } from '../ScoreBoard';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
 
 import styles from './Stage.module.css';
+import { useNavigate } from 'solid-app-router';
+
+const PAGE_TITLE = 'Select album cover';
 
 const Stage = () => {
+  const navigate = useNavigate();
   const [selected, setSelected] = createSignal<Track>();
-  const [{ stage }, gameAction] = useContext(GameContext)!;
-  const { clear, pause } = usePlayer()!;
+  const [stage, setStage] = createSignal(1);
+  const [_, gameAction] = useContext(GameContext)!;
+  const { pause } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
+  const { reset: resetPlayer } = usePlayer()!;
 
   let recordRef: HTMLDivElement;
 
-  onMount(() => {
+  createEffect(() => {
     const hammerRecord = new Hammer(recordRef, {
-      recognizers: [[Hammer.Swipe, { direction: Hammer.DIRECTION_UP }]],
+      recognizers: [
+        [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
+        [Hammer.Tap],
+      ],
     });
-    hammerRecord.on('swipe', () => {
-      if (selected()) {
-        checkRecord(selected())
-        console.log('touched')
-      }
-    });
+    hammerRecord.on('swipe tap', checkRecord);
   });
 
-  const goToNextStage = () => {
+  onMount(() => {
+    gameAction.resetGame();
+  });
+
+  onCleanup(() => {
+    resetPlayer();
+  });
+
+  createEffect(() => {
+    if (stage() > STAGE_COUNT) {
+      navigate('/game/score');
+    }
+  });
+
+  const nextStage = () => {
     if (!selected()) {
       return;
     }
 
-    gameAction.nextStage({
+    gameAction.addScore({
       correctTrack: mysteryTrack(),
       selectedTrack: selected(),
     });
+    setStage((prev) => prev + 1);
   };
 
   const isCorrect = (selectedTrack?: Track) => {
     return mysteryTrack()?.track.id === selectedTrack?.track.id;
   };
 
-  const selectCover = (track?: Track) => {
+  const toggleCoverSelection = (track?: Track) => {
     setSelected((prev) => (prev === track ? undefined : track));
   };
 
@@ -100,10 +114,14 @@ const Stage = () => {
       });
   };
 
-  const checkRecord = (track?: Track) => {
-    if (isCorrect(track)) {
+  const checkRecord = () => {
+    if (!selected()) {
+      return;
+    }
+
+    if (isCorrect(selected())) {
       slideRecordInside(() => {
-        goToNextStage();
+        nextStage();
         anime({
           targets: recordRef,
           translateY: 0,
@@ -116,11 +134,11 @@ const Stage = () => {
     }
 
     slideRecordOutside(() => {
-      goToNextStage();
+      nextStage();
       anime({
         targets: recordRef,
         translateY: 0,
-        delay: 1000,
+        delay: 500,
         duration: 2000,
       });
     });
@@ -134,22 +152,13 @@ const Stage = () => {
     }
   });
 
-  onMount(() => {
-    gameAction.startGame();
-  });
-
-  onCleanup(() => {
-    gameAction.exitGame();
-    clear();
-  });
-
   const isSelected = (track?: Track) => track === selected();
 
   const transformMap = [
-    { bottom: '-105%', right: '-105%' },
-    { bottom: '-105%', left: '-105%' },
-    { top: '-105%', right: '-105%' },
-    { top: '-105%', left: '-105%' },
+    { bottom: '-107%', right: '-107%' },
+    { bottom: '-107%', left: '-107%' },
+    { top: '-107%', right: '-107%' },
+    { top: '-107%', left: '-107%' },
   ];
 
   const getSelectedStyle = (index: number) => ({
@@ -158,44 +167,40 @@ const Stage = () => {
   });
 
   return (
-    <Switch fallback={<ScoreBoard />}>
-      <Match when={stage() <= STAGE_COUNT}>
-        <section className={styles.stage__scroller}>
-          <SplashText subtitle="Find correct album cover" />
-          <section className={styles.stage__coverList}>
-            <For each={randomTracks()}>
-              {(track, index) => {
-                return (
-                  <div className={styles.stage__coverPlaceholder}>
-                    <a
-                      style={isSelected(track) ? getSelectedStyle(index()) : {}}
-                      className={styles.stage__cover}
-                      onClick={() => selectCover(track)}
-                    >
-                      <img src={track?.track.album.images[0].url} />
-                    </a>
-                  </div>
-                );
-              }}
-            </For>
-          </section>
+    <>
+      <section className={styles.stage__scroller}>
+        <SplashText subtitle={PAGE_TITLE} />
+        <section className={styles.stage__coverList}>
+          <For each={randomTracks()}>
+            {(track, index) => {
+              return (
+                <div className={styles.stage__coverPlaceholder}>
+                  <a
+                    style={isSelected(track) ? getSelectedStyle(index()) : {}}
+                    className={styles.stage__cover}
+                    onClick={() => toggleCoverSelection(track)}
+                  >
+                    <img src={track?.track.album.images[0].url} />
+                  </a>
+                </div>
+              );
+            }}
+          </For>
         </section>
+      </section>
 
-        <Show when={selected()}>
-          <Footer>
-            <Button dark onClick={() => checkRecord(selected())} href="">
-              Check
-            </Button>
-          </Footer>
-        </Show>
-
-        <div ref={recordRef} className={styles.stage__playerControls}>
-          <Show when={mysteryTrack()}>
-            <PlayerControls track={mysteryTrack} />
-          </Show>
+      <Show when={selected()}>
+        <div className={styles.stage__playerControlsLabel}>
+          <SplashText subtitle="Swipe up to check" />
         </div>
-      </Match>
-    </Switch>
+      </Show>
+
+      <div ref={recordRef} className={styles.stage__playerControls}>
+        <Show when={mysteryTrack()}>
+          <PlayerControls track={mysteryTrack} />
+        </Show>
+      </div>
+    </>
   );
 };
 

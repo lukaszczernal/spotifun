@@ -13,11 +13,16 @@
   z-index: 0;
 }
 
+.stage__playerControlsLabel {
+  position: absolute;
+  bottom: 20vh;
+}
+
 .stage__coverList {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
-  grid-gap: 1vh;
+  grid-gap: 1.4vh;
   padding: 0 1.4vh;
 }
 
