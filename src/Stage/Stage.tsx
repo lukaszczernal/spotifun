@@ -27,7 +27,7 @@ const Stage = () => {
   const [selected, setSelected] = createSignal<Track>();
   const [stage, setStage] = createSignal(1);
   const [_, gameAction] = useContext(GameContext)!;
-  const { pause } = usePlayer()!;
+  const { pause, toggle: togglePlayer } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
   const { reset: resetPlayer } = usePlayer()!;
 
@@ -40,7 +40,8 @@ const Stage = () => {
         [Hammer.Tap],
       ],
     });
-    hammerRecord.on('swipe tap', checkRecord);
+    hammerRecord.on('swipe', checkRecord);
+    hammerRecord.on('tap', togglePlayer);
   });
 
   onMount(() => {

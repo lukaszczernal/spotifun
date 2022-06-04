@@ -19,6 +19,10 @@ const getStore = () => {
     setState('pause');
   };
 
+  const toggle = () => {
+    state() === 'play' ? pause() : play();
+  };
+
   const load = (sourceUrl?: string) => {
     setSource(sourceUrl);
   };
@@ -31,7 +35,7 @@ const getStore = () => {
     load();
   };
 
-  return { state, source, play, pause, load, reset } as const;
+  return { state, source, play, pause, load, reset, toggle } as const;
 };
 
 export const usePlayer = () => useContext(PlayerContext);
