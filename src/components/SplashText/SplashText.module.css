@@ -1,24 +1,9 @@
-@keyframes ShowUp {
-  from {
-    opacity: 0;
-    transform: translate(0, 2vh);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-}
-
 .splashText {
   padding: 5vh 3rem 1rem 3rem;
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  opacity: 0;
-  animation: ShowUp 500ms ease-in 100ms 1;
-  animation-fill-mode: forwards;
-  transform: translate(0, 2vh);
 }
 
 .splashText__main {

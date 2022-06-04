@@ -18,6 +18,8 @@ import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
 import { Track } from '../services/useTracks';
+import { Animate, AnimationType } from '../components/Animate';
+import { SwipeUpIcon } from '../assets/gestureIcons';
 
 import styles from './Stage.module.css';
 
@@ -176,8 +178,13 @@ const Stage = () => {
       </section>
 
       <Show when={selected()}>
-        <div className={styles.stage__playerControlsLabel}>
-          <SplashText subtitle="Swipe up to check" />
+        <div className={styles.stage__swipeCheckContainer}>
+          <Animate type={AnimationType.fadeIn}>
+            <SplashText subtitle="Swipe up to check" />
+          </Animate>
+          <Animate type={AnimationType.slideUp}>
+            {SwipeUpIcon}
+          </Animate>
         </div>
       </Show>
 

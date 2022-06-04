@@ -14,9 +14,13 @@
   z-index: 0;
 }
 
-.stage__playerControlsLabel {
+.stage__swipeCheckContainer {
   position: absolute;
-  bottom: 20vh;
+  bottom: 14vh;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .stage__coverList {
