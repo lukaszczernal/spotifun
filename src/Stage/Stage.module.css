@@ -2,6 +2,21 @@
   flex: 2;
   max-width: 50vh;
   width: 100%;
+  position: relative;
+}
+
+.stage__coverTouch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  z-index: 5;
+}
+
+.stage__coverTouch__visible {
+  display: block;
 }
 
 .stage__playerControls {

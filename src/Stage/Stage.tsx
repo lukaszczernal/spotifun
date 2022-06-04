@@ -32,6 +32,7 @@ const Stage = () => {
   const { reset: resetPlayer } = usePlayer()!;
 
   let recordRef: HTMLDivElement;
+  let coverRef: HTMLDivElement;
 
   createEffect(() => {
     const hammerRecord = new Hammer(recordRef, {
@@ -42,6 +43,11 @@ const Stage = () => {
     });
     hammerRecord.on('swipe', checkRecord);
     hammerRecord.on('tap', togglePlayer);
+
+    const hammerCover = new Hammer(coverRef, {
+      recognizers: [[Hammer.Swipe], [Hammer.Tap]],
+    });
+    hammerCover.on('swipe tap', () => setSelected());
   });
 
   onMount(() => {
@@ -171,6 +177,12 @@ const Stage = () => {
     <>
       <section className={styles.stage__scroller}>
         <SplashText subtitle={PAGE_TITLE} />
+        <div
+          ref={coverRef}
+          className={`${styles.stage__coverTouch} ${
+            selected() ? styles.stage__coverTouch__visible : ''
+          }`}
+        ></div>
         <section className={styles.stage__coverList}>
           <For each={randomTracks()}>
             {(track, index) => {
