@@ -1,0 +1,33 @@
+.cover {
+  transition-property: top, left, right, bottom, transform;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+  display: inherit;
+  cursor: pointer;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-shadow: 5px 5px 20px rgb(0 0 0 / 40%);
+}
+
+.cover img {
+  width: 100%;
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .cover:hover {
+    transform: scale(1.05);
+  }
+}
+
+.cover__placeholder {
+  display: inherit;
+  background-color: var(--background-dark);
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Maintain aspect ration */
+}
+
+
