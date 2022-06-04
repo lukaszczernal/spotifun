@@ -45,9 +45,9 @@ const Stage = () => {
     hammerRecord.on('tap', togglePlayer);
 
     const hammerCover = new Hammer(coverRef, {
-      recognizers: [[Hammer.Swipe], [Hammer.Tap]],
+      recognizers: [[Hammer.Swipe]],
     });
-    hammerCover.on('swipe tap', () => setSelected());
+    hammerCover.on('swipe', () => setSelected());
   });
 
   onMount(() => {
