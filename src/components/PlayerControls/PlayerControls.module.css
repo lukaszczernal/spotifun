@@ -12,6 +12,7 @@
   width: 44vh;
   bottom: -11vh;
   pointer-events: none;
+  display: block;
 }
 
 .playerControls__recordWrapper__stop .playerControls__recordLabel {

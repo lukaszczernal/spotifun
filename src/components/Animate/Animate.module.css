@@ -12,6 +12,17 @@
   }
 }
 
+@keyframes ShowUpOut {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, -4vh);
+  }
+}
+
 @keyframes FadeIn {
   0% {
     opacity: 0;
@@ -35,6 +46,17 @@
   transform: translate(0, 4vh);
 }
 
+.animate__slideUpOut {
+  animation-name: ShowUpOut;
+  animation-delay: 0;
+  transform: translate(0, 0);
+  opacity: 1;
+}
+
 .animate__fadeIn {
   animation-name: FadeIn;
+}
+
+.animate__fadeOut {
+  animation-direction: reverse;
 }

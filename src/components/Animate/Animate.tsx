@@ -8,16 +8,22 @@ export enum AnimationType {
 
 interface Props {
   type: AnimationType;
+  outCondition?: boolean;
 }
 
 const Animate: Component<Props> = (props) => {
-  const animationClasses: { [key in AnimationType]?: any } = {
-    [AnimationType.slideUp]: styles.animate__slideUp,
-    [AnimationType.fadeIn]: styles.animate__fadeIn,
+  const animationClasses: { [key in AnimationType]: [string, string] } = {
+    [AnimationType.slideUp]: [
+      styles.animate__slideUp,
+      styles.animate__slideUpOut,
+    ],
+    [AnimationType.fadeIn]: [styles.animate__fadeIn, styles.animate__fadeOut],
   };
 
   const getAnimationClass: (type: AnimationType) => string = (type) =>
-    animationClasses[type];
+    props.outCondition
+      ? animationClasses[type].join(' ')
+      : animationClasses[type][0];
 
   return (
     <div className={`${styles.animate} ${getAnimationClass(props.type)}`}>

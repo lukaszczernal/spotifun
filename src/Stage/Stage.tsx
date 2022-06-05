@@ -29,15 +29,17 @@ const Stage = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = createSignal<Track>();
   const [stage, setStage] = createSignal(1);
+  const [isChecking, setIsChecking] = createSignal(false);
   const [_, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
   const { reset: resetPlayer } = usePlayer()!;
 
+  let playerAreaRef: HTMLDivElement;
   let recordRef: HTMLDivElement;
 
   createEffect(() => {
-    const hammerRecord = new Hammer(recordRef, {
+    const hammerRecord = new Hammer(playerAreaRef, {
       recognizers: [
         [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
         [Hammer.Tap],
@@ -56,7 +58,10 @@ const Stage = () => {
   });
 
   createEffect(() => {
+    setIsChecking(false);
+    setSelected(); // Clear selection
     if (stage() > STAGE_COUNT) {
+      pause();
       navigate('/game/score');
     }
   });
@@ -122,6 +127,7 @@ const Stage = () => {
     if (!selected()) {
       return;
     }
+    setIsChecking(true);
 
     if (isCorrect(selected())) {
       slideRecordInside(() => {
@@ -148,13 +154,6 @@ const Stage = () => {
     });
   };
 
-  createEffect(() => {
-    stage(); // Only to trigger update
-    setSelected(); // Clear selection
-    if (stage() > STAGE_COUNT) {
-      pause();
-    }
-  });
 
   const isSelected = (track?: Track) =>
     selected() ? track === selected() : false;
@@ -177,21 +176,21 @@ const Stage = () => {
         </section>
       </section>
 
-      <Show when={selected()}>
-        <div className={styles.stage__swipeCheckContainer}>
-          <Animate type={AnimationType.fadeIn}>
-            <SplashText subtitle="Swipe up to check" />
-          </Animate>
-          <Animate type={AnimationType.slideUp}>
-            {SwipeUpIcon}
-          </Animate>
-        </div>
-      </Show>
-
-      <div ref={recordRef} className={styles.stage__playerControls}>
-        <Show when={mysteryTrack()}>
-          <PlayerControls track={mysteryTrack} />
+      <div ref={playerAreaRef} className={styles.stage__playerControls}>
+        <Show when={selected()}>
+          <div className={styles.stage__swipeCheckContainer}>
+            <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
+              <SplashText subtitle="Swipe up to check" />
+            </Animate>
+            <Animate type={AnimationType.slideUp} outCondition={isChecking()}>{SwipeUpIcon}</Animate>
+          </div>
         </Show>
+
+        <div ref={recordRef}>
+          <Show when={mysteryTrack()}>
+            <PlayerControls track={mysteryTrack} />
+          </Show>
+        </div>
       </div>
     </>
   );
