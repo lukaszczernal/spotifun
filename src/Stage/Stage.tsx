@@ -45,8 +45,14 @@ const Stage = () => {
         [Hammer.Tap],
       ],
     });
-    hammerRecord.on('swipe', checkRecord);
-    hammerRecord.on('tap', togglePlayer);
+    hammerRecord.on('swipe tap', () => {
+      checkRecord();
+      if (isChecking()) {
+        pause();
+      } else {
+        togglePlayer();
+      }
+    });
   });
 
   onMount(() => {
@@ -59,7 +65,6 @@ const Stage = () => {
 
   createEffect(() => {
     setIsChecking(false);
-    setSelected(); // Clear selection
     if (stage() > STAGE_COUNT) {
       pause();
       navigate('/game/score');
@@ -75,6 +80,8 @@ const Stage = () => {
       correctTrack: mysteryTrack(),
       selectedTrack: selected(),
     });
+    setSelected(); // Clear selection
+    // TODO mark correct track;
     setStage((prev) => prev + 1);
   };
 
@@ -98,7 +105,7 @@ const Stage = () => {
       })
       .add({
         targets: recordRef,
-        translateY: '-130%',
+        translateY: '-125%',
         duration: 1000,
       })
       .add({
@@ -123,37 +130,29 @@ const Stage = () => {
       });
   };
 
+  const resetRecordPosition = () =>
+    anime({
+      targets: recordRef,
+      translateY: 0,
+      delay: 500,
+      duration: 2000,
+    });
+
   const checkRecord = () => {
     if (!selected()) {
       return;
     }
     setIsChecking(true);
 
-    if (isCorrect(selected())) {
-      slideRecordInside(() => {
-        nextStage();
-        anime({
-          targets: recordRef,
-          translateY: 0,
-          delay: 1000,
-          duration: 2000,
-        });
-      });
+    const recordAnimation = isCorrect(selected())
+      ? slideRecordInside
+      : slideRecordOutside;
 
-      return;
-    }
-
-    slideRecordOutside(() => {
+    recordAnimation(() => {
       nextStage();
-      anime({
-        targets: recordRef,
-        translateY: 0,
-        delay: 500,
-        duration: 2000,
-      });
+      resetRecordPosition();
     });
   };
-
 
   const isSelected = (track?: Track) =>
     selected() ? track === selected() : false;
@@ -182,7 +181,9 @@ const Stage = () => {
             <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
               <SplashText subtitle="Swipe up to check" />
             </Animate>
-            <Animate type={AnimationType.slideUp} outCondition={isChecking()}>{SwipeUpIcon}</Animate>
+            <Animate type={AnimationType.slideUp} outCondition={isChecking()}>
+              {SwipeUpIcon}
+            </Animate>
           </div>
         </Show>
 

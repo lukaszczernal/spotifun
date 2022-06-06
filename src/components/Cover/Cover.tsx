@@ -29,7 +29,6 @@ const Cover: Component<Props> = (props) => {
       recognizers: [[Hammer.Swipe], [Hammer.Tap]],
     });
     hammerCover.on('swipe tap', () => {
-      console.log('swipe tap')
       props.onClick(props.track);
     });
   });

@@ -16,7 +16,7 @@
 
 .stage__swipeCheckContainer {
   position: absolute;
-  bottom: 14vh;
+  bottom: 12vh;
   z-index: 4;
   display: flex;
   align-items: center;

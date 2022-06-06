@@ -48,8 +48,9 @@
 
 .animate__slideUpOut {
   animation-name: ShowUpOut;
-  animation-delay: 0;
+  animation-delay: 0ms;
   transform: translate(0, 0);
+  animation-duration: 100ms;
   opacity: 1;
 }
 
