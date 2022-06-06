@@ -81,8 +81,7 @@ const Stage = () => {
       selectedTrack: selected(),
     });
     setSelected(); // Clear selection
-    // TODO mark correct track;
-    setStage((prev) => prev + 1);
+    markCorrect(() => setStage((prev) => prev + 1));
   };
 
   const isCorrect = (selectedTrack?: Track) => {
@@ -93,10 +92,26 @@ const Stage = () => {
     setSelected((prev) => (prev === track ? undefined : track));
   };
 
+  const markCorrect = (complete: () => any) => {
+    return anime({
+      targets: '.cover__correct',
+      keyframes: [
+        { rotate: '10deg'},
+        { rotate: '-10deg'},
+        { rotate: '0deg'},
+        { rotate: '0deg', delay: 1000},
+      ],
+      delay: 400,
+      duration: 500,
+      complete,
+    })
+  }
+
   const slideRecordInside = (complete: () => any) => {
     return anime
       .timeline({
         targets: recordRef,
+        easing: 'easeOutExpo',
         complete,
       })
       .add({
@@ -118,15 +133,16 @@ const Stage = () => {
     anime
       .timeline({
         targets: recordRef,
+        easing: 'easeOutExpo',
         complete,
       })
       .add({
-        translateY: '-40%',
-        duration: 1000,
+        translateY: '-30%',
+        duration: 800,
       })
       .add({
         translateY: '100%',
-        duration: 1900,
+        duration: 1500,
       });
   };
 
@@ -134,7 +150,7 @@ const Stage = () => {
     anime({
       targets: recordRef,
       translateY: 0,
-      delay: 500,
+      delay: 2000,
       duration: 2000,
     });
 
@@ -167,6 +183,7 @@ const Stage = () => {
               <Cover
                 track={track}
                 isSelected={isSelected(track)}
+                isCorrect={isCorrect(track)}
                 position={index()}
                 onClick={toggleCoverSelection}
               />

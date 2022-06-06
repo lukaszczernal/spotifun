@@ -6,6 +6,7 @@ interface Props {
   track?: Track;
   isSelected?: boolean;
   position: number;
+  isCorrect: boolean;
   onClick: (track?: Track) => any;
 }
 
@@ -34,10 +35,11 @@ const Cover: Component<Props> = (props) => {
   });
 
   return (
-    <div className={styles.cover__placeholder}>
+    <div className={styles.cover__placeholder} >
       <a
         style={props.isSelected ? getSelectedStyle(props.position) : {}}
         className={styles.cover}
+        class={props.isCorrect ? 'cover__correct': ''} // TODO I do not like this solution
         ref={coverRef}
       >
         <img src={props.track?.track.album.images[0].url} />
