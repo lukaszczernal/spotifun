@@ -20,11 +20,8 @@ const useRandomTracks = (stage: Accessor<number>) => {
   const [randomNumbers, setRandomNumbers] = createSignal<number[]>([]);
 
   createEffect(() => {
-    if (stage() <= STAGE_SIZE) {
-      setRandomNumbers(getRandomNumbers(pageCount()));
-    } else {
-      setRandomNumbers([]);
-    }
+    stage(); // to trigger effect
+    setRandomNumbers(getRandomNumbers(pageCount()));
   });
 
   const [tracks] = useTracks(randomNumbers);

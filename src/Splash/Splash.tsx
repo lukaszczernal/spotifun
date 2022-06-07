@@ -3,13 +3,11 @@ import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
 import { useAuth } from '../services/useAuth';
-import { usePlayer } from '../services/usePlayer';
 
 import styles from './Splash.module.css';
 
 const Splash = () => {
   const { isAuthenticated, login } = useAuth()!;
-  const { play } = usePlayer()!;
 
   return (
     <>
@@ -27,7 +25,7 @@ const Splash = () => {
             </Button>
           }
         >
-          <Button href="/game" onClick={play}>
+          <Button href="/game">
             Start
           </Button>
         </Show>

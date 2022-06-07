@@ -5,6 +5,10 @@
   width: 86%;
   min-width: 10rem;
   max-width: 40rem;
+  max-height: 55vh;
+  display: block;
+  overflow-y: scroll;
+  padding-bottom: 14vh;
 }
 
 .scoreBoard__response {
