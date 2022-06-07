@@ -10,6 +10,7 @@
   top: 0;
   bottom: 0;
   box-shadow: 5px 5px 20px rgb(0 0 0 / 40%);
+  opacity: 0;
 }
 
 .cover img {
@@ -27,7 +28,7 @@
   background-color: var(--background-dark);
   position: relative;
   width: 100%;
-  padding-bottom: 100%; /* Maintain aspect ration */
+  aspect-ratio: 1;
 }
 
 

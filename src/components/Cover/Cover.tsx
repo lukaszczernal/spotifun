@@ -39,7 +39,7 @@ const Cover: Component<Props> = (props) => {
       <a
         style={props.isSelected ? getSelectedStyle(props.position) : {}}
         className={styles.cover}
-        class={props.isCorrect ? 'cover__correct': ''} // TODO I do not like this solution
+        class={`cover ${props.isCorrect ? 'cover__correct': ''}`} // TODO I do not like this solution
         ref={coverRef}
       >
         <img src={props.track?.track.album.images[0].url} />

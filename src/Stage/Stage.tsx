@@ -71,6 +71,28 @@ const Stage = () => {
     }
   });
 
+  createEffect(() => {
+    if (randomTracks()[0] !== undefined) {
+      showCovers();
+    }
+  })
+
+  const hideCovers = () => {
+    return anime({
+      targets: '.cover',
+      opacity: 0,
+      delay: anime.stagger(200), // increase delay by 100ms for each elements.
+    });
+  };
+
+  const showCovers = () => {
+    return anime({
+      targets: '.cover',
+      opacity: 1,
+      delay: anime.stagger(200), // increase delay by 100ms for each elements.
+    });
+  };
+
   const nextStage = () => {
     if (!selected()) {
       return;
@@ -80,8 +102,17 @@ const Stage = () => {
       correctTrack: mysteryTrack(),
       selectedTrack: selected(),
     });
-    setSelected(); // Clear selection
-    markCorrect(() => setStage((prev) => prev + 1));
+
+    if (isCorrect(selected())) {
+      setSelected(); // Clear selection
+      setStage((prev) => prev + 1);
+      hideCovers();
+    } else {
+      setSelected(); // Clear selection
+      markCorrect()
+        .finished.then(() => hideCovers().finished)
+        .then(() => setStage((prev) => prev + 1));
+    }
   };
 
   const isCorrect = (selectedTrack?: Track) => {
@@ -92,31 +123,29 @@ const Stage = () => {
     setSelected((prev) => (prev === track ? undefined : track));
   };
 
-  const markCorrect = (complete: () => any) => {
+  const markCorrect = () => {
     return anime({
       targets: '.cover__correct',
       keyframes: [
-        { rotate: '10deg'},
-        { rotate: '-10deg'},
-        { rotate: '0deg'},
-        { rotate: '0deg', delay: 1000},
+        { rotate: '10deg' },
+        { rotate: '-10deg' },
+        { rotate: '0deg' },
+        { rotate: '0deg', delay: 1000 },
       ],
       delay: 400,
       duration: 500,
-      complete,
-    })
-  }
+    });
+  };
 
-  const slideRecordInside = (complete: () => any) => {
+  const slideRecordInside = () => {
     return anime
       .timeline({
         targets: recordRef,
         easing: 'easeOutExpo',
-        complete,
       })
       .add({
         translateY: '-100%',
-        duration: 2400,
+        duration: 1400,
       })
       .add({
         targets: recordRef,
@@ -129,12 +158,11 @@ const Stage = () => {
       });
   };
 
-  const slideRecordOutside = (complete: () => any) => {
-    anime
+  const slideRecordOutside = () => {
+    return anime
       .timeline({
         targets: recordRef,
         easing: 'easeOutExpo',
-        complete,
       })
       .add({
         translateY: '-30%',
@@ -164,7 +192,7 @@ const Stage = () => {
       ? slideRecordInside
       : slideRecordOutside;
 
-    recordAnimation(() => {
+    recordAnimation().finished.then(() => {
       nextStage();
       resetRecordPosition();
     });
