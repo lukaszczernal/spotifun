@@ -30,3 +30,9 @@
   grid-gap: 1.4vh;
   padding: 0 1.4vh;
 }
+
+.stage__score {
+  position: absolute;
+  top: 2vh;
+  right: 2vh;
+}

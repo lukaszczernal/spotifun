@@ -13,7 +13,7 @@ import anime from 'animejs';
 import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
 import { Cover } from '../components/Cover';
-import { STAGE_COUNT } from '../config';
+import { MAX_FAIL_COUNT } from '../config';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import useRandomTracks from '../services/useRandomTracks';
@@ -30,7 +30,7 @@ const Stage = () => {
   const [selected, setSelected] = createSignal<Track>();
   const [stage, setStage] = createSignal(1);
   const [isChecking, setIsChecking] = createSignal(false);
-  const [_, gameAction] = useContext(GameContext)!;
+  const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
   const { reset: resetPlayer } = usePlayer()!;
@@ -65,7 +65,7 @@ const Stage = () => {
 
   createEffect(() => {
     setIsChecking(false);
-    if (stage() > STAGE_COUNT) {
+    if (failsCount() === MAX_FAIL_COUNT) {
       pause();
       navigate('/game/score');
     }
@@ -75,13 +75,13 @@ const Stage = () => {
     if (randomTracks()[0] !== undefined) {
       showCovers();
     }
-  })
+  });
 
   const hideCovers = () => {
     return anime({
       targets: '.cover',
       opacity: 0,
-      delay: anime.stagger(200), // increase delay by 100ms for each elements.
+      delay: anime.stagger(200, { start: 300 }),
     });
   };
 
@@ -89,7 +89,7 @@ const Stage = () => {
     return anime({
       targets: '.cover',
       opacity: 1,
-      delay: anime.stagger(200), // increase delay by 100ms for each elements.
+      delay: anime.stagger(200),
     });
   };
 
@@ -105,11 +105,10 @@ const Stage = () => {
 
     if (isCorrect(selected())) {
       setSelected(); // Clear selection
-      setStage((prev) => prev + 1);
-      hideCovers();
+      return hideCovers().finished.then(() => setStage((prev) => prev + 1));
     } else {
       setSelected(); // Clear selection
-      markCorrect()
+      return markCorrect()
         .finished.then(() => hideCovers().finished)
         .then(() => setStage((prev) => prev + 1));
     }
@@ -178,7 +177,7 @@ const Stage = () => {
     anime({
       targets: recordRef,
       translateY: 0,
-      delay: 2000,
+      delay: 1000,
       duration: 2000,
     });
 
@@ -192,10 +191,7 @@ const Stage = () => {
       ? slideRecordInside
       : slideRecordOutside;
 
-    recordAnimation().finished.then(() => {
-      nextStage();
-      resetRecordPosition();
-    });
+    recordAnimation().finished.then(nextStage).then(resetRecordPosition);
   };
 
   const isSelected = (track?: Track) =>
@@ -203,6 +199,11 @@ const Stage = () => {
 
   return (
     <>
+      <div className={styles.stage__score}>
+        <span>
+          Score: {scoreCount()} Fails: {failsCount()}
+        </span>
+      </div>
       <section className={styles.stage__scroller}>
         <SplashText subtitle={PAGE_TITLE} />
         <section className={styles.stage__coverList}>
@@ -214,6 +215,7 @@ const Stage = () => {
                 isCorrect={isCorrect(track)}
                 position={index()}
                 onClick={toggleCoverSelection}
+                onLoad={() => console.log('register image loaded')}
               />
             )}
           </For>

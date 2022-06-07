@@ -8,6 +8,7 @@ interface Props {
   position: number;
   isCorrect: boolean;
   onClick: (track?: Track) => any;
+  onLoad: () => any;
 }
 
 const transformMap = [
@@ -42,7 +43,7 @@ const Cover: Component<Props> = (props) => {
         class={`cover ${props.isCorrect ? 'cover__correct': ''}`} // TODO I do not like this solution
         ref={coverRef}
       >
-        <img src={props.track?.track.album.images[0].url} />
+        <img src={props.track?.track.album.images[0].url} onLoad={props.onLoad} />
       </a>
     </div>
   );

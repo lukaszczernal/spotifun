@@ -1,5 +1,6 @@
 import { Component, createContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import { countCorrect } from './gameUtils';
 import { Track } from './useTracks';
 
 export interface Score {
@@ -19,6 +20,9 @@ const getStore = () => {
     answers: [],
   });
 
+  const scoreCount = () => countCorrect(gameScore.answers);
+  const failsCount = () => gameScore.answers.length - scoreCount();
+
   const addScore = (score: Score) => {
     setGameScore('answers', (state) => [...state, score]);
   };
@@ -27,5 +31,5 @@ const getStore = () => {
     setGameScore('answers', []);
   };
 
-  return [{ gameScore }, { addScore, resetGame }] as const;
+  return [{ gameScore, scoreCount, failsCount }, { addScore, resetGame }] as const;
 };

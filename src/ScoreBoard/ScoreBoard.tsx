@@ -1,31 +1,27 @@
-import { useNavigate } from 'solid-app-router';
 import { For, useContext } from 'solid-js';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
-import { STAGE_COUNT } from '../config';
-import { countCorrect, isCorrect } from '../services/gameUtils';
+import { isCorrect } from '../services/gameUtils';
 import { GameContext } from '../services/useGame';
 
 import styles from './ScoreBoard.module.css';
 
 const ScoreBoard = () => {
-  const navigate = useNavigate();
-  const [{ gameScore }, { resetGame }] = useContext(GameContext)!;
-  const score = () => countCorrect(gameScore.answers);
+  const [{ gameScore, scoreCount }] = useContext(GameContext)!;
 
   return (
     <>
-      <SplashText multiline={['Your score', `${score()}/${STAGE_COUNT}`]} />
+      <SplashText multiline={['Your score', `${scoreCount()}`]} />
       <ul className={styles.scoreBoard}>
         <For each={gameScore.answers}>
-          {(score, index) => (
+          {(score) => (
             <li className={styles.scoreBoard__response}>
               <section className={styles.scoreBoard__card}>
                 <img
                   width={64}
                   height={64}
-                  src={score.correctTrack?.track.album.images[2].url}
+                  src={score.selectedTrack?.track.album.images[2].url}
                 />
                 <div className={styles.scoreBoard__songInfo}>
                   <span className={styles.scoreBoard__songTitle}>

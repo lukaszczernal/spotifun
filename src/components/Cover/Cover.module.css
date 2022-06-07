@@ -15,6 +15,7 @@
 
 .cover img {
   width: 100%;
+  image-rendering: pixelated;
 }
 
 @media(hover: hover) and (pointer: fine) {

@@ -20,7 +20,7 @@ const App: Component = () => {
 
   return (
     <>
-      <div class={`${styles.app} ${inGame() ? styles.app__stage : ''}`}>
+      <div className={`${styles.app} ${inGame() ? styles.app__stage : ''}`}>
         <Logo compact={inGame()} />
         <Routes>
           <Route path="/game" element={<AuthGuard />}>
