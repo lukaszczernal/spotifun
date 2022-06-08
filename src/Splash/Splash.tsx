@@ -16,6 +16,9 @@ const Splash = () => {
   let startRef: HTMLDivElement;
 
   createEffect(() => {
+    if (!startRef) {
+      return;
+    }
     const hammerStart = new Hammer(startRef, {
       recognizers: [
         [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],

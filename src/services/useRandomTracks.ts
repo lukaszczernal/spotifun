@@ -54,7 +54,16 @@ const useRandomTracks = (stage: Accessor<number>) => {
   };
 
   createEffect(() => {
-    const newTracks = trackPages()?.flat() || [];
+    const pageLengths = trackPages()?.map((page) => page.length) || [0];
+    let pageCount = Math.min(...pageLengths);
+
+    const newTracks: Track[] = [];
+    while (pageCount--) {
+      trackPages()?.forEach((page) => {
+        newTracks.push(page[pageCount]);
+      });
+    }
+
     addNewTracks(newTracks);
   });
 
