@@ -1,6 +1,6 @@
 .footer {
   display: flex;
-  padding-bottom: 10vh;
+  padding-bottom: calc(14vh + env(safe-area-inset-bottom)); /* TODO test env function on ios */
   z-index: 1;
   position: absolute;
   bottom: 0;

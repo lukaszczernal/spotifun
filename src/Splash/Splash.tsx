@@ -1,4 +1,7 @@
-import { Show } from 'solid-js';
+import { useNavigate } from 'solid-app-router';
+import { createEffect, Show } from 'solid-js';
+import { SwipeUpIcon } from '../assets/gestureIcons';
+import { Animate, AnimationType } from '../components/Animate';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';
 import { SplashText } from '../components/SplashText';
@@ -8,6 +11,19 @@ import styles from './Splash.module.css';
 
 const Splash = () => {
   const { isAuthenticated, login } = useAuth()!;
+  const navigate = useNavigate();
+
+  let startRef: HTMLDivElement;
+
+  createEffect(() => {
+    const hammerStart = new Hammer(startRef, {
+      recognizers: [
+        [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
+        [Hammer.Tap],
+      ],
+    });
+    hammerStart.on('swipe tap', () => navigate('/game'));
+  });
 
   return (
     <>
@@ -25,9 +41,12 @@ const Splash = () => {
             </Button>
           }
         >
-          <Button href="/game">
-            Start
-          </Button>
+          <div ref={startRef} className={styles.splash__swipeStart}>
+            <Animate type={AnimationType.fadeIn}>
+              <SplashText subtitle="Swipe up start" />
+            </Animate>
+            <Animate type={AnimationType.slideUp}>{SwipeUpIcon}</Animate>
+          </div>
         </Show>
       </Footer>
     </>
