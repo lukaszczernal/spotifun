@@ -10,13 +10,14 @@
   display: flex;
   flex: 2;
   justify-content: center;
-  bottom: 0;
+  bottom: calc(1vh + env(safe-area-inset-bottom));
   z-index: 0;
+  position: relative;
 }
 
 .stage__swipeCheckContainer {
   position: absolute;
-  bottom: 12vh;
+  bottom: 23vh;
   z-index: 4;
   display: flex;
   align-items: center;
