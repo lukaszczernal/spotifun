@@ -1,7 +1,12 @@
 import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
+import { createStore } from 'solid-js/store';
 import { STAGE_SIZE } from '../config';
 import usePageCount from './usePageCount';
 import useTracks, { Track } from './useTracks';
+
+interface TrackStore {
+  tracks: Track[];
+}
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
@@ -17,27 +22,47 @@ const getRandomNumbers = (max: number, length: number = STAGE_SIZE) => {
 
 const useRandomTracks = (stage: Accessor<number>) => {
   const [pageCount] = usePageCount();
-  const [randomNumbers, setRandomNumbers] = createSignal<number[]>([]);
+  const [pageNumbers, setPageNumbers] = createSignal<number[]>([]);
+  const [trackStore, updateTracksStore] = createStore<TrackStore>({
+    tracks: [],
+  });
 
   createEffect(() => {
-    stage(); // to trigger effect
-    setRandomNumbers(getRandomNumbers(pageCount()));
+    if (trackStore.tracks.length < 2 * STAGE_SIZE) {
+      setPageNumbers(getRandomNumbers(pageCount()));
+    }
   });
 
-  const [tracks] = useTracks(randomNumbers);
+  createEffect(() => {
+    if (stage() > 1) {
+      removeTracks();
+    }
+  });
 
-  const randomTracks = createMemo<Array<Track | undefined>>(
-    () =>
-      tracks()?.map((track) => track[getRandomInt(track.length || 0)]) ||
-      Array(STAGE_SIZE) // To render placeholder on a scroller
-  );
+  const [trackPages] = useTracks(pageNumbers);
+
+  const stageTracks = createMemo(() => trackStore.tracks.slice(0, STAGE_SIZE));
+
+  const removeTracks = () => {
+    updateTracksStore('tracks', (state) => {
+      return [...state.slice(STAGE_SIZE, state.length)];
+    });
+  };
+
+  const addNewTracks = (newTracks: Track[]) => {
+    updateTracksStore('tracks', (state) => [...state, ...newTracks]);
+  };
+
+  createEffect(() => {
+    const newTracks = trackPages()?.flat() || [];
+    addNewTracks(newTracks);
+  });
 
   const mysteryTrack = createMemo(() => {
-    const tracks = randomTracks();
-    return tracks?.[getRandomInt(STAGE_SIZE)];
+    return stageTracks()?.[getRandomInt(STAGE_SIZE)];
   });
 
-  return { randomTracks, mysteryTrack };
+  return { randomTracks: stageTracks, mysteryTrack };
 };
 
 export default useRandomTracks;
