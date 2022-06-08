@@ -21,7 +21,7 @@ const ScoreBoard = () => {
                 <img
                   width={64}
                   height={64}
-                  src={score.selectedTrack?.track.album.images[2].url}
+                  src={score.selectedTrack?.track.album.images[1].url}
                 />
                 <div className={styles.scoreBoard__songInfo}>
                   <span className={styles.scoreBoard__songTitle}>

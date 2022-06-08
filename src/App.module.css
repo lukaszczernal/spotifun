@@ -6,6 +6,7 @@
   align-items: center;
   height: 100vh;
   padding: 13vh 0 0 0;
+  padding-bottom: calc(1vh + env(safe-area-inset-bottom));
   box-sizing: border-box;
   user-select: none;
   user-zoom: none;
