@@ -15,7 +15,7 @@
   position: relative;
 }
 
-.stage__swipeCheckContainer {
+.stage__recordAction {
   position: absolute;
   bottom: 26vh;
   z-index: 4;

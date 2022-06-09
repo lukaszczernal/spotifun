@@ -33,7 +33,7 @@ const Stage = () => {
   const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
-  const { reset: resetPlayer } = usePlayer()!;
+  const { reset: resetPlayer, state: playerState } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement;
   let recordRef: HTMLDivElement;
@@ -64,7 +64,6 @@ const Stage = () => {
   });
 
   createEffect(() => {
-    setIsChecking(false);
     if (failsCount() === MAX_FAIL_COUNT) {
       pause();
       navigate('/game/score');
@@ -72,6 +71,7 @@ const Stage = () => {
   });
 
   createEffect(() => {
+    // When first tracks are loaded
     if (randomTracks()[0] !== undefined) {
       showCovers();
     }
@@ -179,6 +179,7 @@ const Stage = () => {
       translateY: 0,
       delay: 1000,
       duration: 2000,
+      complete: () => setIsChecking(false),
     });
 
   const checkRecord = () => {
@@ -223,8 +224,23 @@ const Stage = () => {
       </section>
 
       <div ref={playerAreaRef} className={styles.stage__playerControls}>
+        <Show
+          when={
+            playerState() === 'pause' &&
+            randomTracks().length > 0 &&
+            !selected() &&
+            !isChecking()
+          }
+        >
+          <div className={styles.stage__recordAction}>
+            <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
+              <SplashText subtitle="Tap to play" />
+            </Animate>
+          </div>
+        </Show>
+
         <Show when={selected()}>
-          <div className={styles.stage__swipeCheckContainer}>
+          <div className={styles.stage__recordAction}>
             <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
               <SplashText subtitle="Swipe up to check" />
             </Animate>
