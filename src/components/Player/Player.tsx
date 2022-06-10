@@ -6,11 +6,8 @@ const Player: Component = () => {
   const { state, play, source } = usePlayer()!;
 
   createEffect(() => {
-    source();
     if (source()) {
       playerRef.load();
-      playerRef.play();
-      play();
     }
   });
 

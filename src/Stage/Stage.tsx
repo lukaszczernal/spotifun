@@ -33,7 +33,7 @@ const Stage = () => {
   const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
-  const { reset: resetPlayer, state: playerState } = usePlayer()!;
+  const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement;
   let recordRef: HTMLDivElement;
@@ -105,12 +105,13 @@ const Stage = () => {
 
     if (isCorrect(selected())) {
       setSelected(); // Clear selection
-      return hideCovers().finished.then(() => setStage((prev) => prev + 1));
+      return hideCovers().finished.then(() => setStage((prev) => prev + 1)).then(play);
     } else {
       setSelected(); // Clear selection
       return markCorrect()
         .finished.then(() => hideCovers().finished)
-        .then(() => setStage((prev) => prev + 1));
+        .then(() => setStage((prev) => prev + 1))
+        .then(play);
     }
   };
 
