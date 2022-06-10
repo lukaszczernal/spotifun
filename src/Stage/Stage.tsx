@@ -64,13 +64,6 @@ const Stage = () => {
   });
 
   createEffect(() => {
-    if (failsCount() === MAX_FAIL_COUNT) {
-      pause();
-      navigate('/game/score');
-    }
-  });
-
-  createEffect(() => {
     // When first tracks are loaded
     if (randomTracks()[0] !== undefined) {
       showCovers();
@@ -105,13 +98,10 @@ const Stage = () => {
 
     if (isCorrect(selected())) {
       setSelected(); // Clear selection
-      return hideCovers().finished.then(() => setStage((prev) => prev + 1)).then(play);
+      return hideCovers().finished;
     } else {
       setSelected(); // Clear selection
-      return markCorrect()
-        .finished.then(() => hideCovers().finished)
-        .then(() => setStage((prev) => prev + 1))
-        .then(play);
+      return markCorrect().finished.then(() => hideCovers().finished);
     }
   };
 
@@ -120,6 +110,9 @@ const Stage = () => {
   };
 
   const toggleCoverSelection = (track?: Track) => {
+    if (isChecking()) {
+      return;
+    }
     setSelected((prev) => (prev === track ? undefined : track));
   };
 
@@ -193,7 +186,17 @@ const Stage = () => {
       ? slideRecordInside
       : slideRecordOutside;
 
-    recordAnimation().finished.then(nextStage).then(resetRecordPosition);
+    recordAnimation()
+      .finished.then(nextStage)
+      .then(() => setStage((prev) => prev + 1))
+      .then(() => {
+        if (failsCount() === MAX_FAIL_COUNT) {
+          navigate('/game/score');
+        } else {
+          play();
+        }
+      })
+      .then(resetRecordPosition);
   };
 
   const isSelected = (track?: Track) =>

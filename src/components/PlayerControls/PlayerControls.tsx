@@ -10,11 +10,7 @@ interface Props {
 }
 
 const Player: Component<Props> = ({ track }) => {
-  const { state, play, pause, load } = usePlayer()!;
-
-  const togglePlay = () => {
-    state() === 'play' ? pause() : play();
-  };
+  const { state, load, toggle: togglePlay } = usePlayer()!;
 
   createEffect(() => {
     load(track?.()?.track.preview_url);
