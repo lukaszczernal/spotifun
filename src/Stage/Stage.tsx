@@ -177,7 +177,7 @@ const Stage = () => {
     });
 
   const checkRecord = () => {
-    if (!selected()) {
+    if (!selected() || isChecking()) { // TODO isChecking should be substituted with covers loaded
       return;
     }
     setIsChecking(true);
