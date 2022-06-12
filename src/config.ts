@@ -1,4 +1,4 @@
-const getHost = () => import.meta.env.VITE_HOST || 'https://lukaszczernal.github.io/spotifun';
+const getHost = () => import.meta.env.VITE_HOST;
 
 export const MAX_FAIL_COUNT = 3;
 export const STAGE_SIZE = 4;
