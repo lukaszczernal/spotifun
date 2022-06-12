@@ -177,7 +177,8 @@ const Stage = () => {
     });
 
   const checkRecord = () => {
-    if (!selected() || isChecking()) { // TODO isChecking should be substituted with covers loaded
+    if (!selected() || isChecking()) {
+      // TODO isChecking should be substituted with covers loaded
       return;
     }
     setIsChecking(true);
@@ -210,7 +211,10 @@ const Stage = () => {
         </span>
       </div>
       <section className={styles.stage__scroller}>
-        <SplashText subtitle={PAGE_TITLE} />
+        <Animate type={AnimationType.fadeIn} outCondition={!!selected() && !!isChecking()}>
+          <SplashText subtitle={PAGE_TITLE} />
+        </Animate>
+
         <section className={styles.stage__coverList}>
           <For each={randomTracks()}>
             {(track, index) => (

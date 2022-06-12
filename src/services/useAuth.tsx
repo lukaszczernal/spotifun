@@ -1,4 +1,3 @@
-// import { Component, createContext, useContext } from 'solid-js';
 import { STATE_KEY } from '../config';
 import { authorize, login, logout } from './authorize';
 
