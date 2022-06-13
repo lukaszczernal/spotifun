@@ -173,7 +173,6 @@ const Stage = () => {
       translateY: 0,
       delay: 1000,
       duration: 2000,
-      complete: () => setIsChecking(false),
     });
 
   const checkRecord = () => {
@@ -197,7 +196,10 @@ const Stage = () => {
           play();
         }
       })
-      .then(resetRecordPosition);
+      .then(() => {
+        setIsChecking(false)
+        resetRecordPosition()
+      });
   };
 
   const isSelected = (track?: Track) =>
@@ -211,7 +213,7 @@ const Stage = () => {
         </span>
       </div>
       <section className={styles.stage__scroller}>
-        <Animate type={AnimationType.fadeIn} outCondition={!!selected() && !!isChecking()}>
+        <Animate type={AnimationType.fadeIn} outCondition={!!selected() || !!isChecking()}>
           <SplashText subtitle={PAGE_TITLE} />
         </Animate>
 
