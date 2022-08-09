@@ -16,8 +16,8 @@ import { Cover } from '../components/Cover';
 import { MAX_FAIL_COUNT } from '../config';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
-import useRandomTracks from '../services/useRandomTracks';
-import { Track } from '../services/useTracks';
+import { Track } from '../services/model';
+import useTrackStore from '../services/useTrackStore';
 import { Animate, AnimationType } from '../components/Animate';
 import { SwipeUpIcon } from '../assets/gestureIcons';
 
@@ -32,7 +32,7 @@ const Stage = () => {
   const [isChecking, setIsChecking] = createSignal(false);
   const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const { randomTracks, mysteryTrack } = useRandomTracks(stage)!;
+  const { stageTracks, mysteryTrack } = useTrackStore(stage)!;
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement;
@@ -65,7 +65,7 @@ const Stage = () => {
 
   createEffect(() => {
     // When first tracks are loaded
-    if (randomTracks()[0] !== undefined) {
+    if (stageTracks()[0] !== undefined) {
       showCovers();
     }
   });
@@ -218,7 +218,7 @@ const Stage = () => {
         </Animate>
 
         <section className={styles.stage__coverList}>
-          <For each={randomTracks()}>
+          <For each={stageTracks()}>
             {(track, index) => (
               <Cover
                 track={track}
@@ -237,7 +237,7 @@ const Stage = () => {
         <Show
           when={
             playerState() === 'pause' &&
-            randomTracks().length > 0 &&
+            stageTracks().length > 0 &&
             !selected() &&
             !isChecking()
           }

@@ -2,8 +2,8 @@ import { createMemo, createResource } from 'solid-js';
 import { Accessor } from 'solid-js/types/reactive/signal';
 import { responseHandler } from './authorize';
 import { PAGE_SIZE } from './config';
+import { Tracks } from './model';
 import { useAuth } from './useAuth';
-import { Tracks } from './useTracks';
 
 const fetchTrack = () => {
   const { getAccessToken } = useAuth();
