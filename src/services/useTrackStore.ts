@@ -1,82 +1,66 @@
-import { Accessor, createEffect, createMemo, createSignal } from 'solid-js';
+import { createEffect, createMemo } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { STAGE_SIZE } from '../config';
 import { Track } from './model';
-import usePageCount from './usePageCount';
-import useTracks from './useTracks';
+import usePlaylist from './usePlaylist';
+
+interface TrackStageItem {
+  track: Track;
+  guessed: boolean;
+}
 
 interface TrackStore {
-  tracks: Track[];
+  tracks: TrackStageItem[];
 }
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
-const getRandomNumbers = (max: number, length: number = STAGE_SIZE) => {
-  const result: number[] = [];
-  if (max > 0) {
-    while (length--) {
-      result.push(getRandomInt(max));
-    }
-  }
-  return result;
-};
-
-const useTrackStore = (stage: Accessor<number>) => {
-  const [pageCount, total] = usePageCount();
-  const [stageTracks, setStageTracks] = createSignal<Track[]>([]);
-  const [mysteryTrack, setMysteryTrack] = createSignal<Track>();
-  // const [pageNumbers, setPageNumbers] = createSignal<number[]>([]);
-  // const [trackStore, updateTracksStore] = createStore<TrackStore>({
-  //   tracks: [],
-  // });
-
-  // createEffect(() => {
-  //   if (trackStore.tracks.length < 2 * STAGE_SIZE) {
-  //     setPageNumbers(getRandomNumbers(pageCount()));
-  //   }
-  // });
-
-  // createEffect(() => {
-  //   if (stage() > 1) {
-  //     removeTracks();
-  //   }
-  // });
-
-  // const [trackPages] = useTracks(1);
-
-  // const stageTracks = createMemo(() => trackStore.tracks.slice(0, STAGE_SIZE));
-
-  // const removeTracks = () => {
-  //   updateTracksStore('tracks', (state) => {
-  //     return [...state.slice(STAGE_SIZE, state.length)];
-  //   });
-  // };
-
-  // const addNewTracks = (newTracks: Track[]) => {
-  //   updateTracksStore('tracks', (state) => [...state, ...newTracks]);
-  // };
-
-  createEffect(() => {
-    // const pageLengths = trackPages()?.map((page) => page.length) || [0];
-    // let pageCount = Math.min(...pageLengths);
-    console.log('pageCount', pageCount);
-
-    // const newTracks: Track[] = [];
-    // while (pageCount--) {
-    //   trackPages()?.forEach((page) => {
-    //     newTracks.push(page[pageCount]);
-    //   });
-    // }
-
-    // addNewTracks(newTracks);
+const useTrackStore = () => {
+  const [playlist] = usePlaylist();
+  const [trackStore, updateTracksStore] = createStore<TrackStore>({
+    tracks: [],
   });
 
-  // const mysteryTrack = createMemo(() => {
-  //   return stageTracks()?.[getRandomInt(STAGE_SIZE)];
-  // });
+  const trackCount = createMemo(() => playlist()?.length);
 
-  return { stageTracks, mysteryTrack };
+  const tracksToGuess = createMemo(() =>
+    trackStore.tracks.filter((item) => item.guessed === false)
+  );
+
+  const stageTracks = createMemo(() => {
+    return tracksToGuess().slice(0, 4);
+  });
+
+  const mysteryTrack = createMemo(() => {
+    const randomIndex = getRandomInt(4);
+    return stageTracks()[randomIndex];
+  });
+
+  const markAsGuessed = (track: Track | undefined, position?: number) => {
+    updateTracksStore('tracks', (state) => {
+      return [...state].map((item) => {
+        if (item.track.id === track?.id) {
+          item.guessed = true;
+        }
+        return item;
+      });
+    });
+  };
+
+  const resetTracks = (newTracks: Track[] = []) => {
+    updateTracksStore(
+      'tracks',
+      [...newTracks].map((track) => ({ track, guessed: false }))
+    );
+  };
+
+  createEffect(() => {
+    const randomizedTracks = playlist()?.sort(() =>
+      Math.random() > 0.5 ? 1 : -1
+    );
+    resetTracks(randomizedTracks);
+  });
+
+  return { stageTracks, mysteryTrack, trackCount, markAsGuessed };
 };
 
 export default useTrackStore;
-

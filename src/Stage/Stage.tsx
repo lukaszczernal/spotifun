@@ -28,11 +28,12 @@ const PAGE_TITLE = 'Select album cover';
 const Stage = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = createSignal<Track>();
-  const [stage, setStage] = createSignal(1);
+  const [selectedIndex, setSelectedIndex] = createSignal<number>();
   const [isChecking, setIsChecking] = createSignal(false);
   const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const { stageTracks, mysteryTrack } = useTrackStore(stage)!;
+  const { stageTracks, mysteryTrack, trackCount, markAsGuessed } =
+    useTrackStore()!;
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement;
@@ -70,6 +71,7 @@ const Stage = () => {
     }
   });
 
+  // TODO reuse to hide single cover
   const hideCovers = () => {
     return anime({
       targets: '.cover',
@@ -86,34 +88,16 @@ const Stage = () => {
     });
   };
 
-  const nextStage = () => {
-    if (!selected()) {
-      return;
-    }
-
-    gameAction.addScore({
-      correctTrack: mysteryTrack(),
-      selectedTrack: selected(),
-    });
-
-    if (isCorrect(selected())) {
-      setSelected(); // Clear selection
-      return hideCovers().finished;
-    } else {
-      setSelected(); // Clear selection
-      return markCorrect().finished.then(() => hideCovers().finished);
-    }
-  };
-
   const isCorrect = (selectedTrack?: Track) => {
-    return mysteryTrack()?.track.id === selectedTrack?.track.id;
+    return mysteryTrack()?.track.id === selectedTrack?.id;
   };
 
-  const toggleCoverSelection = (track?: Track) => {
+  const toggleCoverSelection = (track: Track | undefined, position: number) => {
     if (isChecking()) {
       return;
     }
     setSelected((prev) => (prev === track ? undefined : track));
+    setSelectedIndex((prev) => (prev === position ? undefined : position));
   };
 
   const markCorrect = () => {
@@ -187,9 +171,7 @@ const Stage = () => {
       : slideRecordOutside;
 
     recordAnimation()
-      .finished.then(nextStage)
-      .then(() => setStage((prev) => prev + 1))
-      .then(() => {
+      .finished.then(() => {
         if (failsCount() === MAX_FAIL_COUNT) {
           navigate('/game/score');
         } else {
@@ -197,8 +179,22 @@ const Stage = () => {
         }
       })
       .then(() => {
-        setIsChecking(false)
-        resetRecordPosition()
+        if (isCorrect(selected())) {
+          markAsGuessed(selected(), selectedIndex());
+        }
+      })
+      .then(() => {
+        // TODO
+        // gameAction.addScore({
+        //   correctTrack: mysteryTrack(),
+        //   selectedTrack: selected(),
+        // });
+      })
+      .then(() => {
+        setSelected(); // Clear selection
+        setSelectedIndex(); // Clear selection
+        setIsChecking(false);
+        resetRecordPosition();
       });
   };
 
@@ -209,11 +205,16 @@ const Stage = () => {
     <>
       <div className={styles.stage__score}>
         <span>
-          Score: {scoreCount()} Fails: {failsCount()}
+          Score: {scoreCount()}
+          <br /> Fails: {failsCount()}
+          <br /> Total: {trackCount()}
         </span>
       </div>
       <section className={styles.stage__scroller}>
-        <Animate type={AnimationType.fadeIn} outCondition={!!selected() || !!isChecking()}>
+        <Animate
+          type={AnimationType.fadeIn}
+          outCondition={!!selected() || !!isChecking()}
+        >
           <SplashText subtitle={PAGE_TITLE} />
         </Animate>
 
@@ -221,9 +222,9 @@ const Stage = () => {
           <For each={stageTracks()}>
             {(track, index) => (
               <Cover
-                track={track}
-                isSelected={isSelected(track)}
-                isCorrect={isCorrect(track)}
+                track={track.track}
+                isSelected={isSelected(track.track)}
+                isCorrect={isCorrect(track.track)}
                 position={index()}
                 onClick={toggleCoverSelection}
                 onLoad={() => console.log('register image loaded')}

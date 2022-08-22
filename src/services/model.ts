@@ -1,4 +1,3 @@
-
 type ImageSize = 640 | 300 | 64;
 
 interface TrackImage {
@@ -13,9 +12,7 @@ interface ExternalURL {
   };
 }
 
-export interface Track {
-  added_at: string;
-  track: {
+export interface Track extends ExternalURL {
     album: {
       album_type: string;
       artists: Array<
@@ -61,15 +58,68 @@ export interface Track {
     track_number: number;
     type: string;
     uri: string;
-  } & ExternalURL;
-}
+  };
 
 export interface Tracks {
   href: string;
-  items: Track[];
+  items: TrackItem[];
   limit: number;
   next: string;
   offset: number;
   previous: string;
   total: number;
+}
+
+interface TrackItem {
+  added_at: string;
+  track: Track;
+}
+
+export interface Playlist {
+  collaborative: boolean;
+  description: string;
+  external_urls: {
+    spotify: string;
+  };
+  followers: {
+    href: string;
+    total: 0;
+  };
+  href: string;
+  id: string;
+  images: [
+    {
+      url: string;
+      height: 300;
+      width: 300;
+    }
+  ];
+  name: string;
+  owner: {
+    external_urls: {
+      spotify: string;
+    };
+    followers: {
+      href: string;
+      total: 0;
+    };
+    href: string;
+    id: string;
+    type: 'user';
+    uri: string;
+    display_name: string;
+  };
+  public: true;
+  snapshot_id: string;
+  tracks: {
+    href: string;
+    items: TrackItem[];
+    limit: 20;
+    next: string;
+    offset: 0;
+    previous: string;
+    total: 4;
+  };
+  type: string;
+  uri: string;
 }

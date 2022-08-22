@@ -1,5 +1,5 @@
 import { Component, createEffect } from 'solid-js';
-import { Track } from '../../services/useTracks';
+import { Track } from '../../services/model';
 import styles from './Cover.module.css';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   isSelected?: boolean;
   position: number;
   isCorrect: boolean;
-  onClick: (track?: Track) => any;
+  onClick: (track: Track | undefined, position: number) => any;
   onLoad: () => any;
 }
 
@@ -31,7 +31,7 @@ const Cover: Component<Props> = (props) => {
       recognizers: [[Hammer.Swipe], [Hammer.Tap]],
     });
     hammerCover.on('swipe tap', () => {
-      props.onClick(props.track);
+      props.onClick(props.track, props.position);
     });
   });
 
@@ -43,7 +43,7 @@ const Cover: Component<Props> = (props) => {
         class={`cover ${props.isCorrect ? 'cover__correct': ''}`} // TODO I do not like this solution
         ref={coverRef}
       >
-        <img src={props.track?.track.album.images[0].url} onLoad={props.onLoad} />
+        <img src={props.track?.album.images[0].url} onLoad={props.onLoad} />
       </a>
     </div>
   );
