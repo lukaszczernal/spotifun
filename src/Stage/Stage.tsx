@@ -13,7 +13,7 @@ import anime from 'animejs';
 import { PlayerControls } from '../components/PlayerControls';
 import { SplashText } from '../components/SplashText';
 import { Cover } from '../components/Cover';
-import { MAX_FAIL_COUNT } from '../config';
+import { MAX_FAIL_COUNT, STAGE_SIZE } from '../config';
 import { GameContext } from '../services/useGame';
 import { usePlayer } from '../services/usePlayer';
 import { Track } from '../services/model';
@@ -28,11 +28,10 @@ const PAGE_TITLE = 'Select album cover';
 const Stage = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = createSignal<Track>();
-  const [selectedIndex, setSelectedIndex] = createSignal<number>();
   const [isChecking, setIsChecking] = createSignal(false);
-  const [{ scoreCount, failsCount }, gameAction] = useContext(GameContext)!;
+  const [{ failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const { stageTracks, mysteryTrack, trackCount, markAsGuessed } =
+  const { stageTracks, mysteryTrack, trackCount, guessedCount, markAsGuessed } =
     useTrackStore()!;
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
@@ -66,21 +65,22 @@ const Stage = () => {
 
   createEffect(() => {
     // When first tracks are loaded
-    if (stageTracks()[0] !== undefined) {
+    if (stageTracks.tracks[STAGE_SIZE - 1] !== undefined) {
       showCovers();
     }
   });
 
   // TODO reuse to hide single cover
-  const hideCovers = () => {
-    return anime({
-      targets: '.cover',
-      opacity: 0,
-      delay: anime.stagger(200, { start: 300 }),
-    });
-  };
+  // const hideCovers = () => {
+  //   return anime({
+  //     targets: '.cover',
+  //     opacity: 0,
+  //     delay: anime.stagger(200, { start: 300 }),
+  //   });
+  // };
 
   const showCovers = () => {
+    // TODO preload images
     return anime({
       targets: '.cover',
       opacity: 1,
@@ -97,22 +97,21 @@ const Stage = () => {
       return;
     }
     setSelected((prev) => (prev === track ? undefined : track));
-    setSelectedIndex((prev) => (prev === position ? undefined : position));
   };
 
-  const markCorrect = () => {
-    return anime({
-      targets: '.cover__correct',
-      keyframes: [
-        { rotate: '10deg' },
-        { rotate: '-10deg' },
-        { rotate: '0deg' },
-        { rotate: '0deg', delay: 1000 },
-      ],
-      delay: 400,
-      duration: 500,
-    });
-  };
+  // const markCorrect = () => {
+  //   return anime({
+  //     targets: '.cover__correct',
+  //     keyframes: [
+  //       { rotate: '10deg' },
+  //       { rotate: '-10deg' },
+  //       { rotate: '0deg' },
+  //       { rotate: '0deg', delay: 1000 },
+  //     ],
+  //     delay: 400,
+  //     duration: 500,
+  //   });
+  // };
 
   const slideRecordInside = () => {
     return anime
@@ -144,10 +143,6 @@ const Stage = () => {
       .add({
         translateY: '-30%',
         duration: 800,
-      })
-      .add({
-        translateY: '100%',
-        duration: 1500,
       });
   };
 
@@ -155,7 +150,6 @@ const Stage = () => {
     anime({
       targets: recordRef,
       translateY: 0,
-      delay: 1000,
       duration: 2000,
     });
 
@@ -180,7 +174,7 @@ const Stage = () => {
       })
       .then(() => {
         if (isCorrect(selected())) {
-          markAsGuessed(selected(), selectedIndex());
+          markAsGuessed(selected());
         }
       })
       .then(() => {
@@ -192,7 +186,6 @@ const Stage = () => {
       })
       .then(() => {
         setSelected(); // Clear selection
-        setSelectedIndex(); // Clear selection
         setIsChecking(false);
         resetRecordPosition();
       });
@@ -205,7 +198,7 @@ const Stage = () => {
     <>
       <div className={styles.stage__score}>
         <span>
-          Score: {scoreCount()}
+          Score: {guessedCount()}
           <br /> Fails: {failsCount()}
           <br /> Total: {trackCount()}
         </span>
@@ -219,7 +212,7 @@ const Stage = () => {
         </Animate>
 
         <section className={styles.stage__coverList}>
-          <For each={stageTracks()}>
+          <For each={stageTracks.tracks}>
             {(track, index) => (
               <Cover
                 track={track.track}
@@ -238,7 +231,7 @@ const Stage = () => {
         <Show
           when={
             playerState() === 'pause' &&
-            stageTracks().length > 0 &&
+            stageTracks.tracks.length > 0 &&
             !selected() &&
             !isChecking()
           }
