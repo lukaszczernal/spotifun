@@ -65,7 +65,7 @@ const Stage = () => {
 
   createEffect(() => {
     // When first tracks are loaded
-    if (stageTracks.tracks[STAGE_SIZE - 1] !== undefined) {
+    if (stageTracks()[STAGE_SIZE - 1] !== undefined) {
       showCovers();
     }
   });
@@ -212,7 +212,7 @@ const Stage = () => {
         </Animate>
 
         <section className={styles.stage__coverList}>
-          <For each={stageTracks.tracks}>
+          <For each={stageTracks()}>
             {(track, index) => (
               <Cover
                 track={track.track}
@@ -231,7 +231,7 @@ const Stage = () => {
         <Show
           when={
             playerState() === 'pause' &&
-            stageTracks.tracks.length > 0 &&
+            stageTracks().length > 0 &&
             !selected() &&
             !isChecking()
           }

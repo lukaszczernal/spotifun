@@ -7,16 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "deploy-push-dir": "npm run build && npm run push-dir",
-    "push-dir": "push-dir --dir=dist --branch=gh-pages",
-    "deploy": "npm run build && gh-pages -- -d dist"
+    "deploy": "npm run build && npm run push-dir",
+    "push-dir": "push-dir --dir=dist --branch=gh-pages"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/animejs": "^3.1.4",
     "@types/hammerjs": "^2.0.41",
     "deepclone-js": "gist:0bce1161cfd2aa91ae7cad9abb42c342",
-    "gh-pages": "^3.2.3",
     "push-dir": "^0.4.1",
     "typescript": "^4.5.5",
     "vite": "^2.8.0",

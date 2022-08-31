@@ -11,23 +11,20 @@ interface TrackStageItem {
 }
 
 interface TrackStore {
-  tracks: TrackStageItem[];
-}
-
-interface StageStore {
+  stage: TrackStageItem[];
   tracks: TrackStageItem[];
 }
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
 const useTrackStore = () => {
-  const [stageTracks, updateStageTracks] = createStore<StageStore>({
-    tracks: [],
-  });
   const [playlist] = usePlaylist();
   const [trackStore, updateTracksStore] = createStore<TrackStore>({
+    stage: [],
     tracks: [],
   });
+
+  const stageTracks = createMemo(() => trackStore.stage);
 
   const trackCount = createMemo(() => playlist()?.length);
   const guessedCount = createMemo(
@@ -41,22 +38,22 @@ const useTrackStore = () => {
   createEffect(() => {
     if (!trackStore.tracks.length) return;
 
-    const emptySlotIndex =
-      stageTracks.tracks.length < STAGE_SIZE
-        ? stageTracks.tracks.length
-        : stageTracks.tracks.findIndex((item) => item.guessed);
-    if (emptySlotIndex < 0) return;
+    const nextSlotIndex =
+      trackStore.stage.length < STAGE_SIZE
+        ? trackStore.stage.length
+        : trackStore.stage.findIndex((item) => item.guessed);
+    if (nextSlotIndex < 0) return;
 
     const nextTrack = drawNextTrack();
     if (!nextTrack) return;
 
-    updateStageTracks('tracks', emptySlotIndex, nextTrack);
-    updateStageTracks('tracks', [...stageTracks.tracks]); // Only to trigger change
+    updateTracksStore('stage', nextSlotIndex, nextTrack);
+    updateTracksStore('stage', [...trackStore.stage]); // Only to trigger change
   });
 
   const mysteryTrack = createMemo(() => {
     const randomIndex = getRandomInt(4);
-    return stageTracks.tracks[randomIndex];
+    return trackStore.stage[randomIndex];
   });
 
   const drawNextTrack = (): TrackStageItem | undefined => {
