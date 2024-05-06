@@ -10,8 +10,10 @@ export const PlayerProvider: Component = (props) => (
 const getStore = () => {
   const [source, setSource] = createSignal<string>();
   const [state, setState] = createSignal<'play' | 'pause'>('pause');
+  const [continousPlay, setContinousPlay] = createSignal<boolean>(false);
 
   const play = () => {
+    setContinousPlay(true);
     setState('play');
   };
 
@@ -33,9 +35,10 @@ const getStore = () => {
   const reset = () => {
     pause();
     load();
+    setContinousPlay(false);
   };
 
-  return { state, source, play, pause, load, reset, toggle } as const;
+  return { state, source, play, pause, load, reset, toggle, continousPlay } as const;
 };
 
 export const usePlayer = () => useContext(PlayerContext);

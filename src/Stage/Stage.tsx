@@ -6,24 +6,25 @@ import {
   onMount,
   Show,
   useContext,
-} from 'solid-js';
-import { useNavigate } from 'solid-app-router';
-import Hammer from 'hammerjs';
-import anime from 'animejs';
-import { PlayerControls } from '../components/PlayerControls';
-import { SplashText } from '../components/SplashText';
-import { Cover } from '../components/Cover';
-import { MAX_FAIL_COUNT, STAGE_SIZE } from '../config';
-import { GameContext } from '../services/useGame';
-import { usePlayer } from '../services/usePlayer';
-import { Track } from '../services/model';
-import useTrackStore from '../services/useTrackStore';
-import { Animate, AnimationType } from '../components/Animate';
-import { SwipeUpIcon } from '../assets/gestureIcons';
+} from "solid-js";
+import { useNavigate } from "solid-app-router";
+import Hammer from "hammerjs";
+import anime from "animejs";
+import { PlayerControls } from "../components/PlayerControls";
+import { SplashText } from "../components/SplashText";
+import { Cover } from "../components/Cover";
+import { MAX_FAIL_COUNT, STAGE_SIZE } from "../config";
+import { GameContext } from "../services/useGame";
+import { usePlayer } from "../services/usePlayer";
+import { Track } from "../services/model";
+import useTrackStore from "../services/useTrackStore";
+import { Animate, AnimationType } from "../components/Animate";
+import { SwipeUpIcon } from "../assets/images/gestureIcons";
+import { slideRecordInside, slideRecordOutside } from "./animations";
 
-import styles from './Stage.module.css';
+import styles from "./Stage.module.css";
 
-const PAGE_TITLE = 'Select album cover';
+const PAGE_TITLE = "Select album cover";
 
 const Stage = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Stage = () => {
         [Hammer.Tap],
       ],
     });
-    hammerRecord.on('swipe tap', () => {
+    hammerRecord.on("swipe tap", () => {
       checkRecord();
       if (isChecking()) {
         pause();
@@ -82,7 +83,7 @@ const Stage = () => {
   const showCovers = () => {
     // TODO preload images
     return anime({
-      targets: '.cover',
+      targets: ".cover",
       opacity: 1,
       delay: anime.stagger(200),
     });
@@ -113,39 +114,6 @@ const Stage = () => {
   //   });
   // };
 
-  const slideRecordInside = () => {
-    return anime
-      .timeline({
-        targets: recordRef,
-        easing: 'easeOutExpo',
-      })
-      .add({
-        translateY: '-100%',
-        duration: 1400,
-      })
-      .add({
-        targets: recordRef,
-        translateY: '-125%',
-        duration: 1000,
-      })
-      .add({
-        translateY: '100%',
-        duration: 1,
-      });
-  };
-
-  const slideRecordOutside = () => {
-    return anime
-      .timeline({
-        targets: recordRef,
-        easing: 'easeOutExpo',
-      })
-      .add({
-        translateY: '-30%',
-        duration: 800,
-      });
-  };
-
   const resetRecordPosition = () =>
     anime({
       targets: recordRef,
@@ -164,17 +132,13 @@ const Stage = () => {
       ? slideRecordInside
       : slideRecordOutside;
 
-    recordAnimation()
+    recordAnimation(recordRef)
       .finished.then(() => {
-        if (failsCount() === MAX_FAIL_COUNT) {
-          navigate('/game/score');
-        } else {
-          play();
-        }
-      })
-      .then(() => {
         if (isCorrect(selected())) {
           markAsGuessed(selected());
+        } else {
+          failsCount() === MAX_FAIL_COUNT && navigate("/game/score");
+          play();
         }
       })
       .then(() => {
@@ -220,7 +184,7 @@ const Stage = () => {
                 isCorrect={isCorrect(track.track)}
                 position={index()}
                 onClick={toggleCoverSelection}
-                onLoad={() => console.log('register image loaded')}
+                onLoad={() => console.log("register image loaded")}
               />
             )}
           </For>
@@ -230,7 +194,7 @@ const Stage = () => {
       <div ref={playerAreaRef} className={styles.stage__playerControls}>
         <Show
           when={
-            playerState() === 'pause' &&
+            playerState() === "pause" &&
             stageTracks().length > 0 &&
             !selected() &&
             !isChecking()

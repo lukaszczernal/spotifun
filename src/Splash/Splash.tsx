@@ -1,6 +1,6 @@
 import { useNavigate } from 'solid-app-router';
 import { createEffect, Show } from 'solid-js';
-import { SwipeUpIcon } from '../assets/gestureIcons';
+import { SwipeUpIcon } from '../assets/images/gestureIcons';
 import { Animate, AnimationType } from '../components/Animate';
 import { Button } from '../components/Button';
 import { Footer } from '../components/Footer';

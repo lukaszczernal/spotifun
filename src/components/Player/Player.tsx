@@ -1,9 +1,17 @@
-import { Component, createEffect } from 'solid-js';
-import { usePlayer } from '../../services/usePlayer';
+import { Component, createEffect } from "solid-js";
+import { usePlayer } from "../../services/usePlayer";
 
 const Player: Component = () => {
-  let playerRef: any; // TODO typings
-  const { state, play, source } = usePlayer()!;
+  let playerRef: HTMLAudioElement;
+  const { state, play, source, continousPlay } = usePlayer()!;
+
+  createEffect(() => {
+    playerRef.addEventListener("loadeddata", () => {
+      if (continousPlay()) {
+        play();
+      }
+    });
+  });
 
   createEffect(() => {
     if (source()) {
@@ -13,17 +21,17 @@ const Player: Component = () => {
 
   createEffect(() => {
     switch (state()) {
-      case 'play':
+      case "play":
         playerRef.play();
         break;
-      case 'pause':
+      case "pause":
         playerRef.pause();
         break;
     }
   });
 
   return (
-    <audio style={{ visibility: 'hidden' }} ref={playerRef} loop>
+    <audio style={{ visibility: "hidden" }} ref={playerRef} loop>
       <source src={source()} type="audio/mpeg" />
     </audio>
   );
