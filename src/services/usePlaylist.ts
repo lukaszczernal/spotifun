@@ -4,7 +4,7 @@ import { Track, Playlist } from './model';
 import { useAuth } from './useAuth';
 
 // const PLAYLIST_URL = 'https://api.spotify.com/v1/playlists/70N5mgNl3QBQB09zXoa72h';
-const PLAYLIST_URL = 'src/assets/mocks/playlist.json';
+const PLAYLIST_URL = 'api/mocks/playlist.json';
 
 export const fetchPlaylist = () => {
   const { getAccessToken } = useAuth();
