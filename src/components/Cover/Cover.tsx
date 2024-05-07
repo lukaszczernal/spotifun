@@ -31,12 +31,14 @@ const Cover: Component<Props> = (props) => {
   createEffect(() => {
     if (props.isSelected) {
       anime({
+        duration: 800,
         targets: coverRef,
         zIndex: {
           value: 30,
           duration: 0,
         },
         scale: 2.1,
+        easing: 'easeOutElastic(1, .9)',
         ...transformMap[props.position],
       });
     } else {
@@ -45,6 +47,7 @@ const Cover: Component<Props> = (props) => {
         translateX: "0%",
         translateY: "0%",
         scale: 1,
+        easing: 'easeOutElastic(1, .9)',
         zIndex: {
           value: 0,
           duration: 100,
