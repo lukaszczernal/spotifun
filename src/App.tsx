@@ -27,7 +27,7 @@ const App: Component = () => {
           <Route path="/gamelist" element={<GameList />} />
           <Route path="/game" element={<AuthGuard />}>
             <Route path="/score" element={<ScoreBoard />} />
-            <Route path="/*" element={<Stage />} />
+            <Route path="/:playlistId" element={<Stage />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/*" element={<Splash />} />

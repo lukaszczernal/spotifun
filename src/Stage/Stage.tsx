@@ -7,7 +7,7 @@ import {
   Show,
   useContext,
 } from "solid-js";
-import { useNavigate } from "solid-app-router";
+import { useNavigate, useParams } from "solid-app-router";
 import Hammer from "hammerjs";
 import anime from "animejs";
 import { PlayerControls } from "../components/PlayerControls";
@@ -28,12 +28,13 @@ const PAGE_TITLE = "Select album cover";
 
 const Stage = () => {
   const navigate = useNavigate();
+  const params = useParams();
   const [selected, setSelected] = createSignal<Track>();
   const [isChecking, setIsChecking] = createSignal(false);
   const [{ failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { stageTracks, mysteryTrack, trackCount, guessedCount, markAsGuessed } =
-    useTrackStore();
+    useTrackStore({ playlistId: params.playlistId });
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement | undefined;

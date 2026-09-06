@@ -23,13 +23,13 @@ const Tile = ({ title, imageUrl, loginRequired, id }: TileProps) => {
 const GameList = () => {
   const tiles = [
     {
-      id: "90s",
-      title: "90s",
+      id: "3S4NTkPgtZUHYppeS0W7Zk",
+      title: "Rabbit Hole",
       imageUrl: "/src/assets/images/game-list-covers/90s.jpg",
     },
     {
-      id: "hiphop-anthems",
-      title: "HipHop Anthems",
+      id: "7bNcMHmfSarVwGeeAqqbnQ",
+      title: "Kafe Garaz 2023",
       imageUrl: "/src/assets/images/game-list-covers/hip-hop-anthems.jpg",
     },
     {

@@ -3,14 +3,24 @@ import { responseHandler } from "./authorize";
 import { Track, Playlist } from "./model";
 import { useAuth } from "./useAuth";
 
-// const PLAYLIST_URL = 'https://api.spotify.com/v1/playlists/70N5mgNl3QBQB09zXoa72h';
-const PLAYLIST_URL = "api/mocks/playlist.json";
+type PlaylistProps = {
+  playlistId: string;
+};
 
-const fetchPlaylist = () => {
+const resolvePlaylistUrl = (playlistId: string) => {
+  if (!playlistId) {
+    return "api/mocks/playlist.json";
+    // return "https://api.spotify.com/v1/playlists/70N5mgNl3QBQB09zXoa72h";
+  }
+  return `https://api.spotify.com/v1/playlists/${playlistId}`;
+};
+// const PLAYLIST_URL = "api/mocks/playlist.json";
+
+const fetchPlaylist = ({ playlistId }: PlaylistProps) => {
   const { getAccessToken } = useAuth();
   const accessToken = getAccessToken();
 
-  return fetch(PLAYLIST_URL, {
+  return fetch(resolvePlaylistUrl(playlistId), {
     headers: {
       Authorization: "Bearer " + accessToken,
     },
@@ -23,6 +33,7 @@ const fetchPlaylist = () => {
     );
 };
 
-const usePlaylist = () => createResource<Track[], number>(fetchPlaylist);
+const usePlaylist = ({ playlistId }: PlaylistProps) =>
+  createResource<Track[], number>(() => fetchPlaylist({ playlistId }));
 
 export default usePlaylist;
