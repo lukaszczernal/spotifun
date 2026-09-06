@@ -33,13 +33,17 @@ const Stage = () => {
   const [{ failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
   const { stageTracks, mysteryTrack, trackCount, guessedCount, markAsGuessed } =
-    useTrackStore()!;
+    useTrackStore();
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
-  let playerAreaRef: HTMLDivElement;
-  let recordRef: HTMLDivElement;
+  let playerAreaRef: HTMLDivElement | undefined;
+  let recordRef: HTMLDivElement | undefined;
 
   createEffect(() => {
+    if (!playerAreaRef) {
+      return;
+    }
+
     const hammerRecord = new Hammer(playerAreaRef, {
       recognizers: [
         [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
@@ -54,6 +58,10 @@ const Stage = () => {
         togglePlayer();
       }
     });
+
+    return () => {
+      hammerRecord.destroy();
+    };
   });
 
   onMount(() => {
@@ -122,7 +130,7 @@ const Stage = () => {
     });
 
   const checkRecord = () => {
-    if (!selected() || isChecking()) {
+    if (!selected() || isChecking() || !recordRef) {
       // TODO isChecking should be substituted with covers loaded
       return;
     }

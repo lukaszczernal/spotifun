@@ -10,10 +10,10 @@ import { useAuth } from '../services/useAuth';
 import styles from './Splash.module.css';
 
 const Splash = () => {
-  const { isAuthenticated, login } = useAuth()!;
+  // const { isAuthenticated, login } = useAuth()!;
   const navigate = useNavigate();
 
-  let startRef: HTMLDivElement;
+  let startRef: HTMLDivElement | undefined;
 
   createEffect(() => {
     if (!startRef) {
@@ -25,7 +25,7 @@ const Splash = () => {
         [Hammer.Tap],
       ],
     });
-    hammerStart.on('swipe tap', () => navigate('/game'));
+    hammerStart.on('swipe tap', () => navigate('/gamelist'));
   });
 
   return (
@@ -36,21 +36,21 @@ const Splash = () => {
         </SplashText>
       </section>
       <Footer>
-        <Show
+        {/* <Show
           when={isAuthenticated()}
           fallback={
             <Button href="" onClick={login}>
               Login to Spotify
             </Button>
           }
-        >
+        > */}
           <div ref={startRef} className={styles.splash__swipeStart}>
             <Animate type={AnimationType.fadeIn}>
               <SplashText subtitle="Swipe up start" />
             </Animate>
             <Animate type={AnimationType.slideUp}>{SwipeUpIcon}</Animate>
           </div>
-        </Show>
+        {/* </Show> */}
       </Footer>
     </>
   );

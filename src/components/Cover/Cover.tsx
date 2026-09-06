@@ -63,7 +63,6 @@ const Cover: Component<Props> = (props) => {
   });
 
   onCleanup(() => {
-    console.log("TODO check if remove works if game ends");
     Hammer.off(coverRef, "tap", onClickCallback);
   });
 

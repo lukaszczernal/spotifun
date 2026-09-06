@@ -4,6 +4,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/spotifun/',
+  server: {
+    port: 4000,
+  },
   plugins: [
     solidPlugin(),
     VitePWA({
@@ -43,6 +46,6 @@ export default defineConfig({
   ],
   build: {
     target: 'esnext',
-    polyfillDynamicImport: false,
+    polyfillDynamicImport: false
   },
 });
