@@ -1,11 +1,11 @@
 import { Component, createContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { countCorrect } from './gameUtils';
-import { Track } from './useTracks';
+import { TrackStageItem } from './model';
 
 export interface Score {
-  correctTrack?: Track;
-  selectedTrack?: Track;
+  correctTrack?: TrackStageItem;
+  selectedTrack?: TrackStageItem;
 }
 
 type GameContext = ReturnType<typeof getStore>;

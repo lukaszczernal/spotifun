@@ -1,14 +1,8 @@
 import { createEffect, createMemo } from "solid-js";
 import { createStore } from "solid-js/store";
 import { STAGE_SIZE } from "../config";
-import { Track } from "./model";
+import { Track, TrackStageItem } from "./model";
 import usePlaylist from "./usePlaylist";
-
-interface TrackStageItem {
-  track: Track;
-  guessed: boolean;
-  staged: boolean;
-}
 
 interface TrackStore {
   stage: TrackStageItem[];

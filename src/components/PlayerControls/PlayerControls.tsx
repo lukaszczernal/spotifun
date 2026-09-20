@@ -1,20 +1,20 @@
 import { Accessor, Component, createEffect, createMemo } from "solid-js";
 import { usePlayer } from "../../services/usePlayer";
-import { Track } from "../../services/useTracks";
+import { TrackStageItem } from "../../services/model";
 import { VinylRecord } from "../../assets/images/vinylRecord";
 import record from "./record.png";
 
 import styles from "./PlayerControls.module.css";
 
 interface Props {
-  track: Accessor<Track | undefined>;
+  track: Accessor<TrackStageItem | undefined>;
 }
 
 const Player: Component<Props> = ({ track }) => {
   const { state, load, toggle: togglePlay } = usePlayer()!;
 
   createEffect(() => {
-    load(track?.()?.track.preview_url);
+    load(track?.()?.track.previewUrl);
   });
 
   const getPlayerClass = createMemo(() => {
