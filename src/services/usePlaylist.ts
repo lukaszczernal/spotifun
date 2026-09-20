@@ -1,35 +1,53 @@
 import { createResource } from "solid-js";
-import { responseHandler } from "./authorize";
-import { Track, Playlist } from "./model";
-import { useAuth } from "./useAuth";
+import { STAGE_SIZE } from "../config";
+import { jsonp } from "./jsonp";
+import { DeezerError, DeezerPlaylist, DeezerTrack, Track } from "./model";
 
 type PlaylistProps = {
   playlistId: string;
 };
 
-const resolvePlaylistUrl = (playlistId: string) => {
-  if (!playlistId) {
-    return "api/mocks/playlist.json";
-    // return "https://api.spotify.com/v1/playlists/70N5mgNl3QBQB09zXoa72h";
-  }
-  return `https://api.spotify.com/v1/playlists/${playlistId}`;
-};
-// const PLAYLIST_URL = "api/mocks/playlist.json";
+const resolvePlaylistUrl = (playlistId: string) =>
+  playlistId
+    ? `https://api.deezer.com/playlist/${playlistId}`
+    : "api/mocks/playlist.json";
+
+const toTrack = (track: DeezerTrack): Track => ({
+  id: track.id,
+  name: track.title,
+  previewUrl: track.preview,
+  artist: track.artist.name,
+  album: {
+    id: track.album.id,
+    name: track.album.title,
+    coverMedium: track.album.cover_medium,
+    coverBig: track.album.cover_big,
+  },
+});
 
 const fetchPlaylist = ({ playlistId }: PlaylistProps) => {
-  const { getAccessToken } = useAuth();
-  const accessToken = getAccessToken();
+  const url = resolvePlaylistUrl(playlistId);
 
-  return fetch(resolvePlaylistUrl(playlistId), {
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
-  })
-    .then((res) => responseHandler<Playlist>(res))
-    .then((res) => res.tracks.items.map((item) => item.track))
-    .then((tracks) => tracks.filter((track) => track.preview_url))
+  const request = playlistId
+    ? jsonp<DeezerPlaylist & DeezerError>(url)
+    : fetch(url).then((res) => res.json() as Promise<DeezerPlaylist>);
+
+  return request
+    .then((res) => {
+      const error = (res as DeezerError).error;
+      if (error) {
+        return Promise.reject(`Deezer error: ${error.message}`);
+      }
+      return res.tracks.data;
+    })
+    .then((tracks) => tracks.filter((track) => track.preview))
+    .then((tracks) => tracks.map(toTrack))
     .then((tracks) =>
-      tracks.length ? tracks : Promise.reject("No previews on playlist"),
+      tracks.length >= STAGE_SIZE
+        ? tracks
+        : Promise.reject(
+            `Not enough playable tracks on playlist (need ${STAGE_SIZE})`,
+          ),
     );
 };
 

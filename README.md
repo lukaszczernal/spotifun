@@ -7,15 +7,15 @@ A quiz app that let you match an album cover with a song sample.
 
 Each quiz game is dividied into 3 rounds. In each, you will listen to a song sample and guess which album cover it belongs to.
 
-## Spotify
+## Deezer
 
-In order to play that game you need a Spotify accound. Also its required that you have bunch of songs in you favourite playlist. This will be the source data for the quiz. 
+Track data comes from the public [Deezer API](https://api.deezer.com). No account or login is required to play — the quiz is built from a public Deezer playlist, and song samples are the 30 second previews Deezer exposes for each track.
+
+Deezer does not send CORS headers, so the app fetches playlists using JSONP. Track availability is region dependent: tracks that are not playable in your country arrive without a preview and are skipped.
 
 ## Development status
 
 The game is in "alpha" stage. Error handling and UX improvements are next.
-
-The Spotify API is currently in development mode. It means that if you want to play the game you need to ask me to add your Spotify's username to the whitelist.
 
 ### Todos
 - [ ] Add error handling
@@ -26,6 +26,6 @@ The Spotify API is currently in development mode. It means that if you want to p
 
 ## How to play the game
 
-The game is deployed on github pages at this moment. But not all of you can play yet (check Development status paragraph).
+The game is deployed on github pages at this moment.
 
 Link to the game https://lukaszczernal.github.io/spotifun

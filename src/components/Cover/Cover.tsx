@@ -73,7 +73,7 @@ const Cover: Component<Props> = (props) => {
         class={`cover ${props.isCorrect ? "cover__correct" : ""}`} // TODO I do not like this solution
         ref={coverRef}
       >
-        <img src={props.track?.album.images[0].url} onLoad={props.onLoad} />
+        <img src={props.track?.album.coverBig} onLoad={props.onLoad} />
       </a>
     </div>
   );

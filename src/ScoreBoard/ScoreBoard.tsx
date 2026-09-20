@@ -21,16 +21,14 @@ const ScoreBoard = () => {
                 <img
                   width={64}
                   height={64}
-                  src={score.selectedTrack?.track.album.images[1].url}
+                  src={score.selectedTrack?.track.album.coverMedium}
                 />
                 <div className={styles.scoreBoard__songInfo}>
                   <span className={styles.scoreBoard__songTitle}>
                     {score.correctTrack?.track.name}
                   </span>
                   <span className={styles.scoreBoard__songArtists}>
-                    {score.correctTrack?.track.artists
-                      .map((artist) => artist.name)
-                      .join(',')}
+                    {score.correctTrack?.track.artist}
                   </span>
                 </div>
                 <span className={styles.scoreBoard__tag}>
