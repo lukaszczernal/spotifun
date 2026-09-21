@@ -1,0 +1,10 @@
+import { JSDOM } from "jsdom";
+const dom = new JSDOM(`<!doctype html><html><body><div id="root"></div></body></html>`);
+globalThis.window = dom.window;
+globalThis.document = dom.window.document;
+globalThis.Node = dom.window.Node;
+globalThis.Element = dom.window.Element;
+globalThis.HTMLElement = dom.window.HTMLElement;
+globalThis.SVGElement = dom.window.SVGElement;
+const { run } = await import("./out/reveal-bundle.mjs");
+console.log(await run());
