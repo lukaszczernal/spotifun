@@ -23,6 +23,10 @@ const Splash = () => {
       ],
     });
     hammerStart.on('swipe tap', () => navigate('/gamelist'));
+
+    return () => {
+      hammerStart.destroy();
+    };
   });
 
   return (

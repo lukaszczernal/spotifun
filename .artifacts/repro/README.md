@@ -1,7 +1,7 @@
-# Stage reshuffle checks (issue #3)
+# Headless checks (issues #3, #5)
 
-Headless checks for the stage-reshuffle behaviour. The project has no test
-runner, so these are plain scripts.
+Headless checks for the stage-reshuffle behaviour and the cover gesture
+cleanup. The project has no test runner, so these are plain scripts.
 
 Two of them drive the real `useTrackStore` with `usePlaylist` swapped for a
 local stub, so they need to be bundled first: Solid's default Node resolution
@@ -53,4 +53,29 @@ in the new covers, so a whole-stage replacement still fades in.
 ```bash
 npx vite build --config .artifacts/repro/reveal.config.mjs
 node .artifacts/repro/reveal-runner.mjs
+```
+
+## Cover gesture cleanup (issue #5)
+
+Both scripts render the real `Cover` component and exit non-zero on
+regression.
+
+The leak check counts Hammer managers created against managers destroyed
+across ten full-stage reshuffles, and compares the surviving `window`
+listeners against the baseline after the initial render. Before the fix it
+reported 44 created / 0 destroyed and 142 window listeners.
+
+```bash
+npx vite build --config .artifacts/repro/cover-leak.config.mjs
+node .artifacts/repro/cover-leak-runner.mjs
+```
+
+The tap check is the counterpart: it proves the added `destroy()` only ever
+fires on unmounted covers, by tapping every cover on every round and
+asserting each one still registers, that no tap resolves to a track that has
+left the stage, and that nothing responds after dispose.
+
+```bash
+npx vite build --config .artifacts/repro/cover-tap.config.mjs
+node .artifacts/repro/cover-tap-runner.mjs
 ```
