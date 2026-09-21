@@ -33,8 +33,14 @@ const Stage = () => {
   const [isChecking, setIsChecking] = createSignal(false);
   const [{ failsCount }, gameAction] = useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const { stageTracks, mysteryTrack, trackCount, guessedCount, markAsGuessed } =
-    useTrackStore({ playlistId: params.playlistId });
+  const {
+    stageTracks,
+    mysteryTrack,
+    trackCount,
+    guessedCount,
+    markAsGuessed,
+    reshuffleStage,
+  } = useTrackStore({ playlistId: params.playlistId });
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement | undefined;
@@ -137,14 +143,17 @@ const Stage = () => {
     }
     setIsChecking(true);
 
-    const recordAnimation = isCorrect(selected())
-      ? slideRecordInside
-      : slideRecordOutside;
+    const correct = isCorrect(selected());
+    const recordAnimation = correct ? slideRecordInside : slideRecordOutside;
 
     recordAnimation(recordRef)
       .finished.then(() => {
-        if (isCorrect(selected())) {
+        if (correct) {
           markAsGuessed(selected());
+          // Swaps in a whole new set of covers along with a new mystery track.
+          // Runs once the record has slid into the case, so that the preview of
+          // the next track does not start playing mid animation.
+          reshuffleStage();
         } else {
           failsCount() === MAX_FAIL_COUNT && navigate("/game/score");
           play();
