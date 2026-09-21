@@ -21,7 +21,7 @@ const transformMap = [
 ];
 
 const Cover: Component<Props> = (props) => {
-  let coverRef: HTMLAnchorElement;
+  let coverRef: HTMLAnchorElement | undefined;
 
   const onClickCallback = () => {
     console.log("!! cover clicked");
@@ -57,13 +57,21 @@ const Cover: Component<Props> = (props) => {
   });
 
   onMount(() => {
-    new Hammer(coverRef, {
-      recognizers: [[Hammer.Tap]],
-    }).on("tap", onClickCallback);
-  });
+    if (!coverRef) {
+      return;
+    }
 
-  onCleanup(() => {
-    Hammer.off(coverRef, "tap", onClickCallback);
+    const hammerCover = new Hammer(coverRef, {
+      recognizers: [[Hammer.Tap]],
+    });
+    hammerCover.on("tap", onClickCallback);
+
+    // destroy(), not off(): off() only clears the handler list, while the
+    // manager's input bindings (element pointerdown, window pointermove/up)
+    // stay attached and keep this cover alive after it is unmounted.
+    onCleanup(() => {
+      hammerCover.destroy();
+    });
   });
 
   return (
