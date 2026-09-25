@@ -17,11 +17,11 @@ const STAGE_SIZE = 4;
 const makeTracks = (n) =>
   Array.from({ length: n }, (_, i) => ({
     track: { id: i + 1 },
-    guessed: false,
+    played: false,
     staged: false,
   }));
 
-const freeTracks = (tracks) => tracks.filter((t) => !t.guessed && !t.staged);
+const freeTracks = (tracks) => tracks.filter((t) => !t.played && !t.staged);
 
 function simulate(playlistSize, strategy) {
   const tracks = makeTracks(playlistSize);
@@ -41,7 +41,7 @@ function simulate(playlistSize, strategy) {
     // Mystery is one of the staged covers; the player guesses it correctly.
     const mystery = stage[0];
     if (!mystery) break;
-    mystery.guessed = true;
+    mystery.played = true;
     matches++;
 
     if (strategy === "replace-one") {
@@ -55,7 +55,7 @@ function simulate(playlistSize, strategy) {
     if (strategy === "reshuffle-recycle") {
       // Release unguessed covers leaving the stage back into the pool.
       stage.forEach((s) => {
-        if (!s.guessed) s.staged = false;
+        if (!s.played) s.staged = false;
       });
     }
 

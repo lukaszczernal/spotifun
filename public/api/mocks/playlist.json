@@ -1,7 +1,7 @@
 {
   "id": 0,
   "title": "Mock playlist",
-  "nb_tracks": 6,
+  "nb_tracks": 21,
   "tracks": {
     "data": [
       {
@@ -9,7 +9,10 @@
         "title": "Harder Better Faster Stronger",
         "preview": "https://cdns-preview-d.dzcdn.net/stream/c-deda7fa9316d9e9e880d2c6207e92260-8.mp3",
         "readable": true,
-        "artist": { "id": 27, "name": "Daft Punk" },
+        "artist": {
+          "id": 27,
+          "name": "Daft Punk"
+        },
         "album": {
           "id": 302127,
           "title": "Discovery",
@@ -22,7 +25,10 @@
         "title": "Seven Nation Army",
         "preview": "https://cdns-preview-4.dzcdn.net/stream/c-4c0b26b4a0a1f0c5a42a4f0b9e8a4d7f-6.mp3",
         "readable": true,
-        "artist": { "id": 1716, "name": "The White Stripes" },
+        "artist": {
+          "id": 1716,
+          "name": "The White Stripes"
+        },
         "album": {
           "id": 93851,
           "title": "Elephant",
@@ -35,7 +41,10 @@
         "title": "Smells Like Teen Spirit",
         "preview": "https://cdns-preview-9.dzcdn.net/stream/c-9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d-5.mp3",
         "readable": true,
-        "artist": { "id": 1145, "name": "Nirvana" },
+        "artist": {
+          "id": 1145,
+          "name": "Nirvana"
+        },
         "album": {
           "id": 110736,
           "title": "Nevermind",
@@ -48,7 +57,10 @@
         "title": "Get Lucky",
         "preview": "https://cdns-preview-2.dzcdn.net/stream/c-2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e-7.mp3",
         "readable": true,
-        "artist": { "id": 27, "name": "Daft Punk" },
+        "artist": {
+          "id": 27,
+          "name": "Daft Punk"
+        },
         "album": {
           "id": 6575789,
           "title": "Random Access Memories",
@@ -61,7 +73,10 @@
         "title": "Bohemian Rhapsody",
         "preview": "https://cdns-preview-1.dzcdn.net/stream/c-1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f-4.mp3",
         "readable": true,
-        "artist": { "id": 412, "name": "Queen" },
+        "artist": {
+          "id": 412,
+          "name": "Queen"
+        },
         "album": {
           "id": 75621,
           "title": "A Night At The Opera",
@@ -70,11 +85,254 @@
         }
       },
       {
+        "id": 3135554,
+        "title": "One More Time",
+        "preview": "https://cdns-preview-6.dzcdn.net/stream/c-000000000000000000000000002fd842-7.mp3",
+        "readable": true,
+        "artist": {
+          "id": 27,
+          "name": "Daft Punk"
+        },
+        "album": {
+          "id": 302127,
+          "title": "Discovery",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000049c2f/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000049c2f/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 916426,
+        "title": "The Hardest Button To Button",
+        "preview": "https://cdns-preview-7.dzcdn.net/stream/c-000000000000000000000000000dfbca-8.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1716,
+          "name": "The White Stripes"
+        },
+        "album": {
+          "id": 93851,
+          "title": "Elephant",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000016e9b/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000016e9b/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 1109734,
+        "title": "Come As You Are",
+        "preview": "https://cdns-preview-8.dzcdn.net/stream/c-0000000000000000000000000010eee6-9.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1145,
+          "name": "Nirvana"
+        },
+        "album": {
+          "id": 110736,
+          "title": "Nevermind",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001b090/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001b090/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 12477072,
+        "title": "Instant Crush",
+        "preview": "https://cdns-preview-9.dzcdn.net/stream/c-00000000000000000000000000be6290-1.mp3",
+        "readable": true,
+        "artist": {
+          "id": 27,
+          "name": "Daft Punk"
+        },
+        "album": {
+          "id": 6575789,
+          "title": "Random Access Memories",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000006456ad/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000006456ad/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 674140,
+        "title": "Love Of My Life",
+        "preview": "https://cdns-preview-0.dzcdn.net/stream/c-000000000000000000000000000a495c-2.mp3",
+        "readable": true,
+        "artist": {
+          "id": 412,
+          "name": "Queen"
+        },
+        "album": {
+          "id": 75621,
+          "title": "A Night At The Opera",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000012765/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000012765/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 2530253,
+        "title": "Billie Jean",
+        "preview": "https://cdns-preview-1.dzcdn.net/stream/c-00000000000000000000000000269bcd-3.mp3",
+        "readable": true,
+        "artist": {
+          "id": 259,
+          "name": "Michael Jackson"
+        },
+        "album": {
+          "id": 251160,
+          "title": "Thriller",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000003d518/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000003d518/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 1173178,
+        "title": "Sweet Child O' Mine",
+        "preview": "https://cdns-preview-2.dzcdn.net/stream/c-0000000000000000000000000011e6ba-4.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1005,
+          "name": "Guns N' Roses"
+        },
+        "album": {
+          "id": 118185,
+          "title": "Appetite For Destruction",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001cda9/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001cda9/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 6172224,
+        "title": "Rolling In The Deep",
+        "preview": "https://cdns-preview-3.dzcdn.net/stream/c-000000000000000000000000005e2e40-5.mp3",
+        "readable": true,
+        "artist": {
+          "id": 75798,
+          "name": "Adele"
+        },
+        "album": {
+          "id": 596066,
+          "title": "21",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000091862/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000091862/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 3128681,
+        "title": "Take On Me",
+        "preview": "https://cdns-preview-4.dzcdn.net/stream/c-000000000000000000000000002fbd69-6.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1240,
+          "name": "a-ha"
+        },
+        "album": {
+          "id": 300817,
+          "title": "Hunting High And Low",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000049711/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000049711/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 429421,
+        "title": "Wonderwall",
+        "preview": "https://cdns-preview-5.dzcdn.net/stream/c-00000000000000000000000000068d6d-7.mp3",
+        "readable": true,
+        "artist": {
+          "id": 400,
+          "name": "Oasis"
+        },
+        "album": {
+          "id": 43011,
+          "title": "(What's The Story) Morning Glory?",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000000a803/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000000a803/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 1097425,
+        "title": "Losing My Religion",
+        "preview": "https://cdns-preview-6.dzcdn.net/stream/c-0000000000000000000000000010bed1-8.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1180,
+          "name": "R.E.M."
+        },
+        "album": {
+          "id": 109657,
+          "title": "Out Of Time",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001ac59/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/0000000000000000000000000001ac59/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 2001000,
+        "title": "Personal Jesus",
+        "preview": "https://cdns-preview-7.dzcdn.net/stream/c-000000000000000000000000001e8868-9.mp3",
+        "readable": true,
+        "artist": {
+          "id": 545,
+          "name": "Depeche Mode"
+        },
+        "album": {
+          "id": 200100,
+          "title": "Violator",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000030da4/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000030da4/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 779492,
+        "title": "Karma Police",
+        "preview": "https://cdns-preview-8.dzcdn.net/stream/c-000000000000000000000000000be4e4-1.mp3",
+        "readable": true,
+        "artist": {
+          "id": 399,
+          "name": "Radiohead"
+        },
+        "album": {
+          "id": 78261,
+          "title": "OK Computer",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000000131b5/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000000131b5/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 8086132,
+        "title": "Feel Good Inc.",
+        "preview": "https://cdns-preview-9.dzcdn.net/stream/c-000000000000000000000000007b6274-2.mp3",
+        "readable": true,
+        "artist": {
+          "id": 860,
+          "name": "Gorillaz"
+        },
+        "album": {
+          "id": 792192,
+          "title": "Demon Days",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000000c1680/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/000000000000000000000000000c1680/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
+        "id": 1447624,
+        "title": "Mr. Brightside",
+        "preview": "https://cdns-preview-0.dzcdn.net/stream/c-000000000000000000000000001616c8-3.mp3",
+        "readable": true,
+        "artist": {
+          "id": 1447,
+          "name": "The Killers"
+        },
+        "album": {
+          "id": 142352,
+          "title": "Hot Fuss",
+          "cover_medium": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000022c10/250x250-000000-80-0-0.jpg",
+          "cover_big": "https://cdn-images.dzcdn.net/images/cover/00000000000000000000000000022c10/500x500-000000-80-0-0.jpg"
+        }
+      },
+      {
         "id": 14001764,
         "title": "Unplayable Region Locked Track",
         "preview": "",
         "readable": false,
-        "artist": { "id": 268355, "name": "Trentemoller" },
+        "artist": {
+          "id": 268355,
+          "name": "Trentemoller"
+        },
         "album": {
           "id": 1282970,
           "title": "The Weird and Wonderful World of Glitch",

@@ -13,7 +13,7 @@ import anime from "animejs";
 import { PlayerControls } from "../components/PlayerControls";
 import { SplashText } from "../components/SplashText";
 import { Cover } from "../components/Cover";
-import { MAX_FAIL_COUNT, STAGE_SIZE } from "../config";
+import { ROUND_LENGTH, STAGE_SIZE } from "../config";
 import { GameContext } from "../services/useGame";
 import { usePlayer } from "../services/usePlayer";
 import { Track } from "../services/model";
@@ -31,16 +31,11 @@ const Stage = () => {
   const params = useParams();
   const [selected, setSelected] = createSignal<Track>();
   const [isChecking, setIsChecking] = createSignal(false);
-  const [{ failsCount }, gameAction] = useContext(GameContext)!;
+  const [{ guessCount, scoreCount, failsCount, isRoundOver }, gameAction] =
+    useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const {
-    stageTracks,
-    mysteryTrack,
-    trackCount,
-    guessedCount,
-    markAsGuessed,
-    reshuffleStage,
-  } = useTrackStore({ playlistId: params.playlistId });
+  const { stageTracks, mysteryTrack, markAsPlayed, reshuffleStage } =
+    useTrackStore({ playlistId: params.playlistId });
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement | undefined;
@@ -146,25 +141,34 @@ const Stage = () => {
     const correct = isCorrect(selected());
     const recordAnimation = correct ? slideRecordInside : slideRecordOutside;
 
+    // Capture the question before the stage advances - reshuffleStage() swaps in
+    // a new mystery track synchronously, so reading these afterwards would
+    // record the next question instead of the one just answered.
+    const askedTrack = mysteryTrack()?.track;
+    const answeredTrack = selected();
+
     recordAnimation(recordRef)
       .finished.then(() => {
-        if (correct) {
-          markAsGuessed(selected());
-          // Swaps in a whole new set of covers along with a new mystery track.
-          // Runs once the record has slid into the case, so that the preview of
-          // the next track does not start playing mid animation.
-          reshuffleStage();
-        } else {
-          failsCount() === MAX_FAIL_COUNT && navigate("/game/score");
+        gameAction.addScore({
+          correctTrack: askedTrack,
+          selectedTrack: answeredTrack,
+        });
+
+        // The track has been asked about, right or wrong, so it is retired and
+        // the stage moves on to a new question. Swapping in a whole new set of
+        // covers runs once the record has finished moving, so that the preview
+        // of the next track does not start playing mid animation.
+        markAsPlayed(askedTrack);
+        const advanced = reshuffleStage();
+
+        if (isRoundOver() || !advanced) {
+          navigate("/game/score");
+          return;
+        }
+
+        if (!correct) {
           play();
         }
-      })
-      .then(() => {
-        // TODO
-        // gameAction.addScore({
-        //   correctTrack: mysteryTrack(),
-        //   selectedTrack: selected(),
-        // });
       })
       .then(() => {
         setSelected(); // Clear selection
@@ -180,9 +184,9 @@ const Stage = () => {
     <>
       <div className={styles.stage__score}>
         <span>
-          Score: {guessedCount()}
+          Score: {scoreCount()}
           <br /> Fails: {failsCount()}
-          <br /> Total: {trackCount()}
+          <br /> Guess: {guessCount()} / {ROUND_LENGTH}
         </span>
       </div>
       <section className={styles.stage__scroller}>

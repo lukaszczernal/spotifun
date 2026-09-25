@@ -38,6 +38,7 @@ export interface Track {
 
 export interface TrackStageItem {
   track: Track;
-  guessed: boolean;
+  /** The track has been asked about already - correctly or not - and is retired. */
+  played: boolean;
   staged: boolean;
 }
