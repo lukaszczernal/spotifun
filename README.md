@@ -9,7 +9,7 @@ A round is 10 songs. For each one you will listen to a song sample and guess whi
 
 ## Deezer
 
-Track data comes from the public [Deezer API](https://api.deezer.com). No account or login is required to play — the quiz is built from a public Deezer playlist, and song samples are the 30 second previews Deezer exposes for each track.
+Track data comes from the public [Deezer API](https://api.deezer.com). No account or login is required to play — the quiz is built from public Deezer playlists, which you pick from the game list, and song samples are the 30 second previews Deezer exposes for each track.
 
 Deezer does not send CORS headers, so the app fetches playlists using JSONP. Track availability is region dependent: tracks that are not playable in your country arrive without a preview and are skipped.
 
