@@ -10,7 +10,7 @@ import { createStore } from "solid-js/store";
 import { render, For } from "solid-js/web";
 
 const STAGE_SIZE = 4;
-const mk = (id) => ({ track: { id, name: "t" + id }, guessed: false, staged: true });
+const mk = (id) => ({ track: { id, name: "t" + id }, played: false, staged: true });
 
 const out = [];
 const log = (...a) => out.push(a.join(" "));

@@ -27,7 +27,7 @@ export async function run() {
   // Exactly STAGE_SIZE + 1 tracks: after the first match there is only one
   // fresh track left, so a full replacement is impossible.
   await createRoot(async (dispose) => {
-    const { stageTracks, mysteryTrack, markAsGuessed, reshuffleStage } =
+    const { stageTracks, mysteryTrack, markAsPlayed, reshuffleStage } =
       useTrackStore({ playlistId: String(STAGE_SIZE + 1) });
 
     await tick();
@@ -46,7 +46,7 @@ export async function run() {
       const mystery = mysteryTrack();
       if (!mystery) break;
 
-      markAsGuessed(mystery.track);
+      markAsPlayed(mystery.track);
       guessed.push(mystery.track.id);
       reshuffleStage();
       await tick();

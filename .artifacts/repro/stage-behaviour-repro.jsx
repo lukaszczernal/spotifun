@@ -40,13 +40,7 @@ async function scenario(playlistSize) {
 
   return createRoot(async (dispose) => {
     const store = useTrackStore({ playlistId: String(playlistSize) });
-    const {
-      stageTracks,
-      mysteryTrack,
-      markAsGuessed,
-      reshuffleStage,
-      guessedCount,
-    } = store;
+    const { stageTracks, mysteryTrack, markAsPlayed, reshuffleStage } = store;
 
     await tick();
     await tick();
@@ -74,7 +68,7 @@ async function scenario(playlistSize) {
       const mystery = mysteryTrack();
       if (!mystery) break;
 
-      markAsGuessed(mystery.track);
+      markAsPlayed(mystery.track);
       guessedIds.push(mystery.track.id);
       reshuffleStage();
       await tick();
@@ -104,7 +98,7 @@ async function scenario(playlistSize) {
       `got ${stageTracks().length}`,
     );
 
-    log(`  rounds played: ${rounds}, guessed: ${guessedCount()}`);
+    log(`  rounds played: ${rounds}, answered: ${guessedIds.length}`);
     dispose();
     return rounds;
   });
