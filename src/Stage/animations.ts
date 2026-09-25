@@ -20,15 +20,3 @@ export const slideRecordInside = (recordRef: HTMLDivElement) => {
       duration: 1,
     });
 };
-
-export const slideRecordOutside = (recordRef: HTMLDivElement) => {
-  return anime
-    .timeline({
-      targets: recordRef,
-      easing: "easeOutExpo",
-    })
-    .add({
-      translateY: "-30%",
-      duration: 800,
-    });
-};

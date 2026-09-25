@@ -16,6 +16,16 @@
   }
 }
 
+/* outline, not border: the covers sit in an aspect-ratio: 1 grid and are driven
+   by anime transforms, so a border would change their box size mid-animation. */
+.cover__revealCorrect {
+  outline: 0.6vh solid var(--accent-light);
+}
+
+.cover__revealWrong {
+  outline: 0.6vh solid var(--accent-fail);
+}
+
 .cover__placeholder {
   display: inherit;
   background-color: var(--background-dark);

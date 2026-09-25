@@ -33,6 +33,10 @@ const settle = async () => {
   for (let i = 0; i < 12; i++) await Promise.resolve();
 };
 
+// settle() only drains microtasks; the wrong-answer reveal hops through
+// setTimeout (durations collapsed to 0 by config.stub.ts).
+const sleep = (ms = 5) => new Promise((r) => setTimeout(r, ms));
+
 const playerStub = () => {
   const calls = { play: 0, pause: 0 };
   return {
@@ -101,12 +105,12 @@ export async function run() {
     const target = correctly ? right : all.find((c) => c !== right);
     if (!target) return false;
 
-    gesture(target, "tap"); // select a cover
+    // Selecting a cover checks the answer on its own (issue #9) - no second
+    // gesture. The wrong-answer path resolves through setTimeout, which
+    // settle() does not drain, hence the sleep.
+    gesture(target, "tap");
     await settle();
-
-    const recordArea = root.querySelector('[class*="playerControls"]');
-    if (!recordArea) return false;
-    gesture(recordArea, "swipe"); // swipe up to check
+    await sleep();
     await settle();
     return true;
   };

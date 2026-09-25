@@ -1,6 +1,6 @@
 // Regression guard for issue #7: the score must describe the question the
 // player actually answered. reshuffleStage() swaps the mystery track
-// synchronously, so Stage.checkRecord captures the question before advancing.
+// synchronously, so Stage.checkAnswer captures the question before advancing.
 // Reading mysteryTrack() after the swap would record the *next* question.
 //
 //   npx vite build --config .artifacts/repro/score-timing.config.mjs
@@ -31,7 +31,7 @@ export async function run() {
     await tick();
     await tick();
 
-    // Mirror Stage.checkRecord: capture the question up front, before any part
+    // Mirror Stage.checkAnswer: capture the question up front, before any part
     // of the answer handling runs.
     const asked = mysteryTrack();
     const askedTrack = asked.track;
