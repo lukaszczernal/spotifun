@@ -30,16 +30,6 @@ const Cover: Component<Props> = (props) => {
     props.onClick(props.track, props.position);
   };
 
-  const revealClass = () => {
-    if (props.reveal === "correct") {
-      return styles.cover__revealCorrect;
-    }
-    if (props.reveal === "wrong") {
-      return styles.cover__revealWrong;
-    }
-    return "";
-  };
-
   createEffect(() => {
     if (props.isSelected) {
       anime({
@@ -89,8 +79,15 @@ const Cover: Component<Props> = (props) => {
   return (
     <div className={styles.cover__placeholder}>
       <a
-        className={`${styles.cover} ${revealClass()}`}
-        class={`cover ${props.isCorrect ? "cover__correct" : ""}`} // TODO I do not like this solution
+        classList={{
+          [styles.cover]: true,
+          [styles.cover__revealCorrect]: props.reveal === "correct",
+          [styles.cover__revealWrong]: props.reveal === "wrong",
+          // Unscoped, unstyled: Stage animates `.cover` by selector, and
+          // `.cover__correct` is how tests locate the album being played.
+          cover: true,
+          cover__correct: props.isCorrect,
+        }}
         ref={coverRef}
       >
         <img src={props.track?.album.coverBig} onLoad={props.onLoad} />
