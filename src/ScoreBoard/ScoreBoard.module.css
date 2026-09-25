@@ -29,6 +29,10 @@
   width: 4rem;
 }
 
+.scoreBoard__tagMissed {
+  opacity: 0.5;
+}
+
 .scoreBoard__card {
   display: flex;
   align-items: center;

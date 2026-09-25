@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5)
+# Headless checks (issues #3, #5, #7)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -78,4 +78,34 @@ left the stage, and that nothing responds after dispose.
 ```bash
 npx vite build --config .artifacts/repro/cover-tap.config.mjs
 node .artifacts/repro/cover-tap-runner.mjs
+```
+
+## Round length (issue #7)
+
+Four checks, each exiting non-zero on regression.
+
+`stage-round` is the main guard: it mounts the real `Stage` and `ScoreBoard`
+behind the real routes and plays a whole round by tapping covers and swiping
+the record, alternating hits and misses. It asserts the round ends after
+exactly `ROUND_LENGTH` guesses, that a miss consumes a guess and moves on to a
+new song, that the player lands on the score board, and that misses are listed
+there. Animations are stubbed, otherwise a round takes ~20s of wall clock time.
+
+```bash
+npx vite build --config .artifacts/repro/stage-round.config.mjs
+node .artifacts/repro/stage-round-runner.mjs
+```
+
+The remaining three cover the stores beneath it: `round-state` on the round
+counter in `useGame` (including a late answer arriving after the round is
+over), `round-length` on a full session against the stores — a perfect round, a
+round of pure misses, and a playlist too short to finish — and `score-timing`
+on the ordering constraint that a score records the song the player was asked
+about, not the one the stage moves on to.
+
+```bash
+for check in round-state round-length score-timing; do
+  npx vite build --config ".artifacts/repro/$check.config.mjs"
+  node ".artifacts/repro/$check-runner.mjs"
+done
 ```

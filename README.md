@@ -5,7 +5,7 @@
 
 A quiz app that let you match an album cover with a song sample. 
 
-Each quiz game is dividied into 3 rounds. In each, you will listen to a song sample and guess which album cover it belongs to.
+A round is 10 songs. For each one you will listen to a song sample and guess which album cover it belongs to. A wrong guess counts as a fail and moves on to the next song, and at the end of the round you get your score.
 
 ## Deezer
 

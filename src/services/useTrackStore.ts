@@ -35,12 +35,9 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
   const stageTracks = createMemo(() => trackStore.stage);
 
   const trackCount = createMemo(() => playlist()?.length);
-  const guessedCount = createMemo(
-    () => trackStore.tracks.filter((item) => item.guessed).length,
-  );
 
   const freeTracks = () =>
-    trackStore.tracks.filter((track) => !track.guessed && !track.staged);
+    trackStore.tracks.filter((track) => !track.played && !track.staged);
 
   createEffect(() => {
     if (trackStore.stage.length >= STAGE_SIZE) return;
@@ -67,14 +64,18 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
   };
 
   /**
-   * Replaces every cover on the stage once the mystery track has been matched.
+   * Replaces every cover on the stage once the mystery track has been answered.
    * New tracks are drawn before the outgoing covers are released, so that the
    * covers the player has just seen are not immediately drawn again. Towards
    * the end of a playlist there may not be enough unseen tracks left to build a
    * whole new stage - the remaining covers are then reused in new positions.
+   *
+   * Returns false when the playlist is exhausted and the stage could not be
+   * rebuilt, so the caller can end the round instead of leaving the player on a
+   * stage that no longer advances.
    */
-  const reshuffleStage = () => {
-    const leaving = trackStore.stage.filter((item) => !item.guessed);
+  const reshuffleStage = (): boolean => {
+    const leaving = trackStore.stage.filter((item) => !item.played);
     const fresh = drawTracks(STAGE_SIZE);
 
     const nextStage =
@@ -86,7 +87,7 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
       // Not enough covers left to rebuild the stage - keep the current one
       // rather than rendering an incomplete grid.
       fresh.forEach((item) => setStaged(item, false));
-      return;
+      return false;
     }
 
     const staying = nextStage.map((item) => item.track.id);
@@ -97,10 +98,12 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
         .forEach((item) => setStaged(item, false));
 
       updateTracksStore("stage", nextStage);
-      // Every cover on the new stage is unguessed, so the mystery track is
-      // always a track the player has not matched yet.
+      // Every cover on the new stage is unplayed, so the mystery track is
+      // always a track the player has not been asked about yet.
       setMysteryIndex(getRandomInt(STAGE_SIZE));
     });
+
+    return true;
   };
 
   const setStaged = (track: TrackStageItem | undefined, staged: boolean) => {
@@ -111,18 +114,18 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
     updateTracksStore("tracks", index, "staged", staged);
   };
 
-  const markAsGuessed = (track: Track | undefined) => {
+  const markAsPlayed = (track: Track | undefined) => {
     const index = trackStore.tracks.findIndex(
       (item) => item.track.id === track?.id,
     );
     if (index < 0) return;
-    updateTracksStore("tracks", index, "guessed", true);
+    updateTracksStore("tracks", index, "played", true);
   };
 
   const resetTracks = (newTracks: Track[] = []) => {
     updateTracksStore(
       "tracks",
-      [...newTracks].map((track) => ({ track, guessed: false, staged: false })),
+      [...newTracks].map((track) => ({ track, played: false, staged: false })),
     );
   };
 
@@ -137,8 +140,7 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
     stageTracks,
     mysteryTrack,
     trackCount,
-    guessedCount,
-    markAsGuessed,
+    markAsPlayed,
     reshuffleStage,
   };
 };
