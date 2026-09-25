@@ -1,6 +1,7 @@
 import anime from "animejs";
 import { Component, onMount, onCleanup, createEffect } from "solid-js";
 import { Track } from "../../services/model";
+import { COVER_ZOOM_DURATION } from "../../config";
 
 import styles from "./Cover.module.css";
 
@@ -9,6 +10,8 @@ interface Props {
   isSelected?: boolean;
   position: number;
   isCorrect: boolean;
+  /** Set once the answer is being revealed, to mark this cover green or red. */
+  reveal?: "correct" | "wrong";
   onClick: (track: Track | undefined, position: number) => any;
   onLoad: () => any;
 }
@@ -24,14 +27,23 @@ const Cover: Component<Props> = (props) => {
   let coverRef: HTMLAnchorElement | undefined;
 
   const onClickCallback = () => {
-    console.log("!! cover clicked");
     props.onClick(props.track, props.position);
+  };
+
+  const revealClass = () => {
+    if (props.reveal === "correct") {
+      return styles.cover__revealCorrect;
+    }
+    if (props.reveal === "wrong") {
+      return styles.cover__revealWrong;
+    }
+    return "";
   };
 
   createEffect(() => {
     if (props.isSelected) {
       anime({
-        duration: 800,
+        duration: COVER_ZOOM_DURATION,
         targets: coverRef,
         zIndex: {
           value: 30,
@@ -77,7 +89,7 @@ const Cover: Component<Props> = (props) => {
   return (
     <div className={styles.cover__placeholder}>
       <a
-        className={styles.cover}
+        className={`${styles.cover} ${revealClass()}`}
         class={`cover ${props.isCorrect ? "cover__correct" : ""}`} // TODO I do not like this solution
         ref={coverRef}
       >

@@ -13,14 +13,18 @@ import anime from "animejs";
 import { PlayerControls } from "../components/PlayerControls";
 import { SplashText } from "../components/SplashText";
 import { Cover } from "../components/Cover";
-import { ROUND_LENGTH, STAGE_SIZE } from "../config";
+import {
+  COVER_ZOOM_DURATION,
+  REVEAL_DURATION,
+  ROUND_LENGTH,
+  STAGE_SIZE,
+} from "../config";
 import { GameContext } from "../services/useGame";
 import { usePlayer } from "../services/usePlayer";
 import { Track } from "../services/model";
 import useTrackStore from "../services/useTrackStore";
 import { Animate, AnimationType } from "../components/Animate";
-import { SwipeUpIcon } from "../assets/images/gestureIcons";
-import { slideRecordInside, slideRecordOutside } from "./animations";
+import { slideRecordInside } from "./animations";
 
 import styles from "./Stage.module.css";
 
@@ -31,6 +35,7 @@ const Stage = () => {
   const params = useParams();
   const [selected, setSelected] = createSignal<Track>();
   const [isChecking, setIsChecking] = createSignal(false);
+  const [wrongTrack, setWrongTrack] = createSignal<Track>();
   const [{ guessCount, scoreCount, failsCount, isRoundOver }, gameAction] =
     useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
@@ -40,25 +45,31 @@ const Stage = () => {
 
   let playerAreaRef: HTMLDivElement | undefined;
   let recordRef: HTMLDivElement | undefined;
+  let revealTimer: ReturnType<typeof setTimeout> | undefined;
+
+  // Only ever one wait is outstanding, so a single handle is enough. Clearing it
+  // on unmount leaves the promise unresolved, which stops the resolution chain
+  // rather than letting it reshuffle or navigate on a disposed stage.
+  const wait = (ms: number) =>
+    new Promise<void>((resolve) => {
+      revealTimer = setTimeout(resolve, ms);
+    });
 
   createEffect(() => {
     if (!playerAreaRef) {
       return;
     }
 
+    // The record is only a play/pause control now that picking a cover checks
+    // the answer on its own.
     const hammerRecord = new Hammer(playerAreaRef, {
-      recognizers: [
-        [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
-        [Hammer.Tap],
-      ],
+      recognizers: [[Hammer.Tap]],
     });
-    hammerRecord.on("swipe tap", () => {
-      checkRecord();
+    hammerRecord.on("tap", () => {
       if (isChecking()) {
-        pause();
-      } else {
-        togglePlayer();
+        return;
       }
+      togglePlayer();
     });
 
     return () => {
@@ -71,6 +82,9 @@ const Stage = () => {
   });
 
   onCleanup(() => {
+    if (revealTimer !== undefined) {
+      clearTimeout(revealTimer);
+    }
     resetPlayer();
   });
 
@@ -103,11 +117,24 @@ const Stage = () => {
     return mysteryTrack()?.track.id === selectedTrack?.id;
   };
 
-  const toggleCoverSelection = (track: Track | undefined, position: number) => {
-    if (isChecking()) {
+  // Picking a cover is terminal - it resolves the guess, so there is no
+  // deselecting it again.
+  const selectCover = (track: Track | undefined, position: number) => {
+    if (isChecking() || !track || !mysteryTrack()) {
       return;
     }
-    setSelected((prev) => (prev === track ? undefined : track));
+    setSelected(track);
+    checkAnswer(track);
+  };
+
+  const revealOf = (track?: Track): "correct" | "wrong" | undefined => {
+    if (!wrongTrack()) {
+      return undefined;
+    }
+    if (track?.id === wrongTrack()?.id) {
+      return "wrong";
+    }
+    return isCorrect(track) ? "correct" : undefined;
   };
 
   // const markCorrect = () => {
@@ -131,33 +158,50 @@ const Stage = () => {
       duration: 2000,
     });
 
-  const checkRecord = () => {
-    if (!selected() || isChecking() || !recordRef) {
+  // A miss is shown on the covers, not on the record: the pick zooms in like any
+  // other selection, then drops back into the grid so that the green and red
+  // borders are readable side by side.
+  const revealWrongAnswer = (answeredTrack: Track) =>
+    wait(COVER_ZOOM_DURATION).then(() => {
+      setSelected();
+      setWrongTrack(answeredTrack);
+      return wait(REVEAL_DURATION);
+    });
+
+  const checkAnswer = (answeredTrack: Track) => {
+    if (isChecking() || !recordRef) {
       // TODO isChecking should be substituted with covers loaded
       return;
     }
     setIsChecking(true);
-
-    const correct = isCorrect(selected());
-    const recordAnimation = correct ? slideRecordInside : slideRecordOutside;
+    pause();
 
     // Capture the question before the stage advances - reshuffleStage() swaps in
     // a new mystery track synchronously, so reading these afterwards would
     // record the next question instead of the one just answered.
     const askedTrack = mysteryTrack()?.track;
-    const answeredTrack = selected();
+    const correct = askedTrack?.id === answeredTrack.id;
 
-    recordAnimation(recordRef)
-      .finished.then(() => {
+    const presented = correct
+      ? slideRecordInside(recordRef).finished
+      : revealWrongAnswer(answeredTrack);
+
+    presented
+      .then(() => {
         gameAction.addScore({
           correctTrack: askedTrack,
           selectedTrack: answeredTrack,
         });
 
+        // Cleared before the stage changes: a wrong track is never retired, so
+        // the end of playlist fallback can put it straight back on the new
+        // stage, where a leftover border would mark the wrong cover.
+        setWrongTrack();
+
         // The track has been asked about, right or wrong, so it is retired and
         // the stage moves on to a new question. Swapping in a whole new set of
-        // covers runs once the record has finished moving, so that the preview
-        // of the next track does not start playing mid animation.
+        // covers runs once the answer has finished being shown, so that the
+        // preview of the next track does not start playing mid animation.
         markAsPlayed(askedTrack);
         const advanced = reshuffleStage();
 
@@ -204,8 +248,9 @@ const Stage = () => {
                 track={track.track}
                 isSelected={isSelected(track.track)}
                 isCorrect={isCorrect(track.track)}
+                reveal={revealOf(track.track)}
                 position={index()}
-                onClick={toggleCoverSelection}
+                onClick={selectCover}
                 onLoad={() => console.log("register image loaded")}
               />
             )}
@@ -225,17 +270,6 @@ const Stage = () => {
           <div className={styles.stage__recordAction}>
             <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
               <SplashText subtitle="Tap to play" />
-            </Animate>
-          </div>
-        </Show>
-
-        <Show when={selected()}>
-          <div className={styles.stage__recordAction}>
-            <Animate type={AnimationType.fadeIn} outCondition={isChecking()}>
-              <SplashText subtitle="Swipe up to check" />
-            </Animate>
-            <Animate type={AnimationType.slideUp} outCondition={isChecking()}>
-              {SwipeUpIcon}
             </Animate>
           </div>
         </Show>

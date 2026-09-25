@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7)
+# Headless checks (issues #3, #5, #7, #9)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -85,8 +85,8 @@ node .artifacts/repro/cover-tap-runner.mjs
 Four checks, each exiting non-zero on regression.
 
 `stage-round` is the main guard: it mounts the real `Stage` and `ScoreBoard`
-behind the real routes and plays a whole round by tapping covers and swiping
-the record, alternating hits and misses. It asserts the round ends after
+behind the real routes and plays a whole round by tapping covers, alternating
+hits and misses. It asserts the round ends after
 exactly `ROUND_LENGTH` guesses, that a miss consumes a guess and moves on to a
 new song, that the player lands on the score board, and that misses are listed
 there. Animations are stubbed, otherwise a round takes ~20s of wall clock time.
@@ -109,3 +109,23 @@ for check in round-state round-length score-timing; do
   node ".artifacts/repro/$check-runner.mjs"
 done
 ```
+
+## Automatic answer check (issue #9)
+
+`auto-check` guards the flow change: selecting a cover resolves the guess on
+its own, with no second gesture. Against the real `Stage`, it asserts that a
+wrong pick records the guess and pauses the preview, that during the reveal
+exactly one cover carries the red border (the one picked) and one the green
+(the answer), that the reveal is cleared before the stage moves on so no stale
+border lands on a recycled cover, that the record area no longer resolves
+anything, and that a correct pick resolves on the tap with no borders shown.
+
+The reveal delays come from `config.stub-reveal.ts`, shortened but non-zero so
+the reveal window can be sampled while it is open. `stage-round` uses
+`config.stub.ts`, which collapses them to zero.
+
+```bash
+npx vite build --config .artifacts/repro/auto-check.config.mjs
+node .artifacts/repro/auto-check-runner.mjs
+```
+

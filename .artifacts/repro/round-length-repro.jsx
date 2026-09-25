@@ -1,7 +1,7 @@
 // Regression guard for issue #7: a play session is a bounded round.
 //
 // Drives the real useTrackStore together with the real useGame store, mirroring
-// what Stage.checkRecord does per answer: record the score, retire the question,
+// what Stage.checkAnswer does per answer: record the score, retire the question,
 // reshuffle. Asserts the session stops at ROUND_LENGTH, and that pool
 // exhaustion is reported rather than silently freezing the stage.
 //
