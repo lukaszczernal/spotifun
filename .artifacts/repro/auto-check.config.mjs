@@ -9,35 +9,34 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        // Swap the Deezer-backed playlist for a deterministic local stub.
         find: /^\.\/usePlaylist$/,
         replacement: path.join(root, ".artifacts/repro/usePlaylist.stub.ts"),
       },
       {
-        // Real animations would make a round take ~20s of wall clock time.
         find: /^animejs$/,
         replacement: path.join(root, ".artifacts/repro/stage-round.stub-anime.js"),
       },
       {
-        // Collapse the wrong-answer reveal delays. Two specifiers reach the
-        // real config from src: "../config" and "../../config" (Cover).
+        // Shortened but non-zero, so the reveal window can be observed while
+        // it is still open. Two specifiers reach the real config from src:
+        // "../config" and "../../config" (Cover).
         find: /^\.\.\/config$/,
-        replacement: path.join(root, ".artifacts/repro/config.stub.ts"),
+        replacement: path.join(root, ".artifacts/repro/config.stub-reveal.ts"),
       },
       {
         find: /^\.\.\/\.\.\/config$/,
-        replacement: path.join(root, ".artifacts/repro/config.stub.ts"),
+        replacement: path.join(root, ".artifacts/repro/config.stub-reveal.ts"),
       },
     ],
   },
   build: {
     target: "esnext",
-    outDir: ".artifacts/repro/out-stage-round",
+    outDir: ".artifacts/repro/out-auto-check",
     emptyOutDir: true,
     minify: false,
     rollupOptions: {
-      input: ".artifacts/repro/stage-round-repro.jsx",
-      output: { entryFileNames: "stage-round-bundle.mjs", format: "es" },
+      input: ".artifacts/repro/auto-check-repro.jsx",
+      output: { entryFileNames: "auto-check-bundle.mjs", format: "es" },
       preserveEntrySignatures: "strict",
     },
   },
