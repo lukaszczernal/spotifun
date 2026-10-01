@@ -127,15 +127,11 @@ const Stage = () => {
     checkAnswer(track);
   };
 
-  const revealOf = (track?: Track): "correct" | "wrong" | undefined => {
-    if (!wrongTrack()) {
-      return undefined;
-    }
-    if (track?.id === wrongTrack()?.id) {
-      return "wrong";
-    }
-    return isCorrect(track) ? "correct" : undefined;
-  };
+  // Open only between a miss and the stage moving on. Covers already know which
+  // one is correct; this is what lets them show it.
+  const isRevealing = () => !!wrongTrack();
+
+  const isPicked = (track?: Track) => track?.id === wrongTrack()?.id;
 
   // const markCorrect = () => {
   //   return anime({
@@ -248,7 +244,8 @@ const Stage = () => {
                 track={track.track}
                 isSelected={isSelected(track.track)}
                 isCorrect={isCorrect(track.track)}
-                reveal={revealOf(track.track)}
+                isPicked={isPicked(track.track)}
+                isRevealing={isRevealing()}
                 position={index()}
                 onClick={selectCover}
                 onLoad={() => console.log("register image loaded")}

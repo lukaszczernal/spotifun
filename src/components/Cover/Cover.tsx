@@ -10,8 +10,12 @@ interface Props {
   isSelected?: boolean;
   position: number;
   isCorrect: boolean;
-  /** Set once the answer is being revealed, to mark this cover green or red. */
-  reveal?: "correct" | "wrong";
+  /** True for the cover that was picked, once the guess is in. */
+  isPicked?: boolean;
+  /** Open only while a miss is being shown. It is what promotes `isCorrect`
+   * and `isPicked` into the green and red borders, so that `isCorrect` does
+   * not give the answer away for the rest of the round. */
+  isRevealing?: boolean;
   onClick: (track: Track | undefined, position: number) => any;
   onLoad: () => any;
 }
@@ -81,8 +85,8 @@ const Cover: Component<Props> = (props) => {
       <a
         classList={{
           [styles.cover]: true,
-          [styles.cover__revealCorrect]: props.reveal === "correct",
-          [styles.cover__revealWrong]: props.reveal === "wrong",
+          [styles.cover__revealCorrect]: props.isRevealing && props.isCorrect,
+          [styles.cover__revealWrong]: props.isRevealing && props.isPicked,
           // Unscoped, unstyled: Stage animates `.cover` by selector, and
           // `.cover__correct` is how tests locate the album being played.
           cover: true,
