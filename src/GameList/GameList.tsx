@@ -27,6 +27,12 @@ const GameList = () => {
       title: "Your favourites",
       imageUrl: favouritesCover,
     },
+    {
+      id: "9010236822",
+      title: "00's Jazz",
+      imageUrl:
+        "https://cdn-images.dzcdn.net/images/playlist/97a9dddf8d1b8d73fce5d6005ba58436/500x500-000000-80-0-0.jpg",
+    },
   ];
 
   return (

@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7, #9)
+# Headless checks (issues #3, #5, #7, #9, #10)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -110,6 +110,22 @@ for check in round-state round-length score-timing; do
 done
 ```
 
+## Game list (issue #10)
+
+Renders the real `GameList` behind a router and reads back the tiles a player
+would see. Asserts the menu offers both playlists — "Your favourites" and
+"00's Jazz" — each linking to its own `/game/:playlistId`, with no playlist
+dropped and none listed twice, and every tile carrying a cover whose alt text
+matches its title.
+
+The tile count and duplicate checks are the regression guard: the #7 PR series
+shipped a duplicated tile that needed a follow-up commit to remove.
+
+```bash
+npx vite build --config .artifacts/repro/game-list.config.mjs
+node .artifacts/repro/game-list-runner.mjs
+```
+
 ## Automatic answer check (issue #9)
 
 `auto-check` guards the flow change: selecting a cover resolves the guess on
@@ -128,4 +144,3 @@ the reveal window can be sampled while it is open. `stage-round` uses
 npx vite build --config .artifacts/repro/auto-check.config.mjs
 node .artifacts/repro/auto-check-runner.mjs
 ```
-
