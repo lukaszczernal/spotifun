@@ -1,6 +1,7 @@
 import anime from "animejs";
 import { Component, onMount, onCleanup, createEffect } from "solid-js";
 import { Track } from "../../services/model";
+import { COVER_ZOOM_DURATION } from "../../config";
 
 import styles from "./Cover.module.css";
 
@@ -9,6 +10,12 @@ interface Props {
   isSelected?: boolean;
   position: number;
   isCorrect: boolean;
+  /** True for the cover that was picked, once the guess is in. */
+  isPicked?: boolean;
+  /** Open only while a miss is being shown. It is what promotes `isCorrect`
+   * and `isPicked` into the green and red borders, so that `isCorrect` does
+   * not give the answer away for the rest of the round. */
+  isRevealing?: boolean;
   onClick: (track: Track | undefined, position: number) => any;
   onLoad: () => any;
 }
@@ -24,14 +31,13 @@ const Cover: Component<Props> = (props) => {
   let coverRef: HTMLAnchorElement | undefined;
 
   const onClickCallback = () => {
-    console.log("!! cover clicked");
     props.onClick(props.track, props.position);
   };
 
   createEffect(() => {
     if (props.isSelected) {
       anime({
-        duration: 800,
+        duration: COVER_ZOOM_DURATION,
         targets: coverRef,
         zIndex: {
           value: 30,
@@ -77,8 +83,15 @@ const Cover: Component<Props> = (props) => {
   return (
     <div className={styles.cover__placeholder}>
       <a
-        className={styles.cover}
-        class={`cover ${props.isCorrect ? "cover__correct" : ""}`} // TODO I do not like this solution
+        classList={{
+          [styles.cover]: true,
+          [styles.cover__revealCorrect]: props.isRevealing && props.isCorrect,
+          [styles.cover__revealWrong]: props.isRevealing && props.isPicked,
+          // Unscoped, unstyled: Stage animates `.cover` by selector, and
+          // `.cover__correct` is how tests locate the album being played.
+          cover: true,
+          cover__correct: props.isCorrect,
+        }}
         ref={coverRef}
       >
         <img src={props.track?.album.coverBig} onLoad={props.onLoad} />
