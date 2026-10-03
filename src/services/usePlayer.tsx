@@ -1,4 +1,10 @@
-import { Component, createContext, createSignal, useContext } from 'solid-js';
+import {
+  batch,
+  Component,
+  createContext,
+  createSignal,
+  useContext,
+} from "solid-js";
 
 type PlayerContext = ReturnType<typeof getStore>;
 
@@ -9,24 +15,40 @@ export const PlayerProvider: Component = (props) => (
 
 const getStore = () => {
   const [source, setSource] = createSignal<string>();
-  const [state, setState] = createSignal<'play' | 'pause'>('pause');
+  const [trackId, setTrackId] = createSignal<number>();
+  const [state, setState] = createSignal<"play" | "pause">("pause");
   const [continousPlay, setContinousPlay] = createSignal<boolean>(false);
 
   const play = () => {
     setContinousPlay(true);
-    setState('play');
+    setState("play");
   };
 
   const pause = () => {
-    setState('pause');
+    setState("pause");
   };
 
   const toggle = () => {
-    state() === 'play' ? pause() : play();
+    state() === "play" ? pause() : play();
   };
 
-  const load = (sourceUrl?: string) => {
-    setSource(sourceUrl);
+  /**
+   * The track id is kept with the source so that an expired preview URL can be
+   * swapped for a fresh one.
+   */
+  const load = (sourceUrl?: string, id?: number) => {
+    batch(() => {
+      setSource(sourceUrl);
+      setTrackId(id);
+    });
+  };
+
+  /**
+   * Mirrors a change the audio element made on its own - the OS pausing it on
+   * screen lock, media keys, a blocked play - without asking the element to act.
+   */
+  const sync = (newState: "play" | "pause") => {
+    setState(newState);
   };
 
   /**
@@ -38,7 +60,18 @@ const getStore = () => {
     setContinousPlay(false);
   };
 
-  return { state, source, play, pause, load, reset, toggle, continousPlay } as const;
+  return {
+    state,
+    source,
+    trackId,
+    play,
+    pause,
+    sync,
+    load,
+    reset,
+    toggle,
+    continousPlay,
+  } as const;
 };
 
 export const usePlayer = () => useContext(PlayerContext);

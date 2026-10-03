@@ -14,7 +14,8 @@ const Player: Component<Props> = ({ track }) => {
   const { state, load, toggle: togglePlay } = usePlayer()!;
 
   createEffect(() => {
-    load(track?.()?.track.previewUrl);
+    const current = track?.()?.track;
+    load(current?.previewUrl, current?.id);
   });
 
   const getPlayerClass = createMemo(() => {
