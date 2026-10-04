@@ -24,6 +24,39 @@ const shuffle = <T>(items: T[]): T[] => {
   return result;
 };
 
+/**
+ * Fills `base` up to `count` items from `candidates`, preferring candidates
+ * whose album is not on the stage yet so that the same cover is not shown
+ * twice. Once the distinct albums run out the remaining candidates are used,
+ * because a full stage matters more than a perfectly unique one.
+ */
+const topUp = <T extends TrackStageItem>(
+  base: T[],
+  candidates: T[],
+  count: number,
+): T[] => {
+  const albums = new Set(base.map((item) => item.track.album.id));
+  const filled = [...base];
+  const rest: T[] = [];
+
+  for (const item of candidates) {
+    if (filled.length === count) break;
+    if (albums.has(item.track.album.id)) {
+      rest.push(item);
+      continue;
+    }
+    albums.add(item.track.album.id);
+    filled.push(item);
+  }
+
+  for (const item of rest) {
+    if (filled.length === count) break;
+    filled.push(item);
+  }
+
+  return filled;
+};
+
 const useTrackStore = ({ playlistId }: TrackStoreProps) => {
   const [playlist] = usePlaylist({ playlistId });
   const [trackStore, updateTracksStore] = createStore<TrackStore>({
@@ -56,9 +89,16 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
   /**
    * Takes up to `count` tracks that have not been played or shown yet and
    * marks them as staged, so that they cannot be drawn a second time.
+   *
+   * Tracks are picked from distinct albums: the cover belongs to the album,
+   * not the track, so two tracks of one album would put the very same image
+   * on the stage twice and the player could not tell them apart. When there
+   * are not enough distinct albums left, the remaining slots are filled with
+   * any free track - a repeated cover is better than a stage that cannot be
+   * built at all.
    */
   const drawTracks = (count: number): TrackStageItem[] => {
-    const drawn = freeTracks().slice(0, count);
+    const drawn = topUp([], freeTracks(), count);
     drawn.forEach((item) => setStaged(item, true));
     return drawn;
   };
@@ -81,7 +121,9 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
     const nextStage =
       fresh.length === STAGE_SIZE
         ? fresh
-        : shuffle([...fresh, ...leaving]).slice(0, STAGE_SIZE);
+        : // Carried-over covers must not stay in the position the player has
+          // just seen them in, so the reused stage is shuffled.
+          shuffle(topUp(fresh, shuffle(leaving), STAGE_SIZE));
 
     if (nextStage.length < STAGE_SIZE) {
       // Not enough covers left to rebuild the stage - keep the current one
