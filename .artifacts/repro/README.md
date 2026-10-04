@@ -35,6 +35,23 @@ npx vite build --config .artifacts/repro/fallback.config.mjs
 node .artifacts/repro/fallback-runner.mjs
 ```
 
+## Repeated album covers (issue #13)
+
+A cover belongs to an album, not to a track, so two tracks of one album put the
+same image on the stage twice - and when one of them is the mystery track the
+guess cannot be answered. The stub builds playlists where a configurable number
+of tracks share an album, as Deezer playlists do, and plays 2000 stages per
+configuration.
+
+Before the fix: 0% repeated covers with one track per album, 17% with two and
+29% with three, about half of them unanswerable. After it all three
+configurations report zero.
+
+```bash
+npx vite build --config .artifacts/repro/dup-cover.config.mjs
+node .artifacts/repro/dup-cover-runner.mjs
+```
+
 ## Track pool arithmetic
 
 Standalone model comparing the old replace-one behaviour, a naive reshuffle
