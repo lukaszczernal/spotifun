@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7, #9, #10, #13, #14, #15)
+# Headless checks (issues #3, #5, #7, #9, #10, #13, #14, #15, #19)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -178,23 +178,33 @@ npx vite build --config .artifacts/repro/auto-check.config.mjs
 node .artifacts/repro/auto-check-runner.mjs
 ```
 
-## Tap to continue on a correct answer (issue #14)
+## Swipe up to continue on a correct answer (issues #14, #19)
 
-`correct-reveal` guards the hold a right answer now gets. Against the real
-`Stage`, it asserts that the record slide starts half a second after the pick
-and stops half way into the cover, that the song title, the performer and a
-"tap to continue" prompt are shown while it waits, and that nothing is
-committed during the hold — no guess banked, no covers swapped. It then taps
-the player area and asserts the rest of the slide runs, the guess is banked,
-the prompt clears and a fresh stage is dealt.
+`correct-reveal` guards the hold a right answer gets. Against the real `Stage`,
+it asserts that the pick interrupts nothing — the record does not move and the
+song is not paused — while the song title, the performer and a "swipe up to
+continue" prompt are shown, and that nothing is committed during the hold: no
+guess banked, no covers swapped. It then continues and asserts that the music
+stops, the whole record slide runs, the guess is banked, the prompt clears and
+a fresh stage is dealt.
+
+The whole sequence runs twice, released by a swipe once and a tap once, which
+must agree. The swipe travels through intermediate `pointermove` events: a
+`pointerdown`/`pointerup` pair that merely shares a distant coordinate has no
+delta and is recognised as a tap, which would let the harness pass even with
+the swipe recognizer removed.
+
+Issue #19 inverted most of these assertions. The record used to slide half way
+into the cover half a second after the pick and the music used to stop there;
+it now stays where it was playing, spinning, until the player continues.
 
 The wrong-answer path is deliberately left on its timer, so the asymmetry is
 covered by `auto-check` rather than here.
 
 Unlike the other Stage harnesses, this one aliases `animejs` to
 `correct-reveal.stub-anime.js`, which records the timelines instead of driving
-them off rAF. That is what makes the delay and the half-way stop readable; a
-stub that resolved instantly would hide both.
+them off rAF. That is what makes "the record did not move at all" provable; a
+stub that resolved instantly could not tell that from a slide that ran.
 
 ```bash
 npx vite build --config .artifacts/repro/correct-reveal.config.mjs
