@@ -1,5 +1,7 @@
+import { Show } from "solid-js";
 import { Link } from "solid-app-router";
 import favouritesCover from "../assets/images/game-list-covers/your-favourites.jpg";
+import { useProgress } from "../services/useProgress";
 import styles from "./GameList.module.css";
 
 interface TileProps {
@@ -7,20 +9,29 @@ interface TileProps {
   key: number;
   title: string;
   imageUrl: string;
+  // Accessors rather than values, so a tile re-renders its progress as soon as
+  // the player comes back from a round.
+  percent: () => number;
+  completed: () => boolean;
 }
 
-const Tile = ({ title, imageUrl, id }: TileProps) => {
+const Tile = (props: TileProps) => {
   return (
-    <Link className={styles.tile} href={`/game/${id}`}>
-      <img src={imageUrl} alt={title} className={styles.tileImage} />
+    <Link className={styles.tile} href={`/game/${props.id}`}>
+      <img src={props.imageUrl} alt={props.title} className={styles.tileImage} />
+      <Show when={props.completed()}>
+        <span className={styles.tileBadge}>Complete</span>
+      </Show>
       <div className={styles.tileContent}>
-        <h3 className={styles.tileTitle}>{title}</h3>
+        <h3 className={styles.tileTitle}>{props.title}</h3>
+        <p className={styles.tileProgress}>{props.percent()}% guessed</p>
       </div>
     </Link>
   );
 };
 
 const GameList = () => {
+  const [{ progressOf }] = useProgress();
   const tiles = [
     {
       id: "394652815",
@@ -49,6 +60,8 @@ const GameList = () => {
           id={tile.id}
           title={tile.title}
           imageUrl={tile.imageUrl}
+          percent={() => progressOf(tile.id).percent}
+          completed={() => progressOf(tile.id).completed}
         />
       ))}
     </div>

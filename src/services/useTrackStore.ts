@@ -11,6 +11,13 @@ interface TrackStore {
 
 type TrackStoreProps = {
   playlistId: string;
+  /**
+   * Ids of the tracks the player has already guessed correctly in this
+   * playlist. Songs outside this list are offered first, so that replaying a
+   * playlist moves the player towards finishing it instead of asking about the
+   * same songs again. Optional, so the store can be driven without progress.
+   */
+  guessedIds?: () => number[];
 };
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
@@ -57,7 +64,7 @@ const topUp = <T extends TrackStageItem>(
   return filled;
 };
 
-const useTrackStore = ({ playlistId }: TrackStoreProps) => {
+const useTrackStore = ({ playlistId, guessedIds }: TrackStoreProps) => {
   const [playlist] = usePlaylist({ playlistId });
   const [trackStore, updateTracksStore] = createStore<TrackStore>({
     stage: [],
@@ -69,8 +76,39 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
 
   const trackCount = createMemo(() => playlist()?.length);
 
-  const freeTracks = () =>
-    trackStore.tracks.filter((track) => !track.played && !track.staged);
+  const isGuessed = (item: TrackStageItem) =>
+    guessedIds?.().includes(item.track.id) ?? false;
+
+  /**
+   * Tracks still available to be drawn, songs the player has never got right
+   * first. Within each group the playlist order - already randomised in
+   * `resetTracks` - is kept.
+   */
+  const freeTracks = () => {
+    const free = trackStore.tracks.filter(
+      (track) => !track.played && !track.staged,
+    );
+    return [
+      ...free.filter((item) => !isGuessed(item)),
+      ...free.filter((item) => isGuessed(item)),
+    ];
+  };
+
+  /**
+   * Picks which cover on the stage is the song to be guessed, preferring one
+   * the player has not got right yet. Ordering the pool is not enough on its
+   * own - a stage can hold both guessed and unguessed songs near the end of a
+   * playlist, and only the mystery track counts towards progress.
+   */
+  const pickMysteryIndex = (stage: TrackStageItem[]) => {
+    const unguessed = stage
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) => !isGuessed(item));
+
+    if (unguessed.length === 0) return getRandomInt(stage.length);
+
+    return unguessed[getRandomInt(unguessed.length)].index;
+  };
 
   createEffect(() => {
     if (trackStore.stage.length >= STAGE_SIZE) return;
@@ -80,7 +118,7 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
 
     batch(() => {
       updateTracksStore("stage", initialStage);
-      setMysteryIndex(getRandomInt(STAGE_SIZE));
+      setMysteryIndex(pickMysteryIndex(initialStage));
     });
   });
 
@@ -140,9 +178,10 @@ const useTrackStore = ({ playlistId }: TrackStoreProps) => {
         .forEach((item) => setStaged(item, false));
 
       updateTracksStore("stage", nextStage);
-      // Every cover on the new stage is unplayed, so the mystery track is
-      // always a track the player has not been asked about yet.
-      setMysteryIndex(getRandomInt(STAGE_SIZE));
+      // Every cover on the new stage is unplayed, so any of them can be asked
+      // about in this round; the pick prefers songs still missing from the
+      // playlist's progress.
+      setMysteryIndex(pickMysteryIndex(nextStage));
     });
 
     return true;

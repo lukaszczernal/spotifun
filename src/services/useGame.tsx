@@ -17,14 +17,21 @@ export const GameProvider: Component = (props) => (
 );
 
 export const getStore = () => {
-  const [gameScore, setGameScore] = createStore<{ answers: Score[] }>({
+  const [gameScore, setGameScore] = createStore<{
+    answers: Score[];
+    // The playlist the current round is being played on, so the score board can
+    // offer another round of the same game.
+    playlistId: string;
+  }>({
     answers: [],
+    playlistId: '',
   });
 
   const guessCount = () => gameScore.answers.length;
   const scoreCount = () => countCorrect(gameScore.answers);
   const failsCount = () => guessCount() - scoreCount();
   const isRoundOver = () => guessCount() >= ROUND_LENGTH;
+  const playlistId = () => gameScore.playlistId;
 
   const addScore = (score: Score) => {
     // A round is a fixed number of guesses. Late animation callbacks must not
@@ -33,12 +40,16 @@ export const getStore = () => {
     setGameScore('answers', (state) => [...state, score]);
   };
 
+  const setPlaylistId = (id: string) => {
+    setGameScore('playlistId', id);
+  };
+
   const resetGame = () => {
     setGameScore('answers', []);
   };
 
   return [
-    { gameScore, guessCount, scoreCount, failsCount, isRoundOver },
-    { addScore, resetGame },
+    { gameScore, guessCount, scoreCount, failsCount, isRoundOver, playlistId },
+    { addScore, resetGame, setPlaylistId },
   ] as const;
 };

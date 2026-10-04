@@ -38,3 +38,8 @@
   right: 2vh;
   text-align: right;
 }
+
+.stage__completed {
+  color: #1db954;
+  font-weight: 600;
+}

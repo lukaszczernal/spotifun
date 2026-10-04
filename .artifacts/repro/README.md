@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7, #9, #10, #14)
+# Headless checks (issues #3, #5, #7, #9, #10, #13, #14, #15)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -108,6 +108,10 @@ exactly `ROUND_LENGTH` guesses, that a miss consumes a guess and moves on to a
 new song, that the player lands on the score board, and that misses are listed
 there. Animations are stubbed, otherwise a round takes ~20s of wall clock time.
 
+It doubles as the end-to-end guard for issue #15: the round is played against
+the real progress store, and the checks confirm only the songs the player got
+right counted towards the playlist, measured against the whole playlist.
+
 ```bash
 npx vite build --config .artifacts/repro/stage-round.config.mjs
 node .artifacts/repro/stage-round-runner.mjs
@@ -130,13 +134,18 @@ done
 ## Game list (issue #10)
 
 Renders the real `GameList` behind a router and reads back the tiles a player
-would see. Asserts the menu offers both playlists — "Your favourites" and
-"00's Jazz" — each linking to its own `/game/:playlistId`, with no playlist
-dropped and none listed twice, and every tile carrying a cover whose alt text
-matches its title.
+would see. Asserts the menu offers all three playlists — "Your favourites",
+"00's Jazz" and "2010" — each linking to its own `/game/:playlistId`, with no
+playlist dropped and none listed twice, and every tile carrying a cover whose
+alt text matches its title.
 
 The tile count and duplicate checks are the regression guard: the #7 PR series
 shipped a duplicated tile that needed a follow-up commit to remove.
+
+The progress store is seeded first (issue #15), so the same run also asserts
+every tile reports the share of its playlist guessed — including a playlist
+that has never been opened, which reads 0% — and that only a finished playlist
+carries the badge.
 
 ```bash
 npx vite build --config .artifacts/repro/game-list.config.mjs
@@ -183,4 +192,33 @@ stub that resolved instantly would hide both.
 ```bash
 npx vite build --config .artifacts/repro/correct-reveal.config.mjs
 node .artifacts/repro/correct-reveal-runner.mjs
+```
+
+## Playlist completion (issue #15)
+
+`progress` is the main guard for finishing a playlist. It drives the real
+progress store together with the real track store, recording a correct guess
+per answer the way `Stage` does, and asserts the share guessed is measured
+against the playable track count; that a playlist is finished both by a
+faultless round and by guessing more than 80% of it over several rounds; that
+the 80% mark is strict, so 32 of 40 is not enough and 33 is; that a finished
+playlist stays finished when it later grows, with its share recalculated
+against the new count; and that replaying a playlist never asks again about a
+song already guessed right.
+
+```bash
+npx vite build --config .artifacts/repro/progress.config.mjs
+node .artifacts/repro/progress-runner.mjs
+```
+
+`replay-route` guards the way back in, without which progress cannot
+accumulate at all: the score board's "One more round" button used to point at
+`/game`, dropping the player on the splash screen and losing the playlist they
+were playing. It renders the real `ScoreBoard` and resolves its button through
+the real route table, asserting the player lands back on the stage for the same
+playlist, and on the menu when no playlist is known.
+
+```bash
+npx vite build --config .artifacts/repro/replay-route.config.mjs
+node .artifacts/repro/replay-route-runner.mjs
 ```
