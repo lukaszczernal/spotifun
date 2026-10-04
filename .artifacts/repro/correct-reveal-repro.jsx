@@ -16,6 +16,10 @@ import Stage from "../../src/Stage/Stage";
 import ScoreBoard from "../../src/ScoreBoard/ScoreBoard";
 import { GameContext, getStore } from "../../src/services/useGame";
 import { PlayerContext } from "../../src/services/usePlayer";
+import {
+  ProgressContext,
+  getStore as getProgressStore,
+} from "../../src/services/useProgress";
 import { STAGE_SIZE } from "../../src/config";
 import { RECORD_SLIDE_DELAY } from "../../src/Stage/animations";
 import { timelines, resetTimelines } from "./correct-reveal.stub-anime.js";
@@ -71,6 +75,7 @@ export async function run() {
   const game = getStore();
   const [{ guessCount }] = game;
   const player = playerStub();
+  const progress = getProgressStore();
 
   const location = { value: "/game/40" };
   const routerIntegration = {
@@ -80,16 +85,18 @@ export async function run() {
   const dispose = render(
     () => (
       <PlayerContext.Provider value={player}>
-        <GameContext.Provider value={game}>
-          <Router source={routerIntegration}>
-            <Routes>
-              <Route path="/game">
-                <Route path="/score" element={<ScoreBoard />} />
-                <Route path="/:playlistId" element={<Stage />} />
-              </Route>
-            </Routes>
-          </Router>
-        </GameContext.Provider>
+        <ProgressContext.Provider value={progress}>
+          <GameContext.Provider value={game}>
+            <Router source={routerIntegration}>
+              <Routes>
+                <Route path="/game">
+                  <Route path="/score" element={<ScoreBoard />} />
+                  <Route path="/:playlistId" element={<Stage />} />
+                </Route>
+              </Routes>
+            </Router>
+          </GameContext.Provider>
+        </ProgressContext.Provider>
       </PlayerContext.Provider>
     ),
     root,
