@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7, #9, #10, #13)
+# Headless checks (issues #3, #5, #7, #9, #10, #14)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -160,4 +160,27 @@ the reveal window can be sampled while it is open. `stage-round` uses
 ```bash
 npx vite build --config .artifacts/repro/auto-check.config.mjs
 node .artifacts/repro/auto-check-runner.mjs
+```
+
+## Tap to continue on a correct answer (issue #14)
+
+`correct-reveal` guards the hold a right answer now gets. Against the real
+`Stage`, it asserts that the record slide starts half a second after the pick
+and stops half way into the cover, that the song title, the performer and a
+"tap to continue" prompt are shown while it waits, and that nothing is
+committed during the hold — no guess banked, no covers swapped. It then taps
+the player area and asserts the rest of the slide runs, the guess is banked,
+the prompt clears and a fresh stage is dealt.
+
+The wrong-answer path is deliberately left on its timer, so the asymmetry is
+covered by `auto-check` rather than here.
+
+Unlike the other Stage harnesses, this one aliases `animejs` to
+`correct-reveal.stub-anime.js`, which records the timelines instead of driving
+them off rAF. That is what makes the delay and the half-way stop readable; a
+stub that resolved instantly would hide both.
+
+```bash
+npx vite build --config .artifacts/repro/correct-reveal.config.mjs
+node .artifacts/repro/correct-reveal-runner.mjs
 ```

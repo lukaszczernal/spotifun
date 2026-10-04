@@ -106,10 +106,15 @@ export async function run() {
     if (!target) return false;
 
     // Selecting a cover checks the answer on its own (issue #9) - no second
-    // gesture. The wrong-answer path resolves through setTimeout, which
-    // settle() does not drain, hence the sleep.
+    // gesture to decide it. A correct answer then holds on screen until the
+    // player taps to continue (issue #14). The wrong-answer path resolves
+    // through setTimeout, which settle() does not drain, hence the sleep.
     gesture(target, "tap");
     await settle();
+    if (correctly) {
+      gesture(root.querySelector('[class*="playerControls"]'), "tap");
+      await settle();
+    }
     await sleep();
     await settle();
     return true;

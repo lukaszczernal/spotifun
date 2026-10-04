@@ -174,6 +174,9 @@ export async function run() {
   // 4. A correct pick resolves on the tap too, with no reveal borders.
   gesture(correctCover(), "tap");
   await settle();
+  // A correct answer now holds on screen for a confirming tap (issue #14).
+  gesture(recordArea, "tap");
+  await settle();
   await sleep();
   await settle();
 
