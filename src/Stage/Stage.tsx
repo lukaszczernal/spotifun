@@ -24,7 +24,7 @@ import { usePlayer } from "../services/usePlayer";
 import { Track } from "../services/model";
 import useTrackStore from "../services/useTrackStore";
 import { Animate, AnimationType } from "../components/Animate";
-import { slideRecordInside } from "./animations";
+import { slideRecordHalfway, slideRecordHome } from "./animations";
 
 import styles from "./Stage.module.css";
 
@@ -36,6 +36,7 @@ const Stage = () => {
   const [selected, setSelected] = createSignal<Track>();
   const [isChecking, setIsChecking] = createSignal(false);
   const [wrongTrack, setWrongTrack] = createSignal<Track>();
+  const [heldTrack, setHeldTrack] = createSignal<Track>();
   const [{ guessCount, scoreCount, failsCount, isRoundOver }, gameAction] =
     useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
@@ -46,6 +47,7 @@ const Stage = () => {
   let playerAreaRef: HTMLDivElement | undefined;
   let recordRef: HTMLDivElement | undefined;
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
+  let continueHold: (() => void) | undefined;
 
   // Only ever one wait is outstanding, so a single handle is enough. Clearing it
   // on unmount leaves the promise unresolved, which stops the resolution chain
@@ -55,17 +57,38 @@ const Stage = () => {
       revealTimer = setTimeout(resolve, ms);
     });
 
+  // A right answer parks the record half way and waits here. Like the timer
+  // above, an unmount simply drops the resolver, so a disposed stage never
+  // reshuffles or navigates.
+  const waitForContinue = (askedTrack: Track) =>
+    new Promise<void>((resolve) => {
+      continueHold = resolve;
+      setHeldTrack(askedTrack);
+    });
+
+  const releaseHold = () => {
+    const resolve = continueHold;
+    continueHold = undefined;
+    setHeldTrack();
+    resolve?.();
+  };
+
   createEffect(() => {
     if (!playerAreaRef) {
       return;
     }
 
     // The record is only a play/pause control now that picking a cover checks
-    // the answer on its own.
+    // the answer on its own - except while a correct answer is held on screen,
+    // when the same tap is what releases it.
     const hammerRecord = new Hammer(playerAreaRef, {
       recognizers: [[Hammer.Tap]],
     });
     hammerRecord.on("tap", () => {
+      if (heldTrack()) {
+        releaseHold();
+        return;
+      }
       if (isChecking()) {
         return;
       }
@@ -85,6 +108,7 @@ const Stage = () => {
     if (revealTimer !== undefined) {
       clearTimeout(revealTimer);
     }
+    continueHold = undefined;
     resetPlayer();
   });
 
@@ -154,6 +178,14 @@ const Stage = () => {
       duration: 2000,
     });
 
+  // A hit is shown on the record: it slides half way into the cover and stops,
+  // leaving the song named on screen until the player taps to continue. Only
+  // then does the record finish its travel.
+  const revealCorrectAnswer = (askedTrack: Track) =>
+    slideRecordHalfway(recordRef!)
+      .finished.then(() => waitForContinue(askedTrack))
+      .then(() => slideRecordHome(recordRef!).finished);
+
   // A miss is shown on the covers, not on the record: the pick zooms in like any
   // other selection, then drops back into the grid so that the green and red
   // borders are readable side by side.
@@ -178,8 +210,11 @@ const Stage = () => {
     const askedTrack = mysteryTrack()?.track;
     const correct = askedTrack?.id === answeredTrack.id;
 
+    // A hit slides the record half way, names the song, and holds there until
+    // the player taps to continue; the rest of the slide runs on that tap. A
+    // miss is unchanged and still moves on by itself after the reveal.
     const presented = correct
-      ? slideRecordInside(recordRef).finished
+      ? revealCorrectAnswer(askedTrack!)
       : revealWrongAnswer(answeredTrack);
 
     presented
@@ -269,6 +304,19 @@ const Stage = () => {
               <SplashText subtitle="Tap to play" />
             </Animate>
           </div>
+        </Show>
+
+        <Show when={heldTrack()}>
+          {(track) => (
+            <div className={styles.stage__recordAction}>
+              <Animate type={AnimationType.fadeIn}>
+                <SplashText multiline={[track.name, track.artist]}>
+                  Correct!
+                </SplashText>
+                <SplashText subtitle="Tap to continue" />
+              </Animate>
+            </div>
+          )}
         </Show>
 
         <div ref={recordRef}>
