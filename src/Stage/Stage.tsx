@@ -23,6 +23,7 @@ import { GameContext } from "../services/useGame";
 import { usePlayer } from "../services/usePlayer";
 import { Track } from "../services/model";
 import useTrackStore from "../services/useTrackStore";
+import { useProgress } from "../services/useProgress";
 import { Animate, AnimationType } from "../components/Animate";
 import { slideRecordHalfway, slideRecordHome } from "./animations";
 
@@ -40,8 +41,12 @@ const Stage = () => {
   const [{ guessCount, scoreCount, failsCount, isRoundOver }, gameAction] =
     useContext(GameContext)!;
   const { pause, toggle: togglePlayer } = usePlayer()!;
-  const { stageTracks, mysteryTrack, markAsPlayed, reshuffleStage } =
-    useTrackStore({ playlistId: params.playlistId });
+  const [{ progressOf, guessedIds }, progressAction] = useProgress();
+  const { stageTracks, mysteryTrack, trackCount, markAsPlayed, reshuffleStage } =
+    useTrackStore({
+      playlistId: params.playlistId,
+      guessedIds: () => guessedIds(params.playlistId),
+    });
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
 
   let playerAreaRef: HTMLDivElement | undefined;
@@ -102,6 +107,15 @@ const Stage = () => {
 
   onMount(() => {
     gameAction.resetGame();
+    gameAction.setPlaylistId(params.playlistId);
+  });
+
+  // The share of a playlist that has been guessed is measured against the songs
+  // that can actually be played, which is only known once the playlist has been
+  // fetched. Recalculated on every visit, so a playlist that has grown or shrunk
+  // reports an up to date percentage.
+  createEffect(() => {
+    progressAction.syncPlaylist(params.playlistId, trackCount());
   });
 
   onCleanup(() => {
@@ -224,6 +238,11 @@ const Stage = () => {
           selectedTrack: answeredTrack,
         });
 
+        // Only songs the player got right count towards finishing a playlist.
+        if (correct) {
+          progressAction.recordGuess(params.playlistId, askedTrack?.id);
+        }
+
         // Cleared before the stage changes: a wrong track is never retired, so
         // the end of playlist fallback can put it straight back on the new
         // stage, where a leftover border would mark the wrong cover.
@@ -237,6 +256,9 @@ const Stage = () => {
         const advanced = reshuffleStage();
 
         if (isRoundOver() || !advanced) {
+          // A faultless round finishes the playlist whatever share of it is
+          // left. Read after addScore, so the last guess is counted.
+          progressAction.completeRound(params.playlistId, scoreCount());
           navigate("/game/score");
           return;
         }
@@ -262,6 +284,11 @@ const Stage = () => {
           Score: {scoreCount()}
           <br /> Fails: {failsCount()}
           <br /> Guess: {guessCount()} / {ROUND_LENGTH}
+          <br /> Complete: {progressOf(params.playlistId).percent}%
+          <Show when={progressOf(params.playlistId).completed}>
+            <br />
+            <span className={styles.stage__completed}>Playlist complete</span>
+          </Show>
         </span>
       </div>
       <section className={styles.stage__scroller}>

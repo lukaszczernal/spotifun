@@ -36,12 +36,23 @@ const { run } = await import("./out-game-list/game-list-repro.mjs");
 const { tiles } = run();
 console.log(JSON.stringify(tiles, null, 2));
 
-// The playlists the menu is expected to offer, in order. The existing tile is
-// listed too: issue #10 asks for a playlist to be added to the choice, not to
-// replace the one already there.
+// The playlists the menu is expected to offer, in order, each with the progress
+// the repro seeded for it. Every tile reports a share guessed, including one
+// that has never been opened, and only a finished playlist carries a badge.
 const expected = [
-  { href: "/game/394652815", title: "Your favourites" },
-  { href: "/game/9010236822", title: "00's Jazz" },
+  {
+    href: "/game/394652815",
+    title: "Your favourites",
+    progress: "90% guessed",
+    badge: "Complete",
+  },
+  {
+    href: "/game/9010236822",
+    title: "00's Jazz",
+    progress: "25% guessed",
+    badge: null,
+  },
+  { href: "/game/67784289", title: "2010", progress: "0% guessed", badge: null },
 ];
 
 console.log("\n--- assertions ---");
@@ -75,6 +86,21 @@ expected.forEach((want, index) => {
         `${JSON.stringify(want.title)}`,
     );
   }
+  if (got.progress !== want.progress) {
+    failures.push(
+      `tile ${index + 1} (${want.title}) reports progress ` +
+        `${JSON.stringify(got.progress)}, expected ${JSON.stringify(want.progress)}`,
+    );
+  }
+  if (got.badge !== want.badge) {
+    failures.push(
+      want.badge
+        ? `tile ${index + 1} (${want.title}) is finished but shows no complete ` +
+          `badge - got ${JSON.stringify(got.badge)}`
+        : `tile ${index + 1} (${want.title}) is unfinished but shows a badge ` +
+          `${JSON.stringify(got.badge)}`,
+    );
+  }
 });
 
 const hrefs = tiles.map((tile) => tile.href);
@@ -105,5 +131,6 @@ if (failures.length > 0) {
 
 console.log(
   `\nOK: the game list offers ${tiles.length} distinct playlists, each with a ` +
-    `cover and a title matching its alt text.`,
+    `cover, a title matching its alt text, and the share of it guessed so far. ` +
+    `Only the finished playlist is badged.`,
 );

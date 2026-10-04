@@ -9,7 +9,13 @@ import { GameContext } from '../services/useGame';
 import styles from './ScoreBoard.module.css';
 
 const ScoreBoard = () => {
-  const [{ gameScore, scoreCount }] = useContext(GameContext)!;
+  const [{ gameScore, scoreCount, playlistId }] = useContext(GameContext)!;
+
+  // Another round of the same playlist, so progress keeps building up. Falls
+  // back to the game list if the playlist is unknown - a reload lands here with
+  // an empty store.
+  const replayHref = () =>
+    playlistId() ? `/game/${playlistId()}` : '/gamelist';
 
   return (
     <>
@@ -47,7 +53,7 @@ const ScoreBoard = () => {
       </ul>
 
       <Footer>
-        <Button href="/game" dark>
+        <Button href={replayHref()} dark>
           One more round
         </Button>
       </Footer>

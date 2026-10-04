@@ -11,6 +11,10 @@ import Hammer from "hammerjs";
 import Stage from "../../src/Stage/Stage";
 import ScoreBoard from "../../src/ScoreBoard/ScoreBoard";
 import { GameContext, getStore } from "../../src/services/useGame";
+import {
+  ProgressContext,
+  getStore as getProgressStore,
+} from "../../src/services/useProgress";
 import { PlayerContext } from "../../src/services/usePlayer";
 import { STAGE_SIZE } from "../../src/config";
 
@@ -65,6 +69,7 @@ export async function run() {
 
   const game = getStore();
   const [{ guessCount }] = game;
+  const progress = getProgressStore();
   const player = playerStub();
 
   const location = { value: "/game/40" };
@@ -75,16 +80,18 @@ export async function run() {
   const dispose = render(
     () => (
       <PlayerContext.Provider value={player}>
-        <GameContext.Provider value={game}>
-          <Router source={routerIntegration}>
-            <Routes>
-              <Route path="/game">
-                <Route path="/score" element={<ScoreBoard />} />
-                <Route path="/:playlistId" element={<Stage />} />
-              </Route>
-            </Routes>
-          </Router>
-        </GameContext.Provider>
+        <ProgressContext.Provider value={progress}>
+          <GameContext.Provider value={game}>
+            <Router source={routerIntegration}>
+              <Routes>
+                <Route path="/game">
+                  <Route path="/score" element={<ScoreBoard />} />
+                  <Route path="/:playlistId" element={<Stage />} />
+                </Route>
+              </Routes>
+            </Router>
+          </GameContext.Provider>
+        </ProgressContext.Provider>
       </PlayerContext.Provider>
     ),
     root,

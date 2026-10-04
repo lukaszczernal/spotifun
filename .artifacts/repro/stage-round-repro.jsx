@@ -8,6 +8,10 @@ import Stage from "../../src/Stage/Stage";
 import ScoreBoard from "../../src/ScoreBoard/ScoreBoard";
 import { GameContext, getStore } from "../../src/services/useGame";
 import { PlayerContext } from "../../src/services/usePlayer";
+import {
+  ProgressContext,
+  getStore as getProgressStore,
+} from "../../src/services/useProgress";
 import { ROUND_LENGTH, STAGE_SIZE } from "../../src/config";
 
 const gesture = (el, type) => {
@@ -63,6 +67,8 @@ export async function run() {
 
   const game = getStore();
   const [{ gameScore, guessCount, scoreCount, failsCount }] = game;
+  const progress = getProgressStore();
+  const [{ progressOf }] = progress;
   const player = playerStub();
 
   // playlistId doubles as the stub playlist size.
@@ -74,18 +80,20 @@ export async function run() {
   const dispose = render(
     () => (
       <PlayerContext.Provider value={player}>
-        <GameContext.Provider value={game}>
-          <Router source={routerIntegration}>
-            {/* Real routes, so Stage reads the playlist id from useParams the
-                way it does in the app, and navigate() actually swaps screens. */}
-            <Routes>
-              <Route path="/game">
-                <Route path="/score" element={<ScoreBoard />} />
-                <Route path="/:playlistId" element={<Stage />} />
-              </Route>
-            </Routes>
-          </Router>
-        </GameContext.Provider>
+        <ProgressContext.Provider value={progress}>
+          <GameContext.Provider value={game}>
+            <Router source={routerIntegration}>
+              {/* Real routes, so Stage reads the playlist id from useParams the
+                  way it does in the app, and navigate() actually swaps screens. */}
+              <Routes>
+                <Route path="/game">
+                  <Route path="/score" element={<ScoreBoard />} />
+                  <Route path="/:playlistId" element={<Stage />} />
+                </Route>
+              </Routes>
+            </Router>
+          </GameContext.Provider>
+        </ProgressContext.Provider>
       </PlayerContext.Provider>
     ),
     root,
@@ -158,6 +166,20 @@ export async function run() {
     "each score kept the song the player was actually asked about",
     gameScore.answers.every((a) => a.correctTrack && a.selectedTrack),
   );
+
+  // Playing a round must move the playlist on (issue #15). The stub playlist
+  // holds 40 tracks, so a mixed round is a long way from finishing it.
+  const played = progressOf("40");
+  check(
+    "only the songs the player got right counted towards the playlist",
+    played.guessed.length === intendedCorrect,
+  );
+  check(
+    "the share guessed is measured against the whole playlist",
+    played.playableCount === 40 &&
+      played.percent === Math.round((intendedCorrect / 40) * 100),
+  );
+  check("a mixed round does not finish the playlist", !played.completed);
 
   await settle();
   const scoreRows = [...root.querySelectorAll('[class*="scoreBoard__response"]')];
