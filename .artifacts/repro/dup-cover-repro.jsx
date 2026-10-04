@@ -26,10 +26,10 @@ const assert = (label, condition, detail = "") => {
 const tick = () => new Promise((r) => setTimeout(r, 0));
 const covers = (stage) => stage.map((i) => i.track.album.coverBig);
 
-async function playRound(playlistId) {
+async function playRound(playlistId, guessedIds) {
   return createRoot(async (dispose) => {
     const { stageTracks, mysteryTrack, markAsPlayed, reshuffleStage } =
-      useTrackStore({ playlistId });
+      useTrackStore({ playlistId, guessedIds });
 
     await tick();
     await tick();
@@ -38,6 +38,7 @@ async function playRound(playlistId) {
     let dupStages = 0;
     let ambiguousGuesses = 0;
     const samples = [];
+    const asked = [];
 
     for (let r = 0; r < 10; r++) {
       const stage = stageTracks();
@@ -56,13 +57,14 @@ async function playRound(playlistId) {
         if (urls.filter((u) => u === mysteryUrl).length > 1) ambiguousGuesses++;
       }
 
+      asked.push(mystery.track.id);
       markAsPlayed(mystery.track);
       if (!reshuffleStage()) break;
       await tick();
     }
 
     dispose();
-    return { stages, dupStages, ambiguousGuesses, samples };
+    return { stages, dupStages, ambiguousGuesses, samples, asked };
   });
 }
 
@@ -108,6 +110,45 @@ export async function run() {
       );
     }
   }
+
+  // The distinct-album rule (issue #13) and preferring songs the player has
+  // not guessed yet (issue #15) both reorder the same pool, so they are
+  // checked together: a playlist half guessed, 3 tracks per album, where the
+  // unguessed songs alone cannot fill a stage from distinct albums.
+  log(`\n--- 40 tracks, 3 per album, 20 already guessed ---`);
+  const guessed = Array.from({ length: 20 }, (_, i) => i + 1);
+  let stages = 0;
+  let dupStages = 0;
+  let askedGuessed = 0;
+  let askedTotal = 0;
+
+  for (let run = 0; run < 200; run++) {
+    const r = await playRound("40x3", () => guessed);
+    stages += r.stages;
+    dupStages += r.dupStages;
+    askedTotal += r.asked.length;
+    askedGuessed += r.asked.filter((id) => guessed.includes(id)).length;
+  }
+
+  const askedPct = ((100 * askedGuessed) / askedTotal).toFixed(1);
+  log(`  stages rendered: ${stages}`);
+  log(`  stages showing the same cover twice: ${dupStages}`);
+  log(`  songs asked about: ${askedTotal}`);
+  log(`  of those already guessed: ${askedGuessed} (${askedPct}%)`);
+
+  assert(
+    "covers stay distinct when the pool is reordered by progress",
+    dupStages === 0,
+    `got ${dupStages} of ${stages} stages`,
+  );
+
+  // 20 unguessed songs against a 10-guess round: the player should never be
+  // asked about a song already matched while unguessed ones remain.
+  assert(
+    "a song already guessed is not asked about again while others remain",
+    askedGuessed === 0,
+    `got ${askedGuessed} of ${askedTotal} questions`,
+  );
 
   log(
     `\n${failures === 0 ? "ALL CHECKS PASSED" : failures + " CHECK(S) FAILED - issue #13 reproduced"}`,

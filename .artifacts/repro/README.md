@@ -47,6 +47,13 @@ Before the fix: 0% repeated covers with one track per album, 17% with two and
 29% with three, about half of them unanswerable. After it all three
 configurations report zero.
 
+A fourth case covers this rule together with the progress weighting of issue
+#15, since both reorder the same pool: a playlist of 40 tracks, 3 per album,
+half of it already guessed, where the unguessed songs alone cannot fill a stage
+from distinct albums. Covers stay distinct and no song already guessed is asked
+about again. Ignoring progress in `isGuessed` turns the second assertion to 53%
+repeats, so the case is not vacuous.
+
 ```bash
 npx vite build --config .artifacts/repro/dup-cover.config.mjs
 node .artifacts/repro/dup-cover-runner.mjs
