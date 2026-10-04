@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 
 import styles from "./App.module.css";
-import { Stage } from "./Stage";
+import { StageRoute } from "./Stage";
 import { Splash } from "./Splash";
 import { Route, Routes, useLocation } from "solid-app-router";
 import { Logo } from "./components/Logo";
@@ -21,7 +21,7 @@ const App: Component = () => {
           <Route path="/gamelist" element={<GameList />} />
           <Route path="/game">
             <Route path="/score" element={<ScoreBoard />} />
-            <Route path="/:playlistId" element={<Stage />} />
+            <Route path="/:playlistId" element={<StageRoute />} />
           </Route>
           <Route path="/*" element={<Splash />} />
         </Routes>
