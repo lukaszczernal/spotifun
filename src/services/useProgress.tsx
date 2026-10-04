@@ -1,6 +1,7 @@
 import { Component, createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { ROUND_LENGTH } from "../config";
+import { PLAYLISTS } from "./playlists";
 
 export interface PlaylistProgress {
   /** Distinct track ids the player has guessed correctly. */
@@ -62,6 +63,22 @@ export const getStore = () => {
   const guessedIds = (playlistId: string) => progressOf(playlistId).guessed;
 
   /**
+   * The playlists are a progression: the first one is always open, and each
+   * later one opens once the playlist before it has been finished. Derived from
+   * `completed` rather than stored, so there is no second copy to keep in sync
+   * - and because `completed` is sticky, an unlocked playlist stays unlocked.
+   * A playlist outside the catalogue (an id typed straight into the url) is
+   * never locked.
+   */
+  const isUnlocked = (playlistId: string) => {
+    const index = PLAYLISTS.findIndex(
+      (playlist) => playlist.id === playlistId,
+    );
+    if (index <= 0) return true;
+    return progressOf(PLAYLISTS[index - 1].id).completed;
+  };
+
+  /**
    * Applies a change to a playlist's entry, creating it first if the playlist
    * has not been seen yet, then recalculates the share guessed. `completed` is
    * only ever raised, never lowered: once a playlist has been finished it stays
@@ -109,7 +126,7 @@ export const getStore = () => {
   };
 
   return [
-    { progress, progressOf, guessedIds },
+    { progress, progressOf, guessedIds, isUnlocked },
     { syncPlaylist, recordGuess, completeRound },
   ] as const;
 };

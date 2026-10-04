@@ -18,6 +18,17 @@
   transform: translateY(-5px);
 }
 
+/* A locked playlist is dimmed and does not lift under the pointer, so it reads
+   as out of reach before the player tries it. */
+.tileLocked {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.tileLocked:hover {
+  transform: none;
+}
+
 .tileImage {
   width: 100%;
   aspect-ratio: 1;
@@ -53,4 +64,10 @@
   font-weight: 600;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
+}
+
+/* Declared after .tileBadge so it wins the background on a locked tile. */
+.tileBadgeLocked {
+  background: #5c5c5c;
+  color: #fff;
 }
