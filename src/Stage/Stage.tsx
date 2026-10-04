@@ -25,7 +25,8 @@ import { Track } from "../services/model";
 import useTrackStore from "../services/useTrackStore";
 import { useProgress } from "../services/useProgress";
 import { Animate, AnimationType } from "../components/Animate";
-import { slideRecordHalfway, slideRecordHome } from "./animations";
+import { SwipeUpIcon } from "../assets/images/gestureIcons";
+import { slideRecordHome } from "./animations";
 
 import styles from "./Stage.module.css";
 
@@ -62,9 +63,9 @@ const Stage = () => {
       revealTimer = setTimeout(resolve, ms);
     });
 
-  // A right answer parks the record half way and waits here. Like the timer
-  // above, an unmount simply drops the resolver, so a disposed stage never
-  // reshuffles or navigates.
+  // A right answer leaves the record playing where it is and waits here. Like
+  // the timer above, an unmount simply drops the resolver, so a disposed stage
+  // never reshuffles or navigates.
   const waitForContinue = (askedTrack: Track) =>
     new Promise<void>((resolve) => {
       continueHold = resolve;
@@ -75,6 +76,14 @@ const Stage = () => {
     const resolve = continueHold;
     continueHold = undefined;
     setHeldTrack();
+
+    // The gesture that continues is also what stops the song. Deliberately
+    // pause() rather than toggle(): a preview that is already silent - autoplay
+    // refused it, or the OS paused it and sync() caught up - would be started by
+    // a toggle, turning the stop into a play. The record stops spinning with it,
+    // both following player state. continousPlay is untouched, so the next
+    // track still starts on its own once it loads.
+    pause();
     resolve?.();
   };
 
@@ -85,11 +94,15 @@ const Stage = () => {
 
     // The record is only a play/pause control now that picking a cover checks
     // the answer on its own - except while a correct answer is held on screen,
-    // when the same tap is what releases it.
+    // when the same gesture is what releases it. Swipe up is what the hold
+    // advertises; tap stays supported, and both land here.
     const hammerRecord = new Hammer(playerAreaRef, {
-      recognizers: [[Hammer.Tap]],
+      recognizers: [
+        [Hammer.Swipe, { direction: Hammer.DIRECTION_UP }],
+        [Hammer.Tap],
+      ],
     });
-    hammerRecord.on("tap", () => {
+    hammerRecord.on("swipe tap", () => {
       if (heldTrack()) {
         releaseHold();
         return;
@@ -192,13 +205,13 @@ const Stage = () => {
       duration: 2000,
     });
 
-  // A hit is shown on the record: it slides half way into the cover and stops,
-  // leaving the song named on screen until the player taps to continue. Only
-  // then does the record finish its travel.
+  // A hit interrupts nothing: the record stays where it is, still spinning,
+  // still playing, with the song named on screen until the player swipes or
+  // taps to continue. Only then does the record travel home.
   const revealCorrectAnswer = (askedTrack: Track) =>
-    slideRecordHalfway(recordRef!)
-      .finished.then(() => waitForContinue(askedTrack))
-      .then(() => slideRecordHome(recordRef!).finished);
+    waitForContinue(askedTrack).then(
+      () => slideRecordHome(recordRef!).finished
+    );
 
   // A miss is shown on the covers, not on the record: the pick zooms in like any
   // other selection, then drops back into the grid so that the green and red
@@ -216,7 +229,6 @@ const Stage = () => {
       return;
     }
     setIsChecking(true);
-    pause();
 
     // Capture the question before the stage advances - reshuffleStage() swaps in
     // a new mystery track synchronously, so reading these afterwards would
@@ -224,9 +236,16 @@ const Stage = () => {
     const askedTrack = mysteryTrack()?.track;
     const correct = askedTrack?.id === answeredTrack.id;
 
-    // A hit slides the record half way, names the song, and holds there until
-    // the player taps to continue; the rest of the slide runs on that tap. A
-    // miss is unchanged and still moves on by itself after the reveal.
+    // Only a miss cuts the song off. A hit plays on through the hold and is
+    // stopped by the gesture that continues, in releaseHold().
+    if (!correct) {
+      pause();
+    }
+
+    // A hit holds the record where it is, names the song, and waits there until
+    // the player swipes or taps to continue; the whole slide runs on that
+    // gesture. A miss is unchanged and still moves on by itself after the
+    // reveal.
     const presented = correct
       ? revealCorrectAnswer(askedTrack!)
       : revealWrongAnswer(answeredTrack);
@@ -340,8 +359,9 @@ const Stage = () => {
                 <SplashText multiline={[track.name, track.artist]}>
                   Correct!
                 </SplashText>
-                <SplashText subtitle="Tap to continue" />
+                <SplashText subtitle="Swipe Up to continue" />
               </Animate>
+              <Animate type={AnimationType.slideUp}>{SwipeUpIcon}</Animate>
             </div>
           )}
         </Show>

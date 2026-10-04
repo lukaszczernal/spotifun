@@ -1,14 +1,19 @@
-// Acceptance check for issue #14: picking the CORRECT cover holds the reveal
-// on screen until the player taps to continue.
+// Acceptance check for issue #19, amending the hold shipped for issue #14:
+// picking the CORRECT cover holds the reveal on screen without interrupting
+// anything, until the player swipes up (or taps) to continue.
 //
-// The record slide starts half a second late, stops half way into the cover,
-// and the stage waits there showing the song title, the performer and a
-// "tap to continue" prompt. Nothing advances until the tap: no guess banked,
-// no covers swapped. The tap then finishes the slide and deals a new stage.
+// The record does not move on the pick and the song keeps playing - the record
+// stays where it was, still spinning, with the song title, the performer and a
+// "swipe up to continue" prompt on screen. Nothing advances until the gesture:
+// no guess banked, no covers swapped, no pause. The gesture then stops the
+// music, runs the whole record slide and deals a new stage.
+//
+// Both gestures are exercised - swipe up is what the prompt advertises, tap is
+// still supported - and must produce identical outcomes.
 //
 // Timelines are recorded rather than driven off rAF, so the shape of the
-// record animation - when it starts, how far it travels, how many legs - can
-// be read back.
+// record animation - whether it runs at all, how far it travels, how many legs
+// - can be read back.
 import { render } from "solid-js/web";
 import { Route, Router, Routes } from "solid-app-router";
 import Hammer from "hammerjs";
@@ -21,24 +26,35 @@ import {
   getStore as getProgressStore,
 } from "../../src/services/useProgress";
 import { STAGE_SIZE } from "../../src/config";
-import { RECORD_SLIDE_DELAY } from "../../src/Stage/animations";
 import { timelines, resetTimelines } from "./correct-reveal.stub-anime.js";
 
-const gesture = (el) => {
-  for (const [name, target] of [
-    ["pointerdown", el],
-    ["pointerup", window],
-  ]) {
-    const ev = document.createEvent("Event");
-    ev.initEvent(name, true, true);
-    Object.assign(ev, {
-      clientX: 10,
-      clientY: 10,
-      pointerType: "touch",
-      button: 0,
-      which: 1,
-    });
-    target.dispatchEvent(ev);
+// A tap is a pointer pair that never moves. A swipe starts in the same place
+// but travels a long way up before lifting, through an intermediate move that
+// gives Hammer the distance and velocity its DIRECTION_UP recognizer needs.
+// The journey matters: a pointerdown and pointerup that merely share a far-off
+// coordinate have zero delta and are recognised as a tap, which would let this
+// harness pass without the swipe recognizer existing at all.
+const point = (name, target, clientY) => {
+  const ev = document.createEvent("Event");
+  ev.initEvent(name, true, true);
+  Object.assign(ev, {
+    clientX: 10,
+    clientY,
+    pointerType: "touch",
+    button: 0,
+    which: 1,
+  });
+  target.dispatchEvent(ev);
+};
+
+const gesture = (el, type) => {
+  point("pointerdown", el, 400);
+  if (type === "swipe") {
+    point("pointermove", window, 240);
+    point("pointermove", window, 80);
+    point("pointerup", window, 20);
+  } else {
+    point("pointerup", window, 400);
   }
 };
 
@@ -48,11 +64,13 @@ const settle = async () => {
 
 const sleep = (ms = 5) => new Promise((r) => setTimeout(r, ms));
 
+// Reports itself as playing, so the stage is in the state a real hold starts
+// from: the preview running, the record spinning.
 const playerStub = () => {
   const calls = { play: 0, pause: 0 };
   return {
     calls,
-    state: () => "pause",
+    state: () => "play",
     source: () => undefined,
     play: () => calls.play++,
     pause: () => calls.pause++,
@@ -63,11 +81,10 @@ const playerStub = () => {
   };
 };
 
-export async function run() {
-  globalThis.Hammer = Hammer;
-
-  const checks = [];
-  const check = (label, pass) => checks.push({ label, pass });
+// One full pass: pick the correct cover, inspect the hold, then release it with
+// `releaseWith` ("swipe" or "tap"). Both passes must agree.
+async function playThrough(releaseWith, check) {
+  const label = (text) => `[${releaseWith}] ${text}`;
 
   const root = document.createElement("div");
   document.body.appendChild(root);
@@ -108,7 +125,7 @@ export async function run() {
   const correctCover = () => root.querySelector("a.cover__correct");
   const coverIds = () => covers().map((c) => c.querySelector("img")?.src);
 
-  check("the stage rendered a full set of covers", covers().length === STAGE_SIZE);
+  check(label("the stage rendered a full set of covers"), covers().length === STAGE_SIZE);
 
   const before = coverIds();
 
@@ -120,50 +137,43 @@ export async function run() {
     ?.src?.match(/\/(\d+)-big\.jpg/)?.[1];
 
   resetTimelines();
+  // Counted as a delta, not an absolute: anything that paused before the pick
+  // would otherwise be charged to the hold.
+  const pausesBeforePick = player.calls.pause;
 
   // Pick the correct cover.
-  gesture(correctCover());
+  gesture(correctCover(), "tap");
   await settle();
-
-  const slide = timelines[timelines.length - 1];
-
-  check(
-    "picking the correct cover builds a record slide timeline",
-    !!slide && slide.steps.length > 0,
-  );
 
   // --- the hold ---
 
-  const firstStep = slide?.steps?.[0] ?? {};
+  // The point of the issue: the record is left exactly where it was playing,
+  // so the pick must not build a slide at all.
   check(
-    "the record slide starts with a half second delay",
-    (slide?.params?.delay ?? firstStep.delay ?? 0) >= RECORD_SLIDE_DELAY,
+    label("picking the correct cover does not move the record"),
+    timelines.length === 0,
   );
 
-  // Half way in, and parked there: one leg only, stopping short of the full
-  // -100% travel that would carry the record all the way behind the cover.
-  const steps = slide?.steps ?? [];
-  const travel = parseFloat(steps[steps.length - 1]?.translateY);
   check(
-    "the record stops half way into the cover",
-    steps.length === 1 && travel < 0 && travel > -100,
+    label("the song keeps playing while the answer is held"),
+    player.calls.pause - pausesBeforePick === 0,
   );
 
   const held = root.textContent;
   check(
-    'a "tap to continue" message is shown while the record waits',
-    held.toLowerCase().includes("tap to continue"),
+    label('a "swipe up to continue" message is shown while the record plays on'),
+    held.toLowerCase().includes("swipe up to continue"),
   );
   check(
-    "the prompt names the song and the performer",
+    label("the prompt names the song and the performer"),
     !!askedId &&
       held.includes(`track-${askedId}`) &&
       held.includes(`artist-${askedId}`),
   );
 
-  // The stage must still be on the answered question until the player taps.
+  // The stage must still be on the answered question until the player acts.
   check(
-    "the guess is not banked until the player taps to continue",
+    label("the guess is not banked until the player continues"),
     guessCount() === 0,
   );
 
@@ -171,15 +181,19 @@ export async function run() {
   await settle();
 
   check(
-    "the covers do not change until the player taps to continue",
+    label("the covers do not change until the player continues"),
     JSON.stringify(coverIds()) === JSON.stringify(before),
   );
+  check(
+    label("the record still has not moved after waiting"),
+    timelines.length === 0,
+  );
 
-  // --- the tap ---
+  // --- the gesture ---
 
-  const timelinesBefore = timelines.length;
+  const pausesBeforeRelease = player.calls.pause;
   const playerArea = root.querySelector('[class*="playerControls"]');
-  gesture(playerArea);
+  gesture(playerArea, releaseWith);
   await settle();
   await sleep(30);
   await settle();
@@ -187,22 +201,39 @@ export async function run() {
   const finish = timelines[timelines.length - 1];
   const finishSteps = finish?.steps ?? [];
   check(
-    "tapping to continue runs the rest of the record slide",
-    timelines.length > timelinesBefore &&
+    label("continuing runs the record slide, all the way home"),
+    timelines.length === 1 &&
       finishSteps[finishSteps.length - 1]?.translateY === "100%",
   );
-  check("the guess is banked on the tap", guessCount() === 1);
   check(
-    "the prompt is cleared once the stage moves on",
-    !root.textContent.toLowerCase().includes("tap to continue"),
+    label("continuing stops the music"),
+    player.calls.pause - pausesBeforeRelease === 1,
+  );
+  check(label("the guess is banked on the gesture"), guessCount() === 1);
+  check(
+    label("the prompt is cleared once the stage moves on"),
+    !root.textContent.toLowerCase().includes("swipe up to continue"),
   );
   check(
-    "the stage moved on to a fresh set of covers",
+    label("the stage moved on to a fresh set of covers"),
     covers().length === STAGE_SIZE &&
       JSON.stringify(coverIds()) !== JSON.stringify(before),
   );
 
   dispose();
+  root.remove();
+
+  return { finish, guesses: guessCount() };
+}
+
+export async function run() {
+  globalThis.Hammer = Hammer;
+
+  const checks = [];
+  const check = (label, pass) => checks.push({ label, pass });
+
+  const swiped = await playThrough("swipe", check);
+  const tapped = await playThrough("tap", check);
 
   const failures = checks.filter((c) => !c.pass).length;
   const shape = (timeline) =>
@@ -216,13 +247,13 @@ export async function run() {
   const output = [
     ...checks.map((c) => `  ${c.pass ? "PASS" : "FAIL"}  ${c.label}`),
     "",
-    `  record slide on the pick: ${shape(slide)}`,
-    `  record slide on the tap:  ${shape(finish)}`,
-    `  guesses banked before the tap: 0 expected`,
+    `  record slide on the pick:   (none) expected, both passes`,
+    `  record slide on the swipe:  ${shape(swiped.finish)}`,
+    `  record slide on the tap:    ${shape(tapped.finish)}`,
     "",
     failures === 0
-      ? "ALL CHECKS PASSED (a correct answer holds for a tap to continue)"
-      : `${failures} CHECK(S) FAILED (guesses=${guessCount()})`,
+      ? "ALL CHECKS PASSED (a correct answer plays on until a swipe or a tap continues)"
+      : `${failures} CHECK(S) FAILED`,
   ].join("\n");
 
   return { output, failures };
