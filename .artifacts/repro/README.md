@@ -1,4 +1,4 @@
-# Headless checks (issues #3, #5, #7, #9, #10, #13, #14, #15)
+# Headless checks (issues #3, #5, #7, #9, #10, #13, #14, #15, #20)
 
 Headless checks for the stage-reshuffle behaviour and the cover gesture
 cleanup. The project has no test runner, so these are plain scripts.
@@ -154,6 +154,15 @@ every tile reports the share of its playlist guessed — including a playlist
 that has never been opened, which reads 0% — and that only a finished playlist
 carries the badge.
 
+The seeding is the caller's (issue #20), so the one bundle covers three
+sessions: a fresh one, one with the first playlist finished, and one with the
+first two finished. Each asserts the full menu, which makes it the guard on
+playlists opening up in order — and on a locked tile being dimmed, badged
+"Locked", shown without a share guessed, and carrying no url at all. Tiles are
+read as the children of the grid rather than as anchors, because a locked tile
+is deliberately not a link: selecting anchors would make a wrongly-locked
+playlist look like a missing one.
+
 ```bash
 npx vite build --config .artifacts/repro/game-list.config.mjs
 node .artifacts/repro/game-list-runner.mjs
@@ -228,4 +237,35 @@ playlist, and on the menu when no playlist is known.
 ```bash
 npx vite build --config .artifacts/repro/replay-route.config.mjs
 node .artifacts/repro/replay-route-runner.mjs
+```
+
+## Playlist unlocking (issue #20)
+
+`playlist-lock` is the guard on the playlists being a progression rather than
+an open menu: only the first one is playable when the app starts, and finishing
+one opens the next.
+
+The store half drives the real `useProgress` and asserts that a fresh session
+opens the first playlist and locks the rest; that finishing a playlist opens
+the next one and only the next one, by either route the game allows (guessing
+more than 80% of it, or a faultless round); that unlocking is sticky, so a
+playlist growing after it was finished does not re-lock what it opened; and
+that a playlist id outside the menu — one typed straight into the url — is
+never locked.
+
+The route half is the other half of the gate. The router gives every playlist a
+url of its own, so hiding a locked tile in the menu does not stop it being
+typed in or restored from a bookmark. Against the real route shape, it asserts
+that opening a locked playlist sends the player back to the menu without
+dealing a stage, that the playlist open from the start plays, and that a
+playlist opened by finishing the one before it plays.
+
+Unlike the other Stage harnesses, this one aliases `usePlaylist` to
+`usePlaylist.fixed.stub.ts`. The usual stub reads the playlist id as the track
+count, which for a real catalogue id ("9010236822") would try to build billions
+of tracks.
+
+```bash
+npx vite build --config .artifacts/repro/playlist-lock.config.mjs
+node .artifacts/repro/playlist-lock-runner.mjs
 ```
