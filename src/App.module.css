@@ -5,7 +5,6 @@
   background-color: var(--dark-background);
   align-items: center;
   height: 100vh;
-  padding: 13vh 0 0 0;
   box-sizing: border-box;
   user-select: none;
   user-zoom: none;
@@ -14,7 +13,7 @@
 }
 
 .app::before {
-  content: '';
+  content: "";
   background: linear-gradient(0deg, var(--accent-light) 0%, #052414 100%);
   position: absolute;
   top: -24vh;
@@ -27,8 +26,13 @@
 }
 
 .app::after {
-  content: '';
-  background: linear-gradient(0deg, var(--accent-light) 0%, #052414 70%, #061B0E 100%);
+  content: "";
+  background: linear-gradient(
+    0deg,
+    var(--accent-light) 0%,
+    #052414 70%,
+    #061b0e 100%
+  );
   position: absolute;
   left: -50%;
   right: 0;
@@ -38,7 +42,7 @@
   width: 200%;
   opacity: 0;
   transition: opacity 500ms ease-in;
-  transform: translate3d(0,0,0);
+  transform: translate3d(0, 0, 0);
 }
 
 .app__stage::after {
