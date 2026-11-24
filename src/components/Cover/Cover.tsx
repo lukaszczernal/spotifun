@@ -10,11 +10,9 @@ interface Props {
   isSelected?: boolean;
   position: number;
   isCorrect: boolean;
-  /** True for the cover that was picked, once the guess is in. */
-  isPicked?: boolean;
   /** Open only while a miss is being shown. It is what promotes `isCorrect`
-   * and `isPicked` into the green and red borders, so that `isCorrect` does
-   * not give the answer away for the rest of the round. */
+   * into the grow and shake, so that `isCorrect` does not give the answer away
+   * for the rest of the round. */
   isRevealing?: boolean;
   onClick: (track: Track | undefined, position: number) => any;
   onLoad: () => any;
@@ -62,6 +60,49 @@ const Cover: Component<Props> = (props) => {
     }
   });
 
+  // The miss is shown here, not on the pick: the correct cover grows and
+  // wobbles in place. Kept in its own effect so the selection reset above
+  // cannot animate the same element at the same time, and so that leaving the
+  // reveal always puts the cover back - the stage's <For> is unkeyed, so this
+  // node is reused by the next round.
+  createEffect(() => {
+    // Both read up front, not short-circuited: Solid only re-runs this effect
+    // for the props it actually read.
+    const isRevealing = props.isRevealing;
+    const isCorrect = props.isCorrect;
+
+    if (isRevealing && isCorrect) {
+      anime({
+        targets: coverRef,
+        zIndex: {
+          value: 20,
+          duration: 0,
+        },
+        scale: 1.3,
+        keyframes: [
+          { rotate: "10deg" },
+          { rotate: "-10deg" },
+          { rotate: "6deg" },
+          { rotate: "0deg" },
+        ],
+        duration: 600,
+        easing: "easeInOutSine",
+      });
+    } else {
+      anime({
+        targets: coverRef,
+        scale: 1,
+        rotate: "0deg",
+        duration: 200,
+        easing: "easeInOutSine",
+        zIndex: {
+          value: 0,
+          duration: 100,
+        },
+      });
+    }
+  });
+
   onMount(() => {
     if (!coverRef) {
       return;
@@ -85,8 +126,6 @@ const Cover: Component<Props> = (props) => {
       <a
         classList={{
           [styles.cover]: true,
-          [styles.cover__revealCorrect]: props.isRevealing && props.isCorrect,
-          [styles.cover__revealWrong]: props.isRevealing && props.isPicked,
           // Unscoped, unstyled: Stage animates `.cover` by selector, and
           // `.cover__correct` is how tests locate the album being played.
           cover: true,
