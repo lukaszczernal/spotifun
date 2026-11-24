@@ -24,6 +24,7 @@ import { usePlayer } from "../services/usePlayer";
 import { Track } from "../services/model";
 import useTrackStore from "../services/useTrackStore";
 import { useProgress } from "../services/useProgress";
+import { PLAYLISTS } from "../services/playlists";
 import { Animate, AnimationType } from "../components/Animate";
 import { SwipeUpIcon } from "../assets/images/gestureIcons";
 import { slideRecordHome } from "./animations";
@@ -49,6 +50,9 @@ const Stage = () => {
       guessedIds: () => guessedIds(params.playlistId),
     });
   const { reset: resetPlayer, state: playerState, play } = usePlayer()!;
+
+  const playlistTitle = () =>
+    PLAYLISTS.find((playlist) => playlist.id === params.playlistId)?.title;
 
   let playerAreaRef: HTMLDivElement | undefined;
   let recordRef: HTMLDivElement | undefined;
@@ -315,7 +319,7 @@ const Stage = () => {
           type={AnimationType.fadeIn}
           outCondition={!!selected() || !!isChecking()}
         >
-          <SplashText subtitle={PAGE_TITLE} />
+          <SplashText subtitle={PAGE_TITLE}>{playlistTitle()}</SplashText>
         </Animate>
 
         <section className={styles.stage__coverList}>
