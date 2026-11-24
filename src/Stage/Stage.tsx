@@ -14,7 +14,6 @@ import { PlayerControls } from "../components/PlayerControls";
 import { SplashText } from "../components/SplashText";
 import { Cover } from "../components/Cover";
 import {
-  COVER_ZOOM_DURATION,
   REVEAL_DURATION,
   ROUND_LENGTH,
   STAGE_SIZE,
@@ -183,24 +182,8 @@ const Stage = () => {
   };
 
   // Open only between a miss and the stage moving on. Covers already know which
-  // one is correct; this is what lets them show it.
+  // one is correct; this is the window in which the correct one is shown.
   const isRevealing = () => !!wrongTrack();
-
-  const isPicked = (track?: Track) => track?.id === wrongTrack()?.id;
-
-  // const markCorrect = () => {
-  //   return anime({
-  //     targets: '.cover__correct',
-  //     keyframes: [
-  //       { rotate: '10deg' },
-  //       { rotate: '-10deg' },
-  //       { rotate: '0deg' },
-  //       { rotate: '0deg', delay: 1000 },
-  //     ],
-  //     delay: 400,
-  //     duration: 500,
-  //   });
-  // };
 
   const resetRecordPosition = () =>
     anime({
@@ -217,15 +200,13 @@ const Stage = () => {
       () => slideRecordHome(recordRef!).finished
     );
 
-  // A miss is shown on the covers, not on the record: the pick zooms in like any
-  // other selection, then drops back into the grid so that the green and red
-  // borders are readable side by side.
-  const revealWrongAnswer = (answeredTrack: Track) =>
-    wait(COVER_ZOOM_DURATION).then(() => {
-      setSelected();
-      setWrongTrack(answeredTrack);
-      return wait(REVEAL_DURATION);
-    });
+  // A miss is shown on the covers, not on the record: the pick is left where it
+  // is, and the correct cover grows and shakes in place right away.
+  const revealWrongAnswer = (answeredTrack: Track) => {
+    setSelected();
+    setWrongTrack(answeredTrack);
+    return wait(REVEAL_DURATION);
+  };
 
   const checkAnswer = (answeredTrack: Track) => {
     if (isChecking() || !recordRef) {
@@ -268,7 +249,7 @@ const Stage = () => {
 
         // Cleared before the stage changes: a wrong track is never retired, so
         // the end of playlist fallback can put it straight back on the new
-        // stage, where a leftover border would mark the wrong cover.
+        // stage, where a leftover reveal would mark the wrong cover.
         setWrongTrack();
 
         // The track has been asked about, right or wrong, so it is retired and
@@ -329,7 +310,6 @@ const Stage = () => {
                 track={track.track}
                 isSelected={isSelected(track.track)}
                 isCorrect={isCorrect(track.track)}
-                isPicked={isPicked(track.track)}
                 isRevealing={isRevealing()}
                 position={index()}
                 onClick={selectCover}
